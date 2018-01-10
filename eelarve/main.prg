@@ -67,6 +67,8 @@ SET EXACT on
 SET CONSOLE OFF
 Set date to german
 Set memowidth to 8000
+SET TEXTMERGE on	
+
 cFile = 'buh60.chm'
 If file(cFile)
 	On key label F1 do fHelp

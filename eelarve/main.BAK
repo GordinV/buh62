@@ -39,7 +39,7 @@ cKasutaja = ''
 gnHandle = 0
 guserid = 0
 gRekv = 0
-glMvt = .f.
+glMvt = .t.
 *!*	grekv = 1
 *!*	gUserid = 1
 Local lError

@@ -1,0 +1,71 @@
+a = 10
+
+a_json = json_encode(a)
+
+Set proc to classes\json
+*LOCAL oDb, gnHandle
+*oJson = createobject('json')
+
+*!*	lError = test_json_encode()
+*!*	IF !lError 
+*!*		return
+*!*	ENDIF
+
+lcJson = test_record_to_json()
+
+
+FUNCTION test_record_to_json
+WAIT WINDOW 'Record to Json test ' nowait
+CREATE CURSOR v_json (id int, kood c(20), nimetus c(254), muud m)
+INSERT INTO v_json (id, kood, nimetus, muud) values (1, 'json', 'test of json', 'muud')
+lcJson = recordToJson()
+USE IN v_json 
+SET STEP on
+WAIT WINDOW 'Json to Record test ' nowait
+lResult = json_decode(lcJson)
+? lResult
+WAIT WINDOW 'Json to Record test passed' TIMEOUT 1
+ENDFUNC
+
+
+
+
+function json_encode(xExpr)
+Set proc to classes\json
+	if vartype(_json)<>'O'
+		public _json
+		_json = newobject('json')
+	endif
+return _json.encode(@xExpr)
+
+function json_decode(cJson)
+Set proc to classes\json
+local retval
+	if vartype(_json)<>'O'
+		public _json
+		_json = newobject('json')
+	endif
+	retval = _json.decode(cJson)
+	if not empty(_json.cError)
+		return null
+	endif
+return retval
+
+function json_getErrorMsg()
+return _json.cError
+
+function recordToJson
+Set proc to classes\json
+local nRecno,i,oObj, cRetVal
+	if alias()==''
+		return ''
+	endif
+	oObj = newObject('myObj')
+	for i=1 to fcount()
+		oObj.set(Field(i),eval(Field(i)))
+	next
+	cRetVal = json_encode(oObj)
+	if not empty(json_getErrorMsg())
+		cRetVal = 'ERROR:'+json_getErrorMsg()
+	endif
+return cRetVal

@@ -1,0 +1,215 @@
+SET CLASSLIB TO classes\classlib
+
+*LOCAL oDb, gnHandle
+gVersia = 'PG'
+oDb = createobject('db')
+
+gRekv = 1
+guserid = 1
+tnId = 0
+
+gnHandle = SQLCONNECT('localPg', 'vlad','123')
+IF gnHandle < 0
+	MESSAGEBOX('Connection error',0+48,'Error')
+	RETURN .t.
+ENDIF
+
+lcModel = 'libs\libraries\tunnus'
+
+WAIT WINDOW 'test model ' + lcModel  TIMEOUT 1
+lsuccess = test_of_grid_model()
+IF lsuccess 
+	lsuccess = test_of_row_new_model()
+ENDIF
+IF lsuccess 
+	lsuccess = test_of_row_validate_model()
+ENDIF
+IF lsuccess 
+	lsuccess = test_of_row_save_model()
+ENDIF
+
+IF lsuccess 
+	lsuccess = test_of_row_model()
+ENDIF
+
+IF lsuccess 
+	lsuccess = test_of_row_delete_model()
+ENDIF
+
+IF lsuccess 
+	lsuccess = test_of_selectAsLibs_model()
+ENDIF
+
+=SQLDISCONNECT(gnHandle)
+
+FUNCTION test_of_selectAsLibs_model
+		
+WITH oDb
+	lcAlias = 'selectAsLibs'
+	* parameters
+		lError = oDb.readFromModel(lcModel, lcAlias, 'gRekv, guserid', 'comTunnusRemote')
+
+	IF 	!lError AND USED('comTunnusRemote') AND RECCOUNT('comTunnusRemote') > 0
+		MESSAGEBOX('test failed',0 + 48,'Error')
+		RETURN .f.
+	ELSE 
+		* success
+		WAIT WINDOW 'test model ' + lcModel + ', ' + lcAlias + ' -> passed' TIMEOUT 1
+		USE IN comTunnusRemote
+		RETURN .t.
+	ENDIF
+	
+
+ENDWITH
+
+
+endfunc
+
+
+FUNCTION test_of_row_validate_model()
+lcAlias = 'validate' 
+SELECT v_model
+LOCATE FOR !EMPTY(validate)
+
+IF EOF()
+* not found
+	RETURN .t.
+ENDIF
+
+lcValidate = ALLTRIM(v_model.validate)
+	lcNotValidFields = oDb.validate(lcValidate, 'v_Tunnus')
+	* expect LIBRARY
+	IF TYPE('lcNotValidFields') = 'C' 
+		replace id WITH 0, kood WITH '__test' + ALLTRIM(STR(RAND() * 10000)), nimetus WITH 'vfp test', library WITH 'TUNNUS' IN v_tunnus
+	ENDIF
+	
+	lcNotValidFields = oDb.validate(lcValidate, 'v_Tunnus')
+	* expect empty
+	IF EMPTY(lcNotValidFields)
+		WAIT WINDOW 'test model ' + lcModel + ', ' + lcAlias + ' validate -> passed' TIMEOUT 1
+		RETURN .t.
+	ELSE
+		MESSAGEBOX('test failed',0 + 48,'Error')
+		SET STEP ON 
+		RETURN .f.
+	
+	ENDIF
+
+ENDFUNC
+
+
+FUNCTION test_of_row_delete_model
+	
+WITH oDb
+	lcAlias = 'deleteDoc'	
+	* parameters
+		
+	lError = oDb.readFromModel(lcModel, lcAlias, 'gUserid,tnId','result')
+
+	IF 	!lError or !USED('result') or !ISNULL(result.error_code)
+			MESSAGEBOX('test failed',0 + 48,'Error')
+		SET STEP ON 
+		RETURN .f.
+	ELSE 
+		* success
+		WAIT WINDOW 'test model ' + lcModel + ', ' + lcAlias + ' delete -> passed' TIMEOUT 1
+		SELECT result
+		RETURN .t.
+	ENDIF
+	
+
+ENDWITH
+
+
+FUNCTION test_of_row_save_model
+	
+WITH oDb
+	lcAlias = 'saveDoc'	
+	* parameters
+	* cursor v_tunnus -> json
+	SELECT v_tunnus
+	lcJson = '{"id":' + ALLTRIM(STR(v_tunnus.id)) + ',"data":'+ oDb.getJson() + '}'
+	lError = oDb.readFromModel(lcModel, lcAlias, 'lcJson,gUserid,gRekv', 'v_Tunnus')
+
+	IF 	!lError AND USED('v_Tunnus') AND RECCOUNT('v_Tunnus') > 0
+		MESSAGEBOX('test failed',0 + 48,'Error')
+		SET STEP ON 
+		RETURN .f.
+	ELSE 
+		* success
+		WAIT WINDOW 'test model ' + lcModel + ', ' + lcAlias + 'new -> passed' TIMEOUT 1
+		SELECT v_tunnus
+		tnId = v_tunnus.id
+		RETURN .t.
+	ENDIF
+	
+
+ENDWITH
+
+
+
+FUNCTION test_of_row_new_model
+tnId = 0
+	
+WITH oDb
+	lcAlias = 'row'
+	* parameters
+		CREATE CURSOR v_Tunnus (id int, kood c(20) null, nimetus c(254) null, muud m null, library c(20))
+		lError = oDb.readFromModel(lcModel, lcAlias, 'tnId, guserid', 'v_Tunnus')
+
+	IF 	!lError AND USED('v_Tunnus') AND RECCOUNT('v_Tunnus') > 0
+		MESSAGEBOX('test failed',0 + 48,'Error')
+		RETURN .f.
+	ELSE 
+		* success
+		WAIT WINDOW 'test model ' + lcModel + ', ' + lcAlias + 'new -> passed' TIMEOUT 1
+		RETURN .t.
+	ENDIF
+	
+
+ENDWITH
+
+
+FUNCTION test_of_row_model
+		
+WITH oDb
+	lcAlias = 'row'
+	* parameters
+		CREATE CURSOR v_Tunnus (id int, kood c(20), nimetus c(254), muud m null)
+		lError = oDb.readFromModel(lcModel, lcAlias, 'tnId, guserid', 'v_Tunnus')
+
+	IF 	!lError AND USED('v_Tunnus') AND RECCOUNT('v_Tunnus') > 0
+		MESSAGEBOX('test failed',0 + 48,'Error')
+		RETURN .f.
+	ELSE 
+		* success
+		WAIT WINDOW 'test model ' + lcModel + ', ' + lcAlias + ' -> passed' TIMEOUT 1
+		USE IN v_Tunnus
+		RETURN .t.
+	ENDIF
+	
+
+ENDWITH
+
+
+endfunc
+
+FUNCTION test_of_grid_model
+WITH oDb
+	LOCAL lcWhere
+	lcWhere = "kood ilike 'test%'"
+	lcAlias = 'curTunnus'
+	* parameters
+		lError = oDb.readFromModel(lcModel, lcAlias, 'gRekv, guserid', 'tmpTunnus', lcWhere)
+
+	IF 	!lError OR !USED('tmpTunnus')
+		MESSAGEBOX('test failed',0 + 48,'Error')
+		RETURN .f.
+	ELSE 
+		* success
+		WAIT WINDOW 'test model ' + lcModel + ', ' + lcAlias + ' -> passed' TIMEOUT 3
+		USE IN tmpTunnus
+		RETURN .t.
+	ENDIF
+ENDWITH
+endfunc

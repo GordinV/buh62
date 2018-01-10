@@ -17,14 +17,14 @@ DEFINE CLASS login AS dokument
  ADD OBJECT coMrekv AS myCombo WITH toP = 5, leFt = 100, wiDth = 400,  ;
      naMe = "comrekv", boUndcolumn = 1, boUndto = .T., roWsourcetype = 6,  ;
      roWsource = "comkey.omanik, id", coLumncount = 2, coLumnwidths =  ;
-     "400,0", coLumnlines = 0, vaLue = 0
+     "400,0", coLumnlines = 0, vaLue = 0, style = 2
  ADD OBJECT txTkasutaja AS myTxt WITH toP = 35, leFt = 100, wiDth = 200,  ;
      naMe = "txtKasutaja"
  ADD OBJECT txTparool AS myTxt WITH toP = 70, leFt = 100, wiDth = 200,  ;
      naMe = "txtParool", paSswordchar = '*'
- ADD OBJECT btNok AS myBtn WITH caPtion = '', toP = 5, leFt = 325, wiDth =  ;
+ ADD OBJECT btNok AS myBtn WITH caPtion = '', toP = 5, leFt = 525, wiDth =  ;
      100, naMe = "btnOk", piCture = "pictures\btok.bmp"
- ADD OBJECT btNcancel AS myBtn WITH caPtion = '', toP = 40, leFt = 325,  ;
+ ADD OBJECT btNcancel AS myBtn WITH caPtion = '', toP = 40, leFt = 525,  ;
      wiDth = 100, naMe = "btnCancel", piCture = "pictures\btExit.bmp"
  ADD OBJECT lbLasutus AS myLbl WITH toP = 5, leFt = 5, naMe = "lblAsutus",  ;
      caPtion = "Database:"
@@ -38,6 +38,7 @@ DEFINE CLASS login AS dokument
       olOgo = CREATEOBJECT('logo')
       olOgo.shOw()
       WITH thIsform
+      	SET STEP on
            ocOnnect = NEWOBJECT('connect', 'connect')
            SELECT coMkey
            leRror = ocOnnect.odB(SYS(2007, ALLTRIM(coMkey.omAnik)), ;
