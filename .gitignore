@@ -1,6 +1,7 @@
 # Created by .ignore support plugin (hsz.mobi)
 *.exe
 *.app
+*.fxp
 /backup
 /dbase*
 buh50viga.log

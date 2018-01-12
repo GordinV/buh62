@@ -1,6 +1,6 @@
 Parameters tnOpt
 *On Error
-l_test = .f.
+l_test = .t.
 If (l_test)
 	gcProgNimi = 'EELARVE'
 	Create Cursor curkey (versia c(20))
@@ -94,12 +94,14 @@ Index On koOd Tag koOd Additive
 Set Order To Id
 
 tdKehtivus = Date() - 365
-= OpenView('comasutusRemote')
-Select coMasutusremote
-Index On Id Tag Id
-Index On reGkood Tag reGkood Additive
-Index On Left(Upper(niMetus), 40) Tag niMetus Additive
-Set Order To Id
+IF (OpenView('comasutusRemote', .T.,'comAsutusRemote','libs\libraries\asutused'))
+	Select coMasutusremote
+	Index On Id Tag Id
+	Index On LEFT(reGkood,40) Tag reGkood Additive
+	Index On Left(Upper(niMetus), 40) Tag niMetus Additive
+	Set Order To Id
+ENDIF
+
 = OpenView('comdokRemote')
 Select comDokremote
 Index On koOd Tag koOd
@@ -201,6 +203,10 @@ Procedure OpenView
 	With oDb
 		If !Empty(tcModel)
 			lError = oDb.readFromModel(tcModel, 'selectAsLibs', 'gRekv, guserid', 'tmpQuery')
+			IF !lError
+				RETURN .f.
+			ENDIF
+			
 			lnFields = Afields(laFields,'tmpQuery')
 *!*	* change name -> nimetus
 *!*				lnElement =  Ascan(laFields,"NAME")
