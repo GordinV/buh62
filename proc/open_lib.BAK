@@ -1,6 +1,6 @@
 Parameters tnOpt
 *On Error
-l_test = .t.
+l_test = .f.
 If (l_test)
 	gcProgNimi = 'EELARVE'
 	Create Cursor curkey (versia c(20))
@@ -28,32 +28,34 @@ gcCurrentValuuta = fnc_currentValuuta('VAL',Date())
 
 
 If Empty(tnOpt)
-	= OpenView('comTpremote',Iif ('EELARVE' $ curkey.versia,.F.,.T.))
+	= OpenView('comTpremote',Iif ('EELARVE' $ curkey.versia,.F.,.T.), 'comTpremote', 'libs\libraries\tp')
 	Select coMTpremote
 	Index On Id Tag Id
-	Index On koOd Tag koOd
+	Index On LEFT(koOd,20) Tag koOd
 	Set Order To Id
 
-	= OpenView('comEelarveremote',Iif ('EELARVE' $ curkey.versia,.F.,.T.))
+	= OpenView('comEelarveremote',Iif ('EELARVE' $ curkey.versia,.F.,.T.), 'comEelarveRemote', 'libs\libraries\artikkel')
 	Select comEelarveremote
 	Index On Id Tag Id
-	Index On koOd Tag koOd Additive
+	Index On LEFT(koOd,20) Tag koOd Additive
 	Set Order To Id
-	= OpenView('comallikadremote',Iif ('EELARVE' $ curkey.versia,.F.,.T.))
+	
+	= OpenView('comAllikadRemote',Iif ('EELARVE' $ curkey.versia,.F.,.T.), 'comAllikadRemote', 'libs\libraries\allikas')
 	Select coMallikadremote
 	Index On Id Tag Id
-	Index On koOd Tag koOd
+	Index On LEFT(koOd,20) Tag koOd
 	Set Order To Id
-	= OpenView('comRaharemote',Iif ('EELARVE' $ curkey.versia,.F.,.T.))
+	
+	= OpenView('comRahaRemote',Iif ('EELARVE' $ curkey.versia,.F.,.T.), 'comRahaRemote', 'libs\libraries\rahavoog')
 	Select coMRaharemote
 	Index On Id Tag Id
-	Index On koOd Tag koOd
+	Index On LEFT(koOd,20) Tag koOd
 	Set Order To Id
 
-	= OpenView('comtegevremote',Iif ('EELARVE' $ curkey.versia,.F.,.T.))
+	= OpenView('comtegevremote',Iif ('EELARVE' $ curkey.versia,.F.,.T.), 'comTegevRemote', 'libs\libraries\tegev')
 	Select coMtegevremote
 	Index On Id Tag Id
-	Index On koOd Tag koOd
+	Index On LEFT(koOd,20) Tag koOd
 	Set Order To Id
 
 
@@ -81,23 +83,23 @@ Index On Id Tag Id
 Index On koOd Tag koOd Additive
 Set Order To Id
 
-= OpenView('comProjremote')
+= OpenView('comProjremote', .t., 'comProjRemote','libs\libraries\project')
 Select comProjremote
 Index On Id Tag Id
-Index On koOd Tag koOd Additive
+Index On LEFT(koOd,20) Tag koOd Additive
 Set Order To Id
 
-= OpenView('comUritusremote')
+= OpenView('comUritusremote', .t., 'comUritusRemote', 'libs\libraries\uritus')
 Select comUritusremote
 Index On Id Tag Id
-Index On koOd Tag koOd Additive
+Index On LEFT(koOd,20) Tag koOd Additive
 Set Order To Id
 
 tdKehtivus = Date() - 365
 IF (OpenView('comasutusRemote', .T.,'comAsutusRemote','libs\libraries\asutused'))
 	Select coMasutusremote
 	Index On Id Tag Id
-	Index On reGkood Tag reGkood Additive
+	Index On LEFT(reGkood,40) Tag reGkood Additive
 	Index On Left(Upper(niMetus), 40) Tag niMetus Additive
 	Set Order To Id
 ENDIF
@@ -115,10 +117,10 @@ Set Order To Id
 Select comkassaRemote
 Index On Id Tag Id
 Set Order To Id
-= OpenView('comkontodRemote',Iif ('RAAMA' $ curkey.versia ,.F.,.T.))
+= OpenView('comkontodRemote',Iif ('RAAMA' $ curkey.versia ,.F.,.T.), 'comkontodRemote', 'libs\libraries\kontod')
 Select coMkontodremote
 Index On Id Tag Id
-Index On koOd Tag koOd Additive
+Index On LEFT(koOd,20) Tag koOd Additive
 Set Order To Id
 
 = OpenView('comPakettRemote')
@@ -141,10 +143,11 @@ Set Order To Id
 Select comlausheadremote
 Index On Id Tag Id
 Set Order To Id
-= OpenView('comnomRemote')
+
+= OpenView('comnomRemote', .T.,'comnomRemote','libs\libraries\nomenclature')
 Select coMnomremote
 Index On Id Tag Id
-Index On koOd Tag koOd Additive
+Index On LEFT(koOd,20) Tag koOd Additive
 Set Order To Id
 = OpenView('comrekvRemote')
 Select comrekvRemote
@@ -168,7 +171,7 @@ Index On Id Tag Id
 Index On Number Tag Number Additive
 Set Order To Number
 
-= OpenView('comValuutaRemote')
+= OpenView('comValuutaRemote',.t.,'comValuutaRemote','')
 If Used('comValuutaRemote')
 	Select coMValuutaRemote
 	Index On Id Tag Id
@@ -202,33 +205,11 @@ Procedure OpenView
 	Endif
 	With oDb
 		If !Empty(tcModel)
-			lError = oDb.readFromModel(tcModel, 'selectAsLibs', 'gRekv, guserid', 'tmpQuery')
+			lError = oDb.readFromModel(tcModel, 'selectAsLibs', 'gRekv, guserid', tcView)
 			IF !lError
 				RETURN .f.
 			ENDIF
 			
-			lnFields = Afields(laFields,'tmpQuery')
-*!*	* change name -> nimetus
-*!*				lnElement =  Ascan(laFields,"NAME")
-*!*				If lnElement > 0
-*!*	* found
-*!*					lnRowNr = Asubscript(laFields, lnElement, 1)
-*!*	* change
-*!*					laFields[lnRowNr,1] = 'Nimetus'
-*!*				ENDIF
-*!*				SET STEP ON 
-*!*				lnElement =  Ascan(laFields,"KOOD")
-*!*				If lnElement > 0
-*!*	* found
-*!*					lnRowNr = Asubscript(laFields, lnElement, 1)
-*!*	* change
-*!*					laFields[lnRowNr,3] = 20
-*!*				Endif
-
-			Create Cursor (tcView) From Array laFields
-			Select (tcView)
-			APPEND FROM DBF('tmpQuery')
-			USE IN tmpQuery
 		Else
 
 			If  .Not. Used(tcView)
