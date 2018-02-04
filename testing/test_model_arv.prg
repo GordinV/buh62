@@ -1,0 +1,45 @@
+SET CLASSLIB TO classes\classlib
+	SET STEP ON 
+
+*LOCAL oDb, gnHandle
+gVersia = 'PG'
+oDb = createobject('db')
+
+tnId = 1
+tnUserId = 1
+
+gnHandle = SQLCONNECT('localPg')
+IF gnHandle < 0
+	MESSAGEBOX('Connection error',0+48,'Error')
+	RETURN .t.
+ENDIF
+
+WAIT WINDOW 'test model raamatupidamine\arv, row' TIMEOUT 1
+lsuccess = test_of_Sql()
+
+=SQLDISCONNECT(gnHandle)
+
+
+FUNCTION test_of_Sql
+	
+WITH oDb
+	* parameters
+	lcParams = 'tnId, tnUser'
+	tnId = 1
+	tnUser = 1
+	lError = .readFromModel('raamatupidamine\arv', 'row', lcParams)
+	IF 	!lError 
+		MESSAGEBOX('test failed',0 + 48,'Error')
+		RETURN .f.
+	ELSE 
+		* success
+		WAIT WINDOW 'test model raamatupidamine\arv, row -> passed' TIMEOUT 3
+		USE
+		RETURN .t.
+	ENDIF
+	
+	
+ENDWITH
+
+
+endfunc

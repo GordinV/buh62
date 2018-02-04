@@ -1,0 +1,57 @@
+<?xml version = "1.0" encoding="Windows-1252" standalone="yes"?>
+<VFPData>
+  <selectAsLibs>
+    <sql />
+    <alias>selectAsLibs</alias>
+  </selectAsLibs>
+  <select>
+    <sql>select l.id, l.rekvid, l.kood, l.nimetus, l.status, l.library, 
+                $2::integer as userid, 'TAHTPAEV' as doc_type_id,
+                (l.properties::JSONB -&gt;&gt; 'paev') :: integer as paev,
+                (l.properties::JSONB -&gt;&gt; 'kuu') :: integer as kuu,
+                (l.properties::JSONB -&gt;&gt; 'aasta') :: integer as aasta,
+                (l.properties::JSONB -&gt;&gt; 'luhipaev') :: integer as luhipaev,
+                l.muud                 
+                from libs.library l 
+                where l.id = $1</sql>
+    <sqlAsNew>select  $1::integer as id , 
+            $2::integer as userid, 
+            'TAHTPAEV' as doc_type_id,
+            null::text as  kood,
+            null::integer as rekvid,
+            null::text as nimetus,
+            'TAHTPAEV'::text as library,
+            null::integer as paev,
+            null::integer as kuu,
+            null::integer as aasta,
+            null::integer as luhipaev,
+            0::integer as status,
+            null::text as muud</sqlAsNew>
+    <query />
+    <multiple>false</multiple>
+    <alias>row</alias>
+  </select>
+  <saveDoc>
+    <sql>select libs.sp_salvesta_tahtpaev($1, $2, $3) as id</sql>
+    <alias>saveDoc</alias>
+  </saveDoc>
+  <deleteDoc>
+    <sql>select error_code, result, error_message from libs.sp_delete_library($1::integer, $2::integer)</sql>
+    <alias>deleteDoc</alias>
+  </deleteDoc>
+  <grid>
+    <sql>select l.id, l.nimetus, 
+            (l.properties::JSONB -&gt;&gt; 'paev') :: integer as paev,        
+            (l.properties::JSONB -&gt;&gt; 'kuu') :: integer as kuu,        
+            (l.properties::JSONB -&gt;&gt; 'aasta') :: integer as aasta,        
+            $2::integer as userId
+            from libs.library l
+            where l.library = 'TAHTPAEV'
+            and l.status &lt;&gt; 3
+            and (l.rekvId = $1 or l.rekvid is null)</sql>
+    <alias>curHoliday</alias>
+  </grid>
+  <requiredFields>
+    <validate>nimetus,paev,kuu,nimetus,library</validate>
+  </requiredFields>
+</VFPData>

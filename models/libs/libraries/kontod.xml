@@ -1,0 +1,63 @@
+<?xml version = "1.0" encoding="Windows-1252" standalone="yes"?>
+<VFPData>
+  <selectAsLibs>
+    <sql>select * from com_kontoplaan l where (l.rekvId = $1 or l.rekvid is null) order by kood</sql>
+    <alias>selectAsLibs</alias>
+  </selectAsLibs>
+  <select>
+    <sql>select l.rekvid, case when l.tun5 = 1 then 'SD' when l.tun5 = 2 then 'SK' when l.tun5 = 3 then 'D' when l.tun5 = 4 then 'K' else null end::text as konto_tyyp, 
+                l.id, trim(l.kood) as kood, trim(l.nimetus) as nimetus, 
+                l.library, l.tun1, l.tun2, l.tun3, l.tun4, l.muud, $2::integer as userid, 
+                'KONTOD' as doc_type_id, l.tun5 as tyyp, 
+                (l.properties::jsonb -&gt;&gt; 'valid')::date as valid
+                from libs.library l 
+                where id = $1</sql>
+    <sqlAsNew>select null::integer as rekvId, 
+            'SD'::text as konto_tyyp, 
+            $1::integer as id , $2::integer as userid, 'KONTOD' as doc_type_id,
+            null::text as  kood,
+            null::text as nimetus,
+            'KONTOD'::text as library,
+            null::integer as tun1,
+            null::integer as tun2,
+            null::integer as tun3,
+            null::integer as tun4,
+            2 as tyyp,
+            null::text as muud,
+            null::date as valid</sqlAsNew>
+    <query />
+    <multiple>false</multiple>
+    <alias>row</alias>
+  </select>
+  <select>
+    <sql>SELECT s.*,  
+                left(a.nimetus,120)::varchar AS nimetus 
+                FROM  libs.subkonto s 
+                INNER JOIN   libs.asutus a on a.id = s.asutusid 
+                inner join ou.userid u on u.id = $2
+                WHERE  s.kontoid = $1 
+                and s.rekvid = u.rekvId</sql>
+    <query />
+    <multiple>true</multiple>
+    <alias>subkonto</alias>
+  </select>
+  <saveDoc>
+    <sql>select libs.sp_salvesta_konto($1, $2, $3) as id</sql>
+    <alias>saveDoc</alias>
+  </saveDoc>
+  <deleteDoc>
+    <sql>select error_code, result, error_message from libs.sp_delete_konto($1, $2)</sql>
+    <alias>deleteDoc</alias>
+  </deleteDoc>
+  <grid>
+    <sql>select id, trim(kood) as kood, trim(nimetus) as nimetus,  $2::integer as userId,
+            case when l.tun5 = 1 then 'SD' when l.tun5 = 2 then 'SK' when l.tun5 = 3 then 'D' when l.tun5 = 4 then 'K' else null end::text as konto_tyyp
+            from libs.library l
+            where library = 'KONTOD' 
+            and (l.rekvId = $1 or l.rekvid is null)</sql>
+    <alias>curKontod</alias>
+  </grid>
+  <requiredFields>
+    <validate>kood,nimetus</validate>
+  </requiredFields>
+</VFPData>
