@@ -1,0 +1,51 @@
+Set Classlib To classes\Classlib
+
+*LOCAL oDb, gnHandle
+gVersia = 'PG'
+oDb = Createobject('db')
+
+gRekv = 1
+guserid = 1
+tnId = 0
+cursorName = 'v_aa'
+
+gnHandle = SQLConnect('localPg', 'vlad','123')
+If gnHandle < 0
+	Messagebox('Connection error',0+48,'Error')
+	Return .T.
+Endif
+
+lcModel = 'ou\aa'
+
+Wait Window 'test model ' + lcModel  Timeout 1
+lsuccess = test_of_selectAsLibs_model()
+
+
+=SQLDISCONNECT(gnHandle)
+
+Return lsuccess
+
+
+Function test_of_selectAsLibs_model
+	l_cursorName = 'comAaRemote'
+	With oDb
+		lcAlias = 'selectAsLibs'
+* parameters
+		lError = oDb.readFromModel(lcModel, lcAlias, 'gRekv, guserid', l_cursorName)
+
+		If 	!lError And Used(l_cursorName) And Reccount(l_cursorName) > 0
+			Messagebox('test failed',0 + 48,'Error')
+			Return .F.
+		Endif
+
+
+* success
+		Wait Window 'test model ' + lcModel + ', ' + lcAlias + ' -> passed' Timeout 1
+		Use In (l_cursorName)
+		Return .T.
+
+	Endwith
+
+
+Endfunc
+

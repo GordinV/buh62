@@ -67,7 +67,7 @@ Index On Id Tag Id
 Index On koOd Tag koOd Additive
 Set Order To Id
 
-= OpenView('comaaRemote')
+=OpenView('comAaRemote',Iif ('EELARVE' $ curkey.versia,.F.,.T.), 'comAaRemote', 'ou\aa')
 Index On Id Tag Id
 Set Order To Id
 

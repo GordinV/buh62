@@ -1,11 +1,15 @@
-**
-** getdokpropid.fxp
-**
-LPARAMETER tcTyyp
+LPARAMETER tcTyyp, tcModel
 LOCAL lnId
 lnId = 0
+
+
 IF !USED('comDokRemote') OR RECCOUNT('comDokRemote') = 0
-	oDb.use('comDokRemote')
+	IF EMPTY(tcModel)
+		oDb.use('comDokRemote')
+	ELSE
+		lError = oDb.readFromModel(tcModel, 'selectAsLibs', 'gRekv, guserid', 'comDokRemote')
+	ENDIF
+	
 ENDIF
 
 SELECT coMdokremote
@@ -14,7 +18,14 @@ IF  .Not. Found()
 	RETURN 0
 ENDIF
 tnId = coMdokremote.Id
-odB.Use('curDokProp')
+
+IF EMPTY(tcModel)
+	odB.Use('curDokProp')
+ELSE
+	lcWhere = "dok = '" + ALLTRIM(coMdokremote.kood) + "'"
+	lError = oDb.readFromModel(tcModel, 'curDokprop', 'gRekv, guserid', 'curDokProp', lcWhere)
+ENDIF
+
 IF Reccount('curDokProp')>1
 	lcForm = 'validok'
 	DO Form (lcForm) To lnId With tnId

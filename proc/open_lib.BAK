@@ -1,6 +1,6 @@
 Parameters tnOpt
 *On Error
-l_test = .f.
+l_test = .t.
 If (l_test)
 	gcProgNimi = 'EELARVE'
 	Create Cursor curkey (versia c(20))
@@ -67,7 +67,8 @@ Index On Id Tag Id
 Index On koOd Tag koOd Additive
 Set Order To Id
 
-= OpenView('comaaRemote')
+SET STEP ON 
+=OpenView('comAaRemote',Iif ('EELARVE' $ curkey.versia,.F.,.T.), 'comAaRemote', 'ou\aa')
 Index On Id Tag Id
 Set Order To Id
 
@@ -171,7 +172,7 @@ Index On Id Tag Id
 Index On Number Tag Number Additive
 Set Order To Number
 
-= OpenView('comValuutaRemote',.t.,'comValuutaRemote','')
+= OpenView('comValuutaRemote',.t.,'comValuutaRemote','libs\libraries\valuuta')
 If Used('comValuutaRemote')
 	Select coMValuutaRemote
 	Index On Id Tag Id

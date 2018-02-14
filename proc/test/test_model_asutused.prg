@@ -45,7 +45,9 @@ clear all
 
 
 FUNCTION test_of_selectAsLibs_model
-		
+	Dimension aCheckedFields(1)
+	aCheckedFields[1] = 'TP'
+			
 WITH oDb
 	lcAlias = 'selectAsLibs'
 	* parameters
@@ -54,12 +56,17 @@ WITH oDb
 	IF 	!lError AND USED('comAsutusRemote') AND RECCOUNT('comAsutusRemote') > 0
 		MESSAGEBOX('test failed',0 + 48,'Error')
 		RETURN .f.
-	ELSE 
+		
+	ENDIF
+	
+	lError = check_fields_in_cursor(@aCheckedFields, 'comAsutusRemote')
+
+	IF lError
 		* success
 		WAIT WINDOW 'test model ' + lcModel + ', ' + lcAlias + ' -> passed' TIMEOUT 1
 		USE IN comAsutusRemote
-		RETURN .t.
 	ENDIF
+	RETURN lError
 	
 
 ENDWITH
@@ -215,3 +222,23 @@ WITH oDb
 	ENDIF
 ENDWITH
 endfunc
+
+
+
+Function check_fields_in_cursor(aCheckedFields, tcAlias)
+*	Parameters 	aCheckedFields, tcAlias
+	
+	lnFields = Afields(laFields,tcAlias)
+
+	For i = 1 To Alen(aCheckedFields)
+		lnElement = Ascan(laFields, aCheckedFields[i])
+
+		If lnElement = 0
+			Messagebox('test failed, puudub field ' + aCheckedFields[i],0 + 48,'Error')
+			lError = .F.
+			Exit
+		Endif
+	Endfor
+
+	RETURN lError
+Endfunc

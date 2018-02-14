@@ -1,0 +1,339 @@
+Set Classlib To classes\Classlib
+
+*LOCAL oDb, gnHandle
+gVersia = 'PG'
+oDb = Createobject('db')
+
+gRekv = 1
+guserid = 1
+tnId = 0
+cursorName = 'v_library'
+
+gnHandle = SQLConnect('localPg', 'vlad','123')
+If gnHandle < 0
+	Messagebox('Connection error',0+48,'Error')
+	Return .T.
+Endif
+
+lcModel = 'raamatupidamine\arv'
+
+Wait Window 'test model ' + lcModel  Timeout 1
+
+lError = oDb.readFromModel('libs\libraries\nomenclature', 'selectAsLibs', 'gRekv, guserid', 'comnomRemote')
+lError = oDb.readFromModel('libs\libraries\asutused', 'selectAsLibs', 'gRekv, guserid', 'comAsutusRemote')
+
+
+lsuccess = test_of_grid_model()
+
+If lsuccess
+	lsuccess = test_of_row_new_model()
+Endif
+
+If lsuccess
+	lsuccess = test_of_row_validate_model()
+Endif
+
+If lsuccess
+	lsuccess = test_of_row_save_model()
+Endif
+
+If lsuccess
+	lsuccess = test_of_row_model()
+Endif
+
+
+If lsuccess
+	lsuccess = test_of_row_delete_model()
+Endif
+
+
+=SQLDISCONNECT(gnHandle)
+
+Return lsuccess
+
+
+Function test_of_row_validate_model()
+	lcAlias = 'validate'
+	cursorName = 'v_arv'
+	Select v_model
+	Locate For !Empty(Validate)
+
+	If Eof()
+* not found
+		Return .T.
+	Endif
+
+	lcValidate = Alltrim(v_model.Validate)
+
+	lcNotValidFields = oDb.Validate(lcValidate, cursorName)
+* expect LIBRARY
+
+	Select comAsutusRemote
+	Go Bottom
+
+	If Type('lcNotValidFields') = 'C'
+		Select (cursorName)
+		Replace Id With 0, rekvid With gRekv, lisa With '__test' + Left(Alltrim(Str(Rand() * 10000)),10),;
+			asutusid With comAsutusRemote.Id, Summa With 100, kpv With Date()
+
+		Select comNomRemote
+		Go Bottom
+
+		Select v_arvread
+		Insert Into v_arvread (nomid, hind, kogus, Summa) Values (comNomRemote.Id, 100, 1, Summa)
+
+	Endif
+
+	lcNotValidFields = oDb.Validate(lcValidate, cursorName)
+* expect empty
+	If Empty(lcNotValidFields)
+		Wait Window 'test model ' + lcModel + ', ' + lcAlias + ' validate -> passed' Timeout 1
+		Return .T.
+	Else
+		Messagebox('test failed',0 + 48,'Error')
+		Set Step On
+		Return .F.
+	Endif
+
+Endfunc
+
+
+Function test_of_row_delete_model
+
+	With oDb
+		lcAlias = 'deleteDoc'
+* parameters
+
+		lError = oDb.readFromModel(lcModel, lcAlias, 'gUserid,tnId','result')
+
+		If 	!lError Or !Used('result') Or !Isnull(result.error_code)
+			Messagebox('test failed',0 + 48,'Error')
+			Set Step On
+			Return .F.
+		Else
+* success
+			Wait Window 'test model ' + lcModel + ', ' + lcAlias + ' delete -> passed' Timeout 1
+			Select result
+			Return .T.
+		Endif
+
+
+	Endwith
+
+
+Function test_of_row_save_model
+	With oDb
+		lcJson = ''
+		lcAlias = 'saveDoc'
+* parameters
+
+		Select v_arvread
+		Go Top
+		lcJson = '"gridData":['+ oDb.getJson() + ']'
+
+		Select(cursorName)
+		lcJson = '{"id":' + Alltrim(Str(Id)) + ',"data": '+ oDb.getJson(lcJson) + '}'
+		lError = oDb.readFromModel(lcModel, 'saveDoc', 'lcJson,gUserid,gRekv', cursorName)
+
+		If 	!lError And Used(cursorName) And Reccount(cursorName) > 0
+			Messagebox('test failed',0 + 48,'Error')
+			Set Step On
+			Return .F.
+		Else
+* success
+			Select(cursorName)
+			Wait Window 'test model ' + lcModel + ', ' + lcAlias + 'new -> passed,' + Alltrim(Str(Id)) Timeout 1
+			Select(cursorName)
+			tnId = Id
+			Return .T.
+		Endif
+
+
+	Endwith
+
+
+
+Function test_of_row_new_model
+	tnId = 0
+	cursorName = 'v_arv'
+	With oDb
+		lcAlias = 'row'
+
+		lError = oDb.readFromModel(lcModel, 'row', 'tnId, guserid', cursorName)
+		If !lError
+			Return .F.
+		Endif
+
+		Dimension aCheckedFields(12)
+		aCheckedFields[1] = 'NUMBER'
+		aCheckedFields[2] = 'KPV'
+		aCheckedFields[3] = 'ASUTUSID'
+		aCheckedFields[4] = 'LISA'
+		aCheckedFields[5] = 'TAHTAEG'
+		aCheckedFields[6] = 'OBJEKT'
+		aCheckedFields[7] = 'MUUD'
+		aCheckedFields[8] = 'KBMTA'
+		aCheckedFields[9] = 'KBM'
+		aCheckedFields[10] = 'SUMMA'
+		aCheckedFields[11] = 'JOURNALID'
+		aCheckedFields[12] = 'LAUS_NR'
+
+		lError = check_fields_in_cursor(@aCheckedFields, cursorName)
+
+		If !lError
+			Return .F.
+		Endif
+
+* details
+
+		lError = oDb.readFromModel(lcModel, 'details', 'tnId, guserid', 'v_arvread')
+
+		If !lError Or !Used('v_arvread') Or !Used('v_arv')
+			lError = .F.
+		Endif
+
+		Dimension aCheckedFields(19)
+		aCheckedFields[1] = 'KOOD'
+		aCheckedFields[2] = 'NOMID'
+		aCheckedFields[3] = 'HIND'
+		aCheckedFields[4] = 'KOGUS'
+		aCheckedFields[5] = 'SOODUS'
+		aCheckedFields[6] = 'KOOD1'
+		aCheckedFields[7] = 'KOOD2'
+		aCheckedFields[8] = 'KOOD3'
+		aCheckedFields[9] = 'KOOD5'
+		aCheckedFields[10] = 'TUNNUS'
+		aCheckedFields[11] = 'PROJ'
+		aCheckedFields[12] = 'VASTISIK'
+		aCheckedFields[13] = 'VALUUTA'
+		aCheckedFields[14] = 'KUURS'
+		aCheckedFields[15] = 'KBM'
+		aCheckedFields[16] = 'SUMMA'
+		aCheckedFields[17] = 'KONTO'
+		aCheckedFields[18] = 'TP'
+		aCheckedFields[19] = 'KM'
+
+		lError = check_fields_in_cursor(@aCheckedFields, 'v_arvread')
+
+		If !lError
+			Return .F.
+		Endif
+
+		If 	!lError  Or Reccount(cursorName) = 0
+			Messagebox('test failed',0 + 48,'Error')
+			Return .F.
+		Else
+* success
+			Wait Window 'test model ' + lcModel + ', ' + lcAlias + 'new -> passed' Timeout 1
+			Return .T.
+		Endif
+
+
+	Endwith
+
+
+Function test_of_row_model
+
+	With oDb
+		lcAlias = 'row'
+* parameters
+		lError = oDb.readFromModel(lcModel, lcAlias, 'tnId, guserid', 'v_arv')
+		lError = oDb.readFromModel(lcModel, 'details', 'tnId, guserid', 'queryArvTasu')
+		lError = oDb.readFromModel(lcModel, 'queryArvTasu', 'tnId', 'queryArvTasu')
+
+		If 	!lError Or !Used('v_arv') Or Reccount('v_arv') = 0 Or !Used('v_arvread') Or Reccount('v_arvread') = 0 Or !Used('queryArvTasu')
+			Messagebox('test failed',0 + 48,'Error')
+			Return .F.
+		Else
+* success
+			Wait Window 'test model ' + lcModel + ', ' + lcAlias + ' -> passed' Timeout 1
+			Return .T.
+		Endif
+
+
+	Endwith
+
+
+Endfunc
+
+Function test_of_grid_model
+	Local cursorName
+	Dimension aCheckedFields(15)
+	aCheckedFields[1] = 'NUMBER'
+	aCheckedFields[2] = 'KPV'
+	aCheckedFields[3] = 'ASUTUS'
+	aCheckedFields[4] = 'SUMMA'
+	aCheckedFields[5] = 'ID'
+	aCheckedFields[6] = 'TAHTAEG'
+	aCheckedFields[7] = 'TASUD'
+	aCheckedFields[8] = 'JAAK'
+	aCheckedFields[9] = 'VALUUTA'
+	aCheckedFields[10] = 'KUURS'
+	aCheckedFields[11] = 'OBJEKT'
+	aCheckedFields[12] = 'LAUSNR'
+	aCheckedFields[13] = 'SUMMA_KOKKU'
+	aCheckedFields[14] = 'READ_KOKKU'
+	aCheckedFields[15] = 'JAAK_KOKKU'
+
+	cursorName  = 'tmpArv'
+	tdKpv1 = Date(2015,01,01)
+	tdKpv2 = Date()
+	tnSumma1 = 0
+	tnSumma2 = 999999
+	tdTasud1 = Null
+	tdTasud2 = Date()
+
+	Local lcWhere
+
+TEXT TO lcWhere NOSHOW textmerge
+	kpv >= ?tdKpv1 and kpv <= ?tdKpv2
+	and summa >= ?tnSumma1 and summa <= ?tnSumma2
+	and (tasud >= ?tdTasud1 or EMPTY(?tdTasud1::date))
+	and (tasud <= ?tdTasud2 or EMPTY(?tdTasud2::date))
+
+ENDTEXT
+
+	lcSubTotals = " sum (summa) OVER()  as summa_kokku, sum (jaak) OVER()  as jaak_kokku, count(id) over() as read_kokku"
+
+	lcAlias = 'curArved'
+* parameters
+	lError = oDb.readFromModel(lcModel, lcAlias, 'gRekv, guserid', cursorName, lcWhere, lcSubTotals)
+
+	If 	!lError Or !Used(cursorName)
+		Messagebox('test failed',0 + 48,'Error')
+		Set Step On
+		Return .F.
+	Endif
+
+	lError = check_fields_in_cursor(@aCheckedFields, cursorName)
+
+	If 	!lError
+		Messagebox('test failed, puuduvad vajaliku andmed',0 + 48,'Error')
+		Return .F.
+	Endif
+
+* success
+	If lError
+		Wait Window 'test model ' + lcModel + ', ' + lcAlias + ' -> passed' Timeout 3
+		Use In (cursorName)
+	Endif
+	Return lError
+Endfunc
+
+Function check_fields_in_cursor(aCheckedFields, tcAlias)
+*	Parameters 	aCheckedFields, tcAlias
+
+	lnFields = Afields(laFields,tcAlias)
+
+	For i = 1 To Alen(aCheckedFields)
+		lnElement = Ascan(laFields, aCheckedFields[i])
+
+		If lnElement = 0
+			Messagebox('test failed, puudub field ' + aCheckedFields[i],0 + 48,'Error')
+			lError = .F.
+			Exit
+		Endif
+	Endfor
+
+	Return lError
+Endfunc
