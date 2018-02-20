@@ -104,19 +104,22 @@ IF (OpenView('comasutusRemote', .T.,'comAsutusRemote','libs\libraries\asutused')
 	Set Order To Id
 ENDIF
 
-= OpenView('comdokRemote')
+=OpenView('comDokRemote', .T.,'comDokRemote','libs\libraries\dok')
 Select comDokremote
-Index On koOd Tag koOd
+Index On LEFT(koOd,20) Tag koOd
 Index On Id Tag Id
 Set Order To Id
+
+
 = OpenView('comdoklausremote', Iif ('RAAMA' $ curkey.versia ,.F.,.T.))
 Select comdoklausremote
 Index On Id Tag Id
 Set Order To Id
-= OpenView('comkassaRemote')
+= OpenView('comkassaRemote', .t., 'comKassaRemote', 'ou\kassa')
 Select comkassaRemote
 Index On Id Tag Id
 Set Order To Id
+
 = OpenView('comkontodRemote',Iif ('RAAMA' $ curkey.versia ,.F.,.T.), 'comkontodRemote', 'libs\libraries\kontod')
 Select coMkontodremote
 Index On Id Tag Id

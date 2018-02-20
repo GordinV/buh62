@@ -18,7 +18,7 @@ DO case
 		IF FOUND()
 			lReturn = comValuutaRemote.kood
 		ELSE
-			lReturn = 'EEK'
+			lReturn = 'EUR'
 		ENDIF
 		
 	CASE tcOpt = 'KUURS'	

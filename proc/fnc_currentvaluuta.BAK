@@ -32,7 +32,9 @@ DO case
 		ELSE
 			lReturn = 1
 		ENDIF
-ENDCASE
-SELECT (lcAlias)
+ENDCASE'
+IF !EMPTY(lcAlias)
+	SELECT (lcAlias)
+ENDIF
 
 RETURN lReturn

@@ -41,6 +41,9 @@ If lsuccess
 	lsuccess = test_of_row_model()
 Endif
 
+If lsuccess
+	lsuccess = test_of_selectAsLibs_model()
+Endif
 
 If lsuccess
 	lsuccess = test_of_row_delete_model()
@@ -50,6 +53,39 @@ Endif
 =SQLDISCONNECT(gnHandle)
 
 Return lsuccess
+
+
+
+Function test_of_selectAsLibs_model
+	l_cursorName = 'comArvRemote'
+	With oDb
+* parameters
+		lcWhere = 'liik = 0 and (jaak <> 0 or id = ?v_arv.id)'
+		lError = oDb.readFromModel(lcModel, 'selectAsLibs', 'gRekv, guserid', l_cursorName, lcWhere)
+
+		If 	!lError And Used(l_cursorName) And Reccount(l_cursorName) > 0
+			Messagebox('test failed',0 + 48,'Error')
+			Return .F.
+		Endif
+
+* kas uut Id in list
+		Select(l_cursorName)
+		Locate For Id = tnId
+
+		If !Found() Then
+			Messagebox('test failed, id not found',0 + 48,'Error')
+			Return .F.
+		Endif
+
+* success
+		Wait Window 'test model ' + lcModel + ', selectAsLibs -> passed' Timeout 1
+		Use In (l_cursorName)
+		Return .T.
+
+	Endwith
+
+
+Endfunc
 
 
 Function test_of_row_validate_model()
@@ -238,7 +274,7 @@ Function test_of_row_model
 		lcAlias = 'row'
 * parameters
 		lError = oDb.readFromModel(lcModel, lcAlias, 'tnId, guserid', 'v_arv')
-		lError = oDb.readFromModel(lcModel, 'details', 'tnId, guserid', 'queryArvTasu')
+		lError = oDb.readFromModel(lcModel, 'details', 'tnId, guserid', 'v_arvread')
 		lError = oDb.readFromModel(lcModel, 'queryArvTasu', 'tnId', 'queryArvTasu')
 
 		If 	!lError Or !Used('v_arv') Or Reccount('v_arv') = 0 Or !Used('v_arvread') Or Reccount('v_arvread') = 0 Or !Used('queryArvTasu')

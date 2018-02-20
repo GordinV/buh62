@@ -179,7 +179,9 @@
     <alias>queryArvTasu</alias>
   </select>
   <selectAsLibs>
-    <sql></sql>
+    <sql>select * from com_arved a
+        where  (a.rekvId = $1) 
+        and docs.usersRigths(a.id, 'select', $2)</sql>
     <alias>selectAsLibs</alias>
   </selectAsLibs>
   <saveDoc>
