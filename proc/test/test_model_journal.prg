@@ -112,23 +112,22 @@ Function test_of_row_delete_model
 
 Function test_of_row_save_model
 	With oDb
-		lcAlias = 'saveDoc'
 * parameters
 		Select v_journal1
 		lcJson = '"gridData":['+ oDb.getJson() + ']'
 
 		Select(cursorName)
 		lcJson = '{"id":' + Alltrim(Str(Id)) + ',"data": '+ oDb.getJson(lcJson) +  ',' + lcJson + '}'
-		lError = oDb.readFromModel(lcModel, lcAlias, 'lcJson,gUserid,gRekv', cursorName)
+		lError = oDb.readFromModel(lcModel, 'saveDoc', 'lcJson,gUserid,gRekv', cursorName)
 
-		If 	!lError And Used(cursorName) And Reccount(cursorName) > 0
+		If 	!lError OR !used(cursorName) or Reccount(cursorName) = 0
 			Messagebox('test failed',0 + 48,'Error')
 			Set Step On
 			Return .F.
 		Else
 * success	
 			SELECT(cursorName)
-			Wait Window 'test model ' + lcModel + ', ' + lcAlias + 'new -> passed,' + ALLTRIM(STR(id)) Timeout 1
+			Wait Window 'test model ' + lcModel + ',  saveDoc new -> passed,' + ALLTRIM(STR(id)) Timeout 1
 			Select(cursorName)
 			tnId = Id
 			Return .T.

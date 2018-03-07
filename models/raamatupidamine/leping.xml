@@ -1,9 +1,13 @@
 <?xml version = "1.0" encoding="Windows-1252" standalone="yes"?>
 <VFPData>
-  <selectAsLibs>
-    <sql />
-    <alias>selectAsLibs</alias>
-  </selectAsLibs>
+  <grid>
+    <sql>select d.*
+         from cur_lepingud d         
+         where d.rekvId = $1 
+         and docs.usersRigths(d.id, 'select', $2)
+         order by d.number</sql>
+    <alias>curLepingud</alias>
+  </grid>
   <select>
     <sql>select d.id, $2::integer as userid, to_char(created, 'DD.MM.YYYY HH:MM:SS')::text as created, to_char(lastupdate,'DD.MM.YYYY HH:MM:SS')::text as lastupdate, d.bpm, 
                  trim(l.nimetus) as doc, trim(l.kood) as doc_type_id,
@@ -67,6 +71,10 @@
     <multiple>true</multiple>
     <alias>relations</alias>
   </select>
+  <selectAsLibs>
+    <sql></sql>
+    <alias>selectAsLibs</alias>
+  </selectAsLibs>
   <saveDoc>
     <sql>select docs.sp_salvesta_leping($1, $2, $3) as id</sql>
     <alias>saveDoc</alias>
@@ -75,15 +83,27 @@
     <sql>select error_code, result, error_message from docs.sp_delete_leping($1, $2)</sql>
     <alias>deleteDoc</alias>
   </deleteDoc>
-  <grid>
-    <sql>select d.*
-         from cur_lepingud d         
-         where d.rekvId = $1 
-         and docs.usersRigths(d.id, 'select', $2)
-         order by d.number</sql>
-    <alias>curLepingud</alias>
-  </grid>
   <requiredFields>
     <validate>kpv,tahtaeg,asutusid,kogus</validate>
   </requiredFields>
+  <executeSql>
+    <sql></sql>
+    <alias></alias>
+  </executeSql>
+  <executeCommand>
+    <sql></sql>
+    <alias></alias>
+  </executeCommand>
+  <register>
+    <sql>update docs.doc set status = 1 where id = $1</sql>
+    <alias />
+  </register>
+  <endProcess>
+    <sql>update docs.doc set status = 2 where id = $1</sql>
+    <alias />
+  </endProcess>
+  <generateJournal>
+    <sql />
+    <alias />
+  </generateJournal>
 </VFPData>

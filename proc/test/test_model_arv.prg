@@ -46,6 +46,10 @@ If lsuccess
 Endif
 
 If lsuccess
+	lsuccess = test_of_generateJournal()
+Endif
+
+If lsuccess
 	lsuccess = test_of_row_delete_model()
 Endif
 
@@ -55,6 +59,49 @@ Endif
 Return lsuccess
 
 
+Function test_of_generateJournal
+	* test of  error_code = 4; -- No documents found
+	l_tnId_backup = tnId
+	tnId = -1
+	lError = oDb.readFromModel(lcModel, 'generateJournal', 'guserid, tnId', 'result')
+	
+	IF !lError Or !Used('result') Or Reccount('result') = 0 Or  result.error_code <> 4
+		Messagebox('test failed',0 + 48,'Error')
+		SET STEP ON 
+	ENDIF
+* error_message = 'User not found';
+    error_code = 3;	
+    	
+    tnId = 	l_tnId_backup
+	lUserid = guserid
+    guserid = 99999
+    
+	lError = oDb.readFromModel(lcModel, 'generateJournal', 'guserid, tnId', 'result')
+	
+	IF !lError Or !Used('result') Or Reccount('result') = 0 Or  result.error_code <> 3
+		Messagebox('test failed',0 + 48,'Error')
+		SET STEP ON 
+	ENDIF
+	
+	guserid = lUserId
+
+	* test for succesfull execution
+	IF lError 
+		lError = oDb.readFromModel(lcModel, 'generateJournal', 'guserid, tnId', 'result')
+
+	ENDIF
+	
+	If 	!lError Or !Used('result') Or Reccount('result') = 0 Or  result.result < 1
+		Messagebox('test failed',0 + 48,'Error')
+		SET STEP ON 
+	ENDIF
+	
+	IF lError
+	* success
+		Wait Window 'test model ' + lcModel + ', generateJournal -> passed' Timeout 1
+	Endif
+	Return	lError
+Endfunc
 
 Function test_of_selectAsLibs_model
 	l_cursorName = 'comArvRemote'
@@ -116,7 +163,7 @@ Function test_of_row_validate_model()
 		Go Bottom
 
 		Select v_arvread
-		Insert Into v_arvread (nomid, hind, kogus, Summa) Values (comNomRemote.Id, 100, 1, Summa)
+		Insert Into v_arvread (nomid, hind, kogus, Summa, konto) Values (comNomRemote.Id, 100, 1, Summa, '300')
 
 	Endif
 

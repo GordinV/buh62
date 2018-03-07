@@ -1,18 +1,5 @@
 <?xml version = "1.0" encoding="Windows-1252" standalone="yes"?>
 <VFPData>
-  <selectAsLibs>
-    <sql />
-    <alias>selectAsLibs</alias>
-  </selectAsLibs>
-  <select />
-  <saveDoc>
-    <sql />
-    <alias>saveDoc</alias>
-  </saveDoc>
-  <deleteDoc>
-    <sql />
-    <alias>deleteDoc</alias>
-  </deleteDoc>
   <grid>
     <sql>select $2::integer as userId,
              o.*
@@ -20,7 +7,40 @@
             WHERE o.rekvid = $1::integer</sql>
     <alias>curObjekt</alias>
   </grid>
+  <select></select>
+  <selectAsLibs>
+    <sql></sql>
+    <alias>selectAsLibs</alias>
+  </selectAsLibs>
+  <saveDoc>
+    <sql></sql>
+    <alias>saveDoc</alias>
+  </saveDoc>
+  <deleteDoc>
+    <sql></sql>
+    <alias>deleteDoc</alias>
+  </deleteDoc>
   <requiredFields>
     <validate></validate>
   </requiredFields>
+  <executeSql>
+    <sql></sql>
+    <alias></alias>
+  </executeSql>
+  <executeCommand>
+    <sql></sql>
+    <alias></alias>
+  </executeCommand>
+  <register>
+    <sql></sql>
+    <alias></alias>
+  </register>
+  <endProcess>
+    <sql />
+    <alias />
+  </endProcess>
+  <generateJournal>
+    <sql />
+    <alias />
+  </generateJournal>
 </VFPData>

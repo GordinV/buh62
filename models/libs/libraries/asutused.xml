@@ -64,4 +64,8 @@
     <sql />
     <alias />
   </endProcess>
+  <generateJournal>
+    <sql />
+    <alias />
+  </generateJournal>
 </VFPData>

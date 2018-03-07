@@ -1,25 +1,25 @@
 <?xml version = "1.0" encoding="Windows-1252" standalone="yes"?>
 <VFPData>
+  <grid>
+    <sql>select * from cur_ladu_jaak j 
+            where (j.rekvId = $1 or j.rekvid is null) and j.jaak &gt; 0</sql>
+    <alias>curLaduJaak</alias>
+  </grid>
+  <select></select>
   <selectAsLibs>
     <sql>select * from com_ladu_jaak 
             where (rekvid = $1 or rekvid is null)
             and jaak &gt; 0</sql>
     <alias>selectAsLibs</alias>
   </selectAsLibs>
-  <select />
   <saveDoc>
-    <sql />
+    <sql></sql>
     <alias>saveDoc</alias>
   </saveDoc>
   <deleteDoc>
-    <sql />
+    <sql></sql>
     <alias>deleteDoc</alias>
   </deleteDoc>
-  <grid>
-    <sql>select * from cur_ladu_jaak j 
-            where (j.rekvId = $1 or j.rekvid is null) and j.jaak &gt; 0</sql>
-    <alias>curLaduJaak</alias>
-  </grid>
   <requiredFields>
     <validate></validate>
   </requiredFields>
@@ -49,4 +49,16 @@
     <sql>select sp_recalc_ladujaak(?gRekv, ?tnNomId, ?tnArveId) as result</sql>
     <alias>recalcLaduJaak</alias>
   </executeCommand>
+  <register>
+    <sql></sql>
+    <alias></alias>
+  </register>
+  <endProcess>
+    <sql />
+    <alias />
+  </endProcess>
+  <generateJournal>
+    <sql />
+    <alias />
+  </generateJournal>
 </VFPData>

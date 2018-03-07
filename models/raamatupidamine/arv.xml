@@ -15,7 +15,7 @@
                  a.asutusid, a.arvId, trim(a.lisa) as lisa, a.tahtaeg as tahtaeg, a.kbmta, a.kbm, a.summa, 
                  a.tasud, trim(a.tasudok) as tasudok, a.muud, a.jaak, a.objektId, trim(a.objekt) as objekt, 
                  asutus.regkood, trim(asutus.nimetus) as asutus, 
-                 a.doklausid, a.doklausid, 
+                 a.doklausid, 
                  a.journalid, coalesce(jid.number,0)::integer as laus_nr,
                  coalesce((dp.details :: JSONB -&gt;&gt; 'konto'),'') :: VARCHAR(20)    AS konto,
                  coalesce((dp.details :: JSONB -&gt;&gt; 'kbmkonto'),'') :: VARCHAR(20) AS kbmkonto,
@@ -27,7 +27,8 @@
                  inner join ou.userid u on u.id = $2::integer 
                  left outer join libs.library s on s.library = 'STATUS' and s.kood = d.status::text 
                  left outer join libs.dokprop dp on dp.id = a.doklausid 
-                 left outer join docs.journalid jid on jid.journalid = a.journalid 
+                 left outer join docs.journal j on j.parentid = a.journalid
+                 left outer join docs.journalid jid on jid.journalid = j.id 
                  where d.id = $1</sql>
     <sqlAsNew>select $1::integer as id, $2::integer as userid,  
                     to_char(now(), 'DD.MM.YYYY HH:MM:SS')::text as created, 
@@ -74,7 +75,7 @@
                  inner join docs.arv a on a.id = a1.parentId 
                  inner join libs.nomenklatuur n on n.id = a1.nomId 
                  inner join ou.userid u on u.id = $2::integer 
-                 left outer join docs.dokvaluuta1 v on (a.id = v.dokid and v.dokliik = 2 ) 
+                 left outer join docs.dokvaluuta1 v on (a.id = v.dokid and v.dokliik = array_position((enum_range(NULL :: DOK_VALUUTA)), 'arv')) 
                  where a.parentid = $1::integer</sql>
     <query />
     <multiple>true</multiple>
@@ -211,4 +212,8 @@
     <sql>update docs.doc set status = 2 where id = $1</sql>
     <alias />
   </endProcess>
+  <generateJournal>
+    <sql>select error_code, result, error_message from docs.gen_lausend_arv($2, $1)</sql>
+    <alias>generateJournal</alias>
+  </generateJournal>
 </VFPData>

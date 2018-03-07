@@ -1,12 +1,13 @@
 <?xml version = "1.0" encoding="Windows-1252" standalone="yes"?>
 <VFPData>
-  <selectAsLibs>
-    <sql>select * from com_varad 
-            where (rekvid = $1 or rekvid is null)
-            and status &lt;&gt; 3
-            order by kood</sql>
-    <alias>selectAsLibs</alias>
-  </selectAsLibs>
+  <grid>
+    <sql>select n.id, coalesce(n.kood,'') as kood, coalesce(n.nimetus,'') as nimetus,  $2::integer as userId, 
+            l.nimetus as grupp
+            from libs.nomenklatuur n
+            inner join libs.library l on l.id = (n.properties::jsonb -&gt;&gt;'gruppid')::integer 
+            where (n.rekvId = $1 or n.rekvid is null) and n.status &lt;&gt; 3</sql>
+    <alias>curVara</alias>
+  </grid>
   <select>
     <sql>select n.*, $2::integer as userid, 'VARA' as doc_type_id,
                 coalesce(v.valuuta,'EUR')::varchar(20) as valuuta, coalesce(v.kuurs,1) as kuurs,
@@ -56,6 +57,13 @@
     <multiple>false</multiple>
     <alias>row</alias>
   </select>
+  <selectAsLibs>
+    <sql>select * from com_varad 
+            where (rekvid = $1 or rekvid is null)
+            and status &lt;&gt; 3
+            order by kood</sql>
+    <alias>selectAsLibs</alias>
+  </selectAsLibs>
   <saveDoc>
     <sql>select libs.sp_salvesta_nomenclature($1, $2, $3) as id</sql>
     <alias>saveDoc</alias>
@@ -64,15 +72,27 @@
     <sql>select error_code, result, error_message from libs.sp_delete_nomenclature($1::integer, $2::integer)</sql>
     <alias>deleteDoc</alias>
   </deleteDoc>
-  <grid>
-    <sql>select n.id, coalesce(n.kood,'') as kood, coalesce(n.nimetus,'') as nimetus,  $2::integer as userId, 
-            l.nimetus as grupp
-            from libs.nomenklatuur n
-            inner join libs.library l on l.id = (n.properties::jsonb -&gt;&gt;'gruppid')::integer 
-            where (n.rekvId = $1 or n.rekvid is null) and n.status &lt;&gt; 3</sql>
-    <alias>curVara</alias>
-  </grid>
   <requiredFields>
     <validate>kood,nimetus,gruppid,dok</validate>
   </requiredFields>
+  <executeSql>
+    <sql></sql>
+    <alias></alias>
+  </executeSql>
+  <executeCommand>
+    <sql></sql>
+    <alias></alias>
+  </executeCommand>
+  <register>
+    <sql></sql>
+    <alias></alias>
+  </register>
+  <endProcess>
+    <sql />
+    <alias />
+  </endProcess>
+  <generateJournal>
+    <sql />
+    <alias />
+  </generateJournal>
 </VFPData>

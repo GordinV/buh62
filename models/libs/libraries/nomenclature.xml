@@ -1,11 +1,11 @@
 <?xml version = "1.0" encoding="Windows-1252" standalone="yes"?>
 <VFPData>
-  <selectAsLibs>
-    <sql>select * from com_nomenclature 
-            where (rekvid = $1 or rekvid is null)
-            order by kood</sql>
-    <alias>selectAsLibs</alias>
-  </selectAsLibs>
+  <grid>
+    <sql>select id, coalesce(kood,'') as kood, coalesce(nimetus,'') as nimetus,  $2::integer as userId, dok
+            from libs.nomenklatuur n
+            where (n.rekvId = $1 or n.rekvid is null) and n.status &lt;&gt; 3</sql>
+    <alias>curNomenklatuur</alias>
+  </grid>
   <select>
     <sql>select n.*, $2::integer as userid, 'NOMENCLATURE' as doc_type_id,
                 v.valuuta, v.kuurs,
@@ -18,7 +18,7 @@
                 (n.properties::jsonb -&gt;&gt;'rahavoog')::text as rahavoog,
                 (n.properties::jsonb -&gt;&gt;'artikkel')::text as artikkel                
                 from libs.nomenklatuur n 
-                left outer join docs.dokvaluuta1 v on v.dokliik = 17 and v.dokid = n.id
+                left outer join docs.dokvaluuta1 v on v.dokliik = array_position((enum_range(NULL :: DOK_VALUUTA)), 'nomenklatuur') and v.dokid = n.id
                 where n.id = $1</sql>
     <sqlAsNew>select  $1::integer as id , $2::integer as userid, 'NOMENCLATURE' as doc_type_id,
             null::text as  kood,
@@ -46,6 +46,12 @@
     <multiple>false</multiple>
     <alias>row</alias>
   </select>
+  <selectAsLibs>
+    <sql>select * from com_nomenclature 
+            where (rekvid = $1 or rekvid is null)
+            order by kood</sql>
+    <alias>selectAsLibs</alias>
+  </selectAsLibs>
   <saveDoc>
     <sql>select libs.sp_salvesta_nomenclature($1, $2, $3) as id</sql>
     <alias>saveDoc</alias>
@@ -54,13 +60,27 @@
     <sql>select error_code, result, error_message from libs.sp_delete_nomenclature($1::integer, $2::integer)</sql>
     <alias>deleteDoc</alias>
   </deleteDoc>
-  <grid>
-    <sql>select id, coalesce(kood,'') as kood, coalesce(nimetus,'') as nimetus,  $2::integer as userId, dok
-            from libs.nomenklatuur n
-            where (n.rekvId = $1 or n.rekvid is null) and n.status &lt;&gt; 3</sql>
-    <alias>curNomenklatuur</alias>
-  </grid>
   <requiredFields>
     <validate>kood,nimetus,dok</validate>
   </requiredFields>
+  <executeSql>
+    <sql></sql>
+    <alias></alias>
+  </executeSql>
+  <executeCommand>
+    <sql></sql>
+    <alias></alias>
+  </executeCommand>
+  <register>
+    <sql></sql>
+    <alias></alias>
+  </register>
+  <endProcess>
+    <sql />
+    <alias />
+  </endProcess>
+  <generateJournal>
+    <sql />
+    <alias />
+  </generateJournal>
 </VFPData>

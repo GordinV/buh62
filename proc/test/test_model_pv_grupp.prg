@@ -101,7 +101,7 @@ Function test_of_row_validate_model()
 
 	If Type('lcNotValidFields') = 'C'
 		Select (cursorName)
-		Replace Id With 0, rekvid With gRekv, kood With '__test' + Left(Alltrim(Str(Rand() * 10000)),10),;
+		Replace Id With 0, rekvid With gRekv, kood With '__test' + Left(Alltrim(Str(Rand() * 10000000)),14),;
 			nimetus With 'vfp test PVGRUPP',;
 			konto With '5001';
 			kulum_konto With '1901';
@@ -152,11 +152,12 @@ Function test_of_row_save_model
 * parameters
 		Select(cursorName)
 		lcJson = '{"id":' + Alltrim(Str(Id)) + ',"data":'+ oDb.getJson() + '}'
-		lError = oDb.readFromModel(lcModel, lcAlias, 'lcJson,gUserid,gRekv', cursorName)
+		lError = oDb.readFromModel(lcModel, 'saveDoc', 'lcJson,gUserid,gRekv', 'v_grupp_id')
 
-
+		replace v_library.id WITH v_grupp_id.id IN v_library
+		 
 		Select(cursorName)
-		If 	!lError And Used(cursorName) And Reccount(cursorName) > 0 AND id > 0
+		If 	!lError or !Used('v_grupp_id') or Reccount('v_grupp_id') = 0 or v_grupp_id.id = 0
 			Messagebox('test failed',0 + 48,'Error')
 			Set Step On
 			Return .F.

@@ -121,7 +121,7 @@ Function test_of_row_save_model
 		lcJson = '{"id":' + Alltrim(Str(Id)) + ',"data": '+ oDb.getJson(lcJson) +  ',' + lcJson + '}'
 		lError = oDb.readFromModel(lcModel, lcAlias, 'lcJson,gUserid,gRekv', cursorName)
 
-		If 	!lError And Used(cursorName) And Reccount(cursorName) > 0
+		If 	!lError OR !used(cursorName) or Reccount(cursorName) = 0
 			Messagebox('test failed',0 + 48,'Error')
 			Set Step On
 			Return .F.
@@ -184,10 +184,10 @@ Function test_of_row_new_model
 		aCheckedFields[8] = 'KOOD3'
 		aCheckedFields[9] = 'KOOD5'
 		aCheckedFields[10] = 'TUNNUS'
-		aCheckedFields[10] = 'PROJ'
-		aCheckedFields[10] = 'KOOD4'
-		aCheckedFields[10] = 'VALUUTA'
-		aCheckedFields[10] = 'KUURS'
+		aCheckedFields[11] = 'PROJ'
+		aCheckedFields[12] = 'KOOD4'
+		aCheckedFields[13] = 'VALUUTA'
+		aCheckedFields[14] = 'KUURS'
 
 		lError = check_fields_in_cursor(@aCheckedFields, 'v_journal1')
 

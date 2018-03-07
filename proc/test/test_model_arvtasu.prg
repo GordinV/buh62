@@ -115,7 +115,7 @@ Function test_of_row_save_model
 		lError = oDb.readFromModel(lcModel, 'saveDoc', 'lcJson,gUserid,gRekv', cursorName)
 
 		SELECT (cursorName)
-		If 	!lError And Used(cursorName) And Reccount(cursorName) > 0 AND v_arvtasu.id < 1
+		If 	!lError or !Used(cursorName) OR Reccount(cursorName) = 0 or v_arvtasu.id < 1
 			Messagebox('test failed',0 + 48,'Error')
 			Set Step On
 			Return .F.

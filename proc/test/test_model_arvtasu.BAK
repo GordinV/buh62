@@ -207,7 +207,7 @@ Function test_of_grid_model
 	With oDb
 		Local lcWhere
 		lcWhere = "dok ilike '%muud%'"
-		lcAlias = 'curArvtasu'
+		lcAlias = 'curArvtasud'
 * parameters
 		lError = oDb.readFromModel(lcModel, lcAlias, 'gRekv, guserid', cursorName, lcWhere, lcSubTotals)
 
