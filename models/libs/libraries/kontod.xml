@@ -1,14 +1,20 @@
 <?xml version = "1.0" encoding="Windows-1252" standalone="yes"?>
 <VFPData>
-  <selectAsLibs>
-    <sql>select * from com_kontoplaan l where (l.rekvId = $1 or l.rekvid is null) order by kood</sql>
-    <alias>selectAsLibs</alias>
-  </selectAsLibs>
+  <grid>
+    <sql>select id, trim(kood) as kood, trim(nimetus) as nimetus,  $2::integer as userId,
+            case when l.tun5 = 1 then 'SD' when l.tun5 = 2 then 'SK' when l.tun5 = 3 then 'D' when l.tun5 = 4 then 'K' else null end::text as konto_tyyp
+            from libs.library l
+            where library = 'KONTOD' 
+            and l.status &lt;&gt; 3
+            and (l.rekvId = $1 or l.rekvid is null)</sql>
+    <alias>curKontod</alias>
+  </grid>
   <select>
     <sql>select l.rekvid, case when l.tun5 = 1 then 'SD' when l.tun5 = 2 then 'SK' when l.tun5 = 3 then 'D' when l.tun5 = 4 then 'K' else null end::text as konto_tyyp, 
                 l.id, trim(l.kood) as kood, trim(l.nimetus) as nimetus, 
                 l.library, l.tun1, l.tun2, l.tun3, l.tun4, l.muud, $2::integer as userid, 
                 'KONTOD' as doc_type_id, l.tun5 as tyyp, 
+                l.status,
                 (l.properties::jsonb -&gt;&gt; 'valid')::date as valid
                 from libs.library l 
                 where id = $1</sql>
@@ -23,6 +29,7 @@
             null::integer as tun3,
             null::integer as tun4,
             2 as tyyp,
+            0 as status,
             null::text as muud,
             null::date as valid</sqlAsNew>
     <query />
@@ -41,6 +48,10 @@
     <multiple>true</multiple>
     <alias>subkonto</alias>
   </select>
+  <selectAsLibs>
+    <sql>select * from com_kontoplaan l where (l.rekvId = $1 or l.rekvid is null) order by kood</sql>
+    <alias>selectAsLibs</alias>
+  </selectAsLibs>
   <saveDoc>
     <sql>select libs.sp_salvesta_konto($1, $2, $3) as id</sql>
     <alias>saveDoc</alias>
@@ -49,15 +60,27 @@
     <sql>select error_code, result, error_message from libs.sp_delete_konto($1, $2)</sql>
     <alias>deleteDoc</alias>
   </deleteDoc>
-  <grid>
-    <sql>select id, trim(kood) as kood, trim(nimetus) as nimetus,  $2::integer as userId,
-            case when l.tun5 = 1 then 'SD' when l.tun5 = 2 then 'SK' when l.tun5 = 3 then 'D' when l.tun5 = 4 then 'K' else null end::text as konto_tyyp
-            from libs.library l
-            where library = 'KONTOD' 
-            and (l.rekvId = $1 or l.rekvid is null)</sql>
-    <alias>curKontod</alias>
-  </grid>
   <requiredFields>
     <validate>kood,nimetus</validate>
   </requiredFields>
+  <executeSql>
+    <sql></sql>
+    <alias></alias>
+  </executeSql>
+  <executeCommand>
+    <sql></sql>
+    <alias></alias>
+  </executeCommand>
+  <register>
+    <sql></sql>
+    <alias></alias>
+  </register>
+  <endProcess>
+    <sql />
+    <alias />
+  </endProcess>
+  <generateJournal>
+    <sql />
+    <alias />
+  </generateJournal>
 </VFPData>
