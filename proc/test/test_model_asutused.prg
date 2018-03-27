@@ -131,14 +131,13 @@ ENDWITH
 
 
 FUNCTION test_of_row_save_model
-	
 WITH oDb
 	lcAlias = 'saveDoc'	
 	* parameters
 	* cursor v_tunnus -> json
 	SELECT v_asutus
 	lcJson = '{"id":' + ALLTRIM(STR(v_asutus.id)) + ',"data":'+ oDb.getJson() + '}'
-	lError = oDb.readFromModel(lcModel, lcAlias, 'lcJson,gUserid,gRekv', 'v_asutus')
+	lError = oDb.readFromModel(lcModel, 'saveDoc', 'lcJson,gUserid,gRekv', 'v_asutus')
 
 	IF 	!lError AND USED('v_asutus') AND RECCOUNT('v_asutus') > 0
 		MESSAGEBOX('test failed',0 + 48,'Error')
@@ -146,7 +145,7 @@ WITH oDb
 		RETURN .f.
 	ELSE 
 		* success
-		WAIT WINDOW 'test model ' + lcModel + ', ' + lcAlias + 'new -> passed' TIMEOUT 1
+		WAIT WINDOW 'test model ' + lcModel + ', saveDoc	 new -> passed' TIMEOUT 1
 		SELECT v_asutus
 		tnId = v_asutus.id
 		RETURN .t.
