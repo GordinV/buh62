@@ -12,6 +12,12 @@ Public gnHandle,gnHandleAsync, gcWindow, gRekv,gUserId, oPrintform2, oFinder, gR
 	oTpr, oRahavoodid, oMenu, oConnect, oKorderID, gcKey, oVanemtasu, gcAmetnik, oLahetuskulud, oLapsed,;
 	oEeltaotlus, oEelVariandid,oDokumendid,;
 	oProjektid, oUritused, tcProj, tcUritus, tcgrupp, oValuuta,gcCurrentValuuta, glMvt
+	
+#DEFINE TM 4
+#DEFINE SM 5
+#DEFINE TK 7
+#DEFINE PM 8
+	
 gnPaev = 0
 gcAmetnik = ''
 tcKasutaja = '%'
