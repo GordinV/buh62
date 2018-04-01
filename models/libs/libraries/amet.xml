@@ -31,6 +31,14 @@
     <multiple>false</multiple>
     <alias>row</alias>
   </select>
+  <select>
+    <sql>select tmpl.*, $2::integer as userid
+            from palk.cur_palk_tmpl tmpl
+            where parentid = $1</sql>
+    <query />
+    <multiple>true</multiple>
+    <alias>details</alias>
+  </select>
   <selectAsLibs>
     <sql>select * from com_ametid l
         where  (l.rekvId = $1 or l.rekvid is null)</sql>

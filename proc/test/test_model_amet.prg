@@ -97,20 +97,20 @@ Function test_of_row_validate_model()
 	lcNotValidFields = oDb.Validate(lcValidate, cursorName)
 * expect LIBRARY
 
-	IF !USED('comOsakondRemote')
+	If !Used('comOsakondRemote')
 		lError = oDb.readFromModel('libs\libraries\osakond', 'selectAsLibs', 'gRekv, guserid', 'comOsakondRemote')
-		SELECT comOsakondRemote
-		GO bottom
-	ENDIF
-	
+		Select comOsakondRemote
+		Go Bottom
+	Endif
+
 
 	If Type('lcNotValidFields') = 'C'
 		Select (cursorName)
 		Replace Id With 0, rekvid With gRekv, kood With '__test' + Left(Alltrim(Str(Rand() * 10000)),10),;
 			nimetus With 'vfp test',;
-			osakondId WITH comOsakondRemote.id,;
-			kogus WITH 1,;
-			palgamaar WITH 10,;
+			osakondId With comOsakondRemote.Id,;
+			kogus With 1,;
+			palgamaar With 10,;
 			library With 'AMET'
 	Endif
 
@@ -154,11 +154,10 @@ Function test_of_row_delete_model
 
 Function test_of_row_save_model
 	With oDb
-		lcAlias = 'saveDoc'
 * parameters
 		Select(cursorName)
 		lcJson = '{"id":' + Alltrim(Str(Id)) + ',"data":'+ oDb.getJson() + '}'
-		lError = oDb.readFromModel(lcModel, lcAlias, 'lcJson,gUserid,gRekv', cursorName)
+		lError = oDb.readFromModel(lcModel, 'saveDoc', 'lcJson,gUserid,gRekv', cursorName)
 
 		If 	!lError And Used(cursorName) And Reccount(cursorName) > 0
 			Messagebox('test failed',0 + 48,'Error')
@@ -166,7 +165,7 @@ Function test_of_row_save_model
 			Return .F.
 		Else
 * success
-			Wait Window 'test model ' + lcModel + ', ' + lcAlias + 'new -> passed' Timeout 1
+			Wait Window 'test model ' + lcModel + ', saveDoc new -> passed' Timeout 1
 			Select(cursorName)
 			tnId = Id
 			Return .T.
@@ -208,18 +207,26 @@ Function test_of_row_model
 * parameters
 		lError = oDb.readFromModel(lcModel, lcAlias, 'tnId, guserid', cursorName)
 
-		If 	!lError And Used(cursorName) And Reccount(cursorName) > 0
+		If 	!lError or !Used(cursorName) or Reccount(cursorName) = 0
 			Messagebox('test failed',0 + 48,'Error')
 			Return .F.
-		Else
-* success
-			Wait Window 'test model ' + lcModel + ', ' + lcAlias + ' -> passed' Timeout 1
-*		USE IN v_Tunnus
-			Return .T.
 		Endif
 
+		lError = oDb.readFromModel(lcModel, 'details', 'tnId, guserid', 'v_palk_tmpl')
+		If 	!lError And !Used('v_palk_tmpl') 
+			Messagebox('test failed',0 + 48,'Error')
+			Return .F.
+		Endif
 
-	Endwith
+* success
+	IF lError
+		Wait Window 'test model ' + lcModel + ', ' + lcAlias + ' -> passed' Timeout 1
+*		USE IN v_Tunnus
+		Return .T.
+	Endif
+
+
+Endwith
 
 
 Endfunc
