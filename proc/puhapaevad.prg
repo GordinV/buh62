@@ -1,10 +1,11 @@
 Parameter tdKpv1, tdKpv2
 Local lnPaevad, lError
 If  .Not. Used('qryHoliday')
-	lError = odB.Use('curHoliday','qryHoliday')
+	lError = oDb.readFromModel('libs\libraries\tahtpaev', 'curHoliday', 'gRekv, guserid', 'qryHoliday')
+
 Endif
 lnPaevad = 0
-If used('qryHoliday') and Reccount('qryHoliday') > 0
+If Used('qryHoliday') And Reccount('qryHoliday') > 0
 	Select Date(Year(tdKpv1), qrYholiday.kuU, qrYholiday.paEv) As kpV1,  ;
 		DATE(Year(tdKpv2), qrYholiday.kuU, qrYholiday.paEv) As kpV2 From  ;
 		qrYholiday Into Cursor tmpPuhad
