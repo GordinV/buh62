@@ -1,15 +1,10 @@
 <?xml version = "1.0" encoding="Windows-1252" standalone="yes"?>
 <VFPData>
   <grid>
-    <sql>select l.id, l.nimetus, 
-            (l.properties::JSONB -&gt;&gt; 'paev') :: integer as paev,        
-            (l.properties::JSONB -&gt;&gt; 'kuu') :: integer as kuu,        
-            (l.properties::JSONB -&gt;&gt; 'aasta') :: integer as aasta,        
-            $2::integer as userId
-            from libs.library l
-            where l.library = 'TAHTPAEV'
-            and l.status &lt;&gt; 3
-            and (l.rekvId = $1 or l.rekvid is null)</sql>
+    <sql>select 
+                $2::integer as userId, *
+                from cur_tahtpaevad l       
+                where (l.rekvId = $1 or l.rekvid is null)</sql>
     <alias>curHoliday</alias>
   </grid>
   <select>

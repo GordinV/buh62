@@ -1,137 +1,157 @@
-LOCAL lnResult
-IF EMPTY(gnKuu) .OR. EMPTY(gnAasta)
-	DO FORM period
-ENDIF
-IF  .NOT. USED('curSource')
-	CREATE CURSOR curSource (id INT, koOd C (20), niMetus C (120))
-ENDIF
-IF  .NOT. USED('curValitud')
-	CREATE CURSOR curValitud (id INT, koOd C (20), niMetus C (120))
-ENDIF
-CREATE CURSOR curResult (id INT, osAkondid INT)
+Local lnResult
+If Empty(gnKuu) .Or. Empty(gnAasta)
+	Do Form period
+Endif
+If  .Not. Used('curSource')
+	Create Cursor curSource (Id Int, koOd C (20), niMetus C (120))
+Endif
+If  .Not. Used('curValitud')
+	Create Cursor curValitud (Id Int, koOd C (20), niMetus C (120))
+Endif
+Create Cursor curResult (Id Int, osAkondid Int)
 lnStep = 1
-DO WHILE lnStep>0
-	DO CASE
-		CASE lnStep=1
-			DO geT_osakonna_list
-		CASE lnStep=2
-			DO geT_isiku_list
-		CASE lnStep>2
-			DO arVutus
-	ENDCASE
-ENDDO
-IF USED('curSource')
-	USE IN curSource
-ENDIF
-IF USED('curvalitud')
-	USE IN curValitud
-ENDIF
-IF USED('curResult')
-	USE IN curResult
-ENDIF
-IF USED('qryPuhkused')
-	USE IN qrYpuhkused
-ENDIF
-IF USED('tmpArvestaMinSots')
-	USE IN tmpArvestaMinSots
-ENDIF
+Do While lnStep>0
+	Do Case
+		Case lnStep=1
+			Do geT_osakonna_list
+		Case lnStep=2
+			Do geT_isiku_list
+		Case lnStep>2
+			Do arVutus
+			If Used('tmp_params') And Reccount('tmp_params') > 0
+* params
+				Select tmp_params
+				TEXT TO l_json TEXTMERGE noshow
+					[<<oDb.getJson()>>]
+				ENDTEXT
+				lError = oDb.readFromModel('palk\palk_taabel', 'genTaabel', 'guserid,l_json', 'result')
+				If !lError
+					lcViga = ''
+					If Used('result')
+						lcViga = result.error_message
+					Endif
 
-ENDPROC
+					Messagebox('Tekkis viga:' + lcViga,0+16,'Viga')
+					Set Step On
+					Use In result
+					Return .F.
+				Else
+					Messagebox('Kokku lisatud: ' + Alltrim(Str(result.result)),0+64,'Tulemus')
+					Use In result
+					Return .T.
+				Endif
+			Endif
+
+	Endcase
+Enddo
+If Used('curSource')
+	Use In curSource
+Endif
+If Used('curvalitud')
+	Use In curValitud
+Endif
+If Used('curResult')
+	Use In curResult
+Endif
+If Used('qryPuhkused')
+	Use In qrYpuhkused
+Endif
+If Used('tmpArvestaMinSots')
+	Use In tmpArvestaMinSots
+Endif
+
+Endproc
 *
-PROCEDURE arVutus
-	LOCAL leRror
-	WITH odB
-		.opEntransaction()
-		SELECT DISTINCT id FROM curResult WHERE  NOT EMPTY(curResult.id) INTO  ;
-			CURSOR recalc1
-		SELECT recalc1
-		SCAN
-			lError = odb.exec ('gen_taabel1',STR(recalc1.Id)+","+STR(gnKuu,2)+","+STR(gnAasta,4))
-			IF leRror=.F.
-				EXIT
-			ENDIF
-		ENDSCAN
-		IF leRror=.T.
-			.coMmit
-		ELSE
-			.roLlback()
-			MESSAGEBOX('Viga', 'Kontrol')
-		ENDIF
-	ENDWITH
+Procedure arVutus
+	Local lError
+
+	If !Used('tmp_params')
+		Create Cursor tmp_params (lepingid Int, kuu Int, aasta Int)
+	Endif
+
+	Select Distinct Id From curResult Where  Not Empty(curResult.Id) Into  ;
+		CURSOR recalc1
+	Select recalc1
+	Scan
+		Insert Into tmp_params (lepingid, kuu, aasta) Values (recalc1.Id,gnKuu, gnAasta )
+	Endscan
 	lnStep = 0
-ENDPROC
+Endproc
 *
-PROCEDURE geT_osakonna_list
-	IF USED('query1')
-		USE IN query1
-	ENDIF
-	tcKood = '%%'
-	tcNimetus = '%%'
-	odB.usE('curOsakonnad','qryOsakonnad')
-	SELECT curSource
-	IF RECCOUNT('curSource')>0
-		ZAP
-	ENDIF
-	APPEND FROM DBF('qryOsakonnad')
-	USE IN qrYosakonnad
-	SELECT curValitud
-	IF RECCOUNT('curvalitud')>0
-		ZAP
-	ENDIF
-	DO FORM forms\samm TO nrEsult WITH '1', IIF(coNfig.keEl=2, 'Osakoonad',  ;
-		'Подразделения'), IIF(coNfig.keEl=2, 'Valitud osakonnad',  ;
+Procedure geT_osakonna_list
+	If Used('query1')
+		Use In query1
+	Endif
+	lError = oDb.readFromModel('libs\libraries\osakond', 'curOsakonnad', 'gRekv, guserid', 'qryOsakonnad')
+
+	Select curSource
+	If Reccount('curSource')>0
+		Zap
+	Endif
+	Append From Dbf('qryOsakonnad')
+	Use In qrYosakonnad
+	Select curValitud
+	If Reccount('curvalitud')>0
+		Zap
+	Endif
+	Do Form Forms\samm To nrEsult With '1', Iif(coNfig.keEl=2, 'Osakoonad',  ;
+		'Подразделения'), Iif(coNfig.keEl=2, 'Valitud osakonnad',  ;
 		'Выбранные подразделения')
-	IF nrEsult=1
-		SELECT DISTINCT id FROM curValitud INTO CURSOR query1
-		SELECT query1
-		SCAN
-			INSERT INTO curResult (osAkondid) VALUES (query1.id)
-		ENDSCAN
-		USE IN query1
-		SELECT curValitud
-		ZAP
-	ENDIF
-	IF nrEsult=0
+	If nrEsult=1
+		Select Distinct Id From curValitud Into Cursor query1
+		Select query1
+		Scan
+			Insert Into curResult (osAkondid) Values (query1.Id)
+		Endscan
+		Use In query1
+		Select curValitud
+		Zap
+	Endif
+	If nrEsult=0
 		lnStep = 0
-	ELSE
+	Else
 		lnStep = lnStep+nrEsult
-	ENDIF
-ENDPROC
+	Endif
+Endproc
 *
-PROCEDURE geT_isiku_list
-	IF USED('query1')
-		USE IN query1
-	ENDIF
-	odB.usE('curKaader','qryKaader')
-	SELECT curSource
-	IF RECCOUNT('curSource')>0
-		ZAP
-	ENDIF
-	SELECT isIkukood AS koOd, LEFT(RTRIM(isIk)+SPACE(1)+RTRIM(amEt), 120) AS  ;
-		niMetus, id FROM qryKaader WHERE osAkondid IN (SELECT osAkondid  ;
-		FROM curResult) INTO CURSOR query1
-	SELECT curSource
-	APPEND FROM DBF('query1')
-	USE IN query1
-	SELECT curValitud
-	IF RECCOUNT('curvalitud')>0
-		ZAP
-	ENDIF
-	DO FORM forms\samm TO nrEsult WITH '2', IIF(coNfig.keEl=2, 'Tццtajad',  ;
-		'Работники'), IIF(coNfig.keEl=2, 'Valitud tццtajad', 'Выбранные работники')
-	IF nrEsult=1
-		SELECT DISTINCT id FROM curValitud INTO CURSOR query1
-		SELECT query1
-		SCAN
-			INSERT INTO curResult (id) VALUES (query1.id)
-		ENDSCAN
-		USE IN query1
-	ENDIF
-	IF nrEsult=0
+Procedure geT_isiku_list
+	If Used('query1')
+		Use In query1
+	Endif
+	Select curSource
+	If Reccount('curSource')>0
+		Zap
+	Endif
+	Select isIkukood As koOd,; 
+		Left(Rtrim(nimetus)+Space(1)+Rtrim(amEt), 120) As niMetus, lepingId as id;
+		From comTootajad ;
+		Where osAkondid <> 0 ;
+		AND osakondId In (Select osAkondid  ;
+		FROM curResult) ;
+		Into Cursor query1
+		
+	Select curSource
+	Append From Dbf('query1')
+	Use In query1
+	Select curValitud
+	If Reccount('curvalitud')>0
+		Zap
+	Endif
+	Do Form Forms\samm To nrEsult With '2', Iif(coNfig.keEl=2, 'Tццtajad',  ;
+		'Работники'), Iif(coNfig.keEl=2, 'Valitud tццtajad', 'Выбранные работники')
+	If nrEsult=1
+		Select Distinct Id From curValitud Into Cursor query1
+		Select query1
+		Scan
+			Insert Into curResult (Id) Values (query1.Id)
+		Endscan
+		Use In query1
+	Endif
+	If nrEsult=0
 		lnStep = 0
-	ELSE
+	Else
 		lnStep = lnStep+nrEsult
-	ENDIF
-	RETURN
-ENDPROC
+	Endif
+	Return
+Endproc
 *
