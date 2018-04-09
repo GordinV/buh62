@@ -1,0 +1,254 @@
+Set Classlib To classes\Classlib
+
+*LOCAL oDb, gnHandle
+gVersia = 'PG'
+oDb = Createobject('db')
+
+gRekv = 1
+guserid = 1
+tnId = 0
+
+gnHandle = SQLConnect('localPg', 'vlad','123')
+If gnHandle < 0
+	Messagebox('Connection error',0+48,'Error')
+	Return .T.
+Endif
+
+lcModel = 'palk\taotlus_mvt'
+
+lError = oDb.readFromModel('palk\tooleping', 'selectAsLibs', 'gRekv, guserid', 'comToolepingRemote')
+SELECT comToolepingRemote
+GO bottom
+
+IF !lError
+	MESSAGEBOX('tekkis viga, Toolepingud',0+16,'Viga')
+	SET STEP ON 
+	RETURN .f.
+ENDIF
+
+Wait Window 'test model ' + lcModel  Timeout 1
+lsuccess = test_of_grid_model()
+If lsuccess
+	lsuccess = test_of_row_new_model()
+Endif
+If lsuccess
+	lsuccess = test_of_row_validate_model()
+Endif
+If lsuccess
+	lsuccess = test_of_row_save_model()
+Endif
+
+If lsuccess
+	lsuccess = test_of_row_model()
+Endif
+
+If lsuccess
+	lsuccess = test_of_row_delete_model()
+Endif
+
+=SQLDISCONNECT(gnHandle)
+
+RETURN lsuccess
+*Clear All
+
+
+
+Function test_of_row_validate_model()
+	lcAlias = 'validate'
+	Select v_model
+	Locate For !Empty(Validate)
+
+	If Eof()
+* not found
+		Return .T.
+	Endif
+
+	lcValidate = Alltrim(v_model.Validate)
+
+	lcNotValidFields = oDb.Validate(lcValidate, 'v_taotlus_mvt')
+* expect LIBRARY
+	If Type('lcNotValidFields') = 'C'
+		Replace Id With 0, ;
+			lepingid WITH comToolepingRemote.id,;
+			kpv WITH DATE(),;
+			alg_kpv WITH DATE(),;
+			lopp_kpv WITH DATE(2018,12,31),;
+			summa WITH 500 IN v_taotlus_mvt
+			
+
+	Endif
+
+	lcNotValidFields = oDb.Validate(lcValidate, 'v_taotlus_mvt')
+* expect empty
+	If Empty(lcNotValidFields)
+		Wait Window 'test model ' + lcModel + ', validate -> passed' Timeout 1
+		Return .T.
+	Else
+		Messagebox('test failed',0 + 48,'Error')
+		Set Step On
+		Return .F.
+
+	Endif
+
+Endfunc
+
+
+Function test_of_row_delete_model
+
+	With oDb
+* parameters
+
+		lError = oDb.readFromModel(lcModel, 'deleteDoc', 'gUserid,tnId','result')
+
+		If 	!lError Or !Used('result') Or !Isnull(result.error_code)
+			Messagebox('test failed',0 + 48,'Error')
+			Set Step On
+			Return .F.
+		Else
+* success
+			Wait Window 'test model ' + lcModel + ', deleteDoc delete -> passed' Timeout 1
+			Select result
+			Return .T.
+		Endif
+
+
+	Endwith
+
+
+Function test_of_row_save_model
+
+	With oDb
+		lcAlias = 'saveDoc'
+* parameters
+* cursor v_tunnus -> json
+
+		Select v_taotlus_mvt
+		lcJson = '{"id":' + Alltrim(Str(v_taotlus_mvt.Id)) + ',"data":'+ oDb.getJson() + '}'
+		lError = oDb.readFromModel(lcModel, 'saveDoc', 'lcJson,gUserid,gRekv', 'v_taotlus_mvt_id')
+
+		If 	!lError And Used('v_taotlus_mvt_id') And Reccount('v_taotlus_mvt_id') > 0 And !Empty(v_taotlus_mvt_id.Id)
+			Messagebox('test failed',0 + 48,'Error')
+			Set Step On
+			Return .F.
+		Else
+* success
+			Wait Window 'test model ' + lcModel + ', saveDoc new -> passed' + Str(v_taotlus_mvt_id.Id) Timeout 1
+			Select v_taotlus_mvt_id
+			tnId = v_taotlus_mvt_id.Id
+			Use In v_taotlus_mvt_id
+			Return .T.
+		Endif
+
+
+	Endwith
+
+
+
+Function test_of_row_new_model
+	tnId = 0
+	Dimension aCheckedFields(4)
+	aCheckedFields[1] = 'SUMMA'
+	aCheckedFields[2] = 'LEPINGID'
+	aCheckedFields[3] = 'ALG_KPV'
+	aCheckedFields[4] = 'LOPP_KPV'
+	
+	With oDb
+		lcAlias = 'row'
+* parameters
+		lError = oDb.readFromModel(lcModel, 'row', 'tnId, guserid', 'v_taotlus_mvt')
+
+		If 	!lError And Used('v_taotlus_mvt') And Reccount('v_taotlus_mvt') > 0
+			Messagebox('test failed',0 + 48,'Error')
+			Return .F.
+		Endif
+
+		
+		lError = check_fields_in_cursor(@aCheckedFields, 'v_taotlus_mvt') 
+
+
+		If (lError)
+* success
+			Wait Window 'test model ' + lcModel + ', row new -> passed' Timeout 1
+		Endif
+		RETURN lError
+
+	Endwith
+
+
+Function test_of_row_model
+
+	With oDb
+		lcAlias = 'row'
+* parameters
+		lError = oDb.readFromModel(lcModel, 'row', 'tnId, guserid', 'v_taotlus_mvt')
+
+		If 	!lError OR !Used('v_taotlus_mvt') or Reccount('v_taotlus_mvt') = 0 OR Empty(v_taotlus_mvt.Id)
+			Messagebox('test failed',0 + 48,'Error')
+			Return .F.
+		Endif
+
+		lError = oDb.readFromModel(lcModel, 'palk_config', 'tnId, guserid', 'v_palk_config')
+
+		If 	!lError OR !Used('v_palk_config') or Reccount('v_palk_config') = 0 
+			Messagebox('test failed',0 + 48,'Error')
+			Return .F.
+		Endif
+
+		lError = oDb.readFromModel(lcModel, 'v_isiku_mvt_taotlused', 'tnId, guserid', 'v_isiku_mvt_taotlused')
+
+		If 	!lError OR !Used('v_isiku_mvt_taotlused') or Reccount('v_palk_config') = 0 
+			Messagebox('test failed',0 + 48,'Error')
+			Return .F.
+		Endif
+
+
+		If (lError)
+* success
+			Wait Window 'test model ' + lcModel + ', row -> passed' Timeout 1
+			Return .T.
+		Endif
+
+
+	Endwith
+
+
+Endfunc
+
+Function test_of_grid_model
+	With oDb
+		Local lcWhere
+		lcWhere = "amet ilike '%'"
+* parameters
+		lError = oDb.readFromModel(lcModel, 'curTaotlus_mvt', 'gRekv, guserid', 'tmp', lcWhere)
+
+		If 	!lError Or !Used('tmp') And Reccount('tmp') > 0
+			Messagebox('test failed',0 + 48,'Error')
+			Return .F.
+		Else
+* success
+			Wait Window 'test model ' + lcModel + ', curTaotlus_mvt -> passed' Timeout 3
+			Use In tmp
+			Return .T.
+		Endif
+	Endwith
+Endfunc
+
+
+
+Function check_fields_in_cursor(aCheckedFields, tcAlias)
+*	Parameters 	aCheckedFields, tcAlias
+
+	lnFields = Afields(laFields,tcAlias)
+
+	For i = 1 To Alen(aCheckedFields)
+		lnElement = Ascan(laFields, aCheckedFields[i])
+
+		If lnElement = 0
+			Messagebox('test failed, puudub field ' + aCheckedFields[i],0 + 48,'Error')
+			lError = .F.
+			Exit
+		Endif
+	Endfor
+
+	Return lError
+Endfunc

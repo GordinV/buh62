@@ -1,0 +1,257 @@
+Set Classlib To classes\Classlib
+
+*LOCAL oDb, gnHandle
+gVersia = 'PG'
+oDb = Createobject('db')
+
+gRekv = 1
+guserid = 1
+tnId = 0
+cursorName = 'v_eelarve'
+
+gnHandle = SQLConnect('localPg', 'vlad','123')
+If gnHandle < 0
+	Messagebox('Connection error',0+48,'Error')
+	Return .T.
+Endif
+
+lcModel = 'eelarve\eelproj'
+
+Wait Window 'test model ' + lcModel  Timeout 1
+lsuccess = test_of_grid_model()
+
+If lsuccess
+	lsuccess = test_of_row_new_model()
+Endif
+
+If lsuccess
+	lsuccess = test_of_row_validate_model()
+Endif
+
+If lsuccess
+	lsuccess = test_of_row_save_model()
+Endif
+
+If lsuccess
+	lsuccess = test_of_row_model()
+Endif
+
+If lsuccess
+	lsuccess = test_of_tuhistaProjekt_model()
+Endif
+
+
+If lsuccess
+	lsuccess = test_of_allikiriProjekt_model()
+Endif
+
+
+
+If lsuccess
+	lsuccess = test_of_row_delete_model()
+Endif
+
+
+=SQLDISCONNECT(gnHandle)
+
+Return lsuccess
+
+FUNCTION test_of_tuhistaProjekt_model
+		cTask = 'eelarve.sp_eelproj_tuhista'
+		TEXT TO cParams NOSHOW textmerge
+			{"eelproj_id":<<ALLTRIM(STR(tnId))>>}
+		ENDTEXT
+		
+		lError = oDb.readFromModel(lcModel, 'executeTask', 'gUserid,cParams,cTask','result')
+
+		If 	!lError Or !Used('result') Or !Isnull(result.error_code)
+			Messagebox('test failed',0 + 48,'Error')
+			Set Step On
+			Return .F.
+		Else
+* success
+			Wait Window 'test model ' + lcModel + ', allikiriProjekt -> passed' Timeout 1
+			Select result
+			Return .T.
+		Endif
+
+ENDFUNC
+
+
+
+FUNCTION test_of_allikiriProjekt_model
+		cTask = 'eelarve.sp_eelproj_allkiri'
+		TEXT TO cParams NOSHOW textmerge
+			{"eelproj_id":<<ALLTRIM(STR(tnId))>>}
+		ENDTEXT
+		
+		lError = oDb.readFromModel(lcModel, 'executeTask', 'gUserid,cParams,cTask','result')
+
+		If 	!lError Or !Used('result') Or !Isnull(result.error_code)
+			Messagebox('test failed',0 + 48,'Error')
+			Set Step On
+			Return .F.
+		Else
+* success
+			Wait Window 'test model ' + lcModel + ', allikiriProjekt -> passed' Timeout 1
+			Select result
+			Return .T.
+		Endif
+
+ENDFUNC
+
+
+
+Function test_of_row_validate_model()
+	lcAlias = 'validate'
+	cursorName = 'v_eelarve'
+	Select v_model
+	Locate For !Empty(Validate)
+
+	If Eof()
+* not found
+		Return .T.
+	Endif
+
+	lcValidate = Alltrim(v_model.Validate)
+
+
+	lcNotValidFields = oDb.Validate(lcValidate, cursorName)
+* expect LIBRARY
+
+	If Type('lcNotValidFields') = 'C'
+		Select (cursorName)
+		Replace Id With 0, rekvid With gRekv, kinnitaja WITH gUserId;
+			aasta with 2018, kuu WITH 0,;
+			muud with 'test' 
+	Endif
+
+	lcNotValidFields = oDb.Validate(lcValidate, cursorName)
+* expect empty
+	If Empty(lcNotValidFields)
+		Wait Window 'test model ' + lcModel + ', ' + lcAlias + ' validate -> passed' Timeout 1
+		Return .T.
+	Else
+		Messagebox('test failed',0 + 48,'Error')
+		Set Step On
+		Return .F.
+
+	Endif
+
+Endfunc
+
+
+Function test_of_row_delete_model
+
+	With oDb
+* parameters
+
+		lError = oDb.readFromModel(lcModel, 'deleteDoc', 'gUserid,tnId,0','result')
+
+		If 	!lError Or !Used('result') Or !Isnull(result.error_code)
+			Messagebox('test failed',0 + 48,'Error')
+			Set Step On
+			Return .F.
+		Else
+* success
+			Wait Window 'test model ' + lcModel + ', deleteDoc delete -> passed' Timeout 1
+			Select result
+			Return .T.
+		Endif
+
+
+	Endwith
+
+
+Function test_of_row_save_model
+	With oDb
+* parameters
+		Select(cursorName)
+		lcJson = '{"id":' + Alltrim(Str(Id)) + ',"data":'+ oDb.getJson() + '}'
+		lError = oDb.readFromModel(lcModel, 'saveDoc', 'lcJson,gUserid,gRekv', cursorName)
+
+		If 	!lError And Used(cursorName) And Reccount(cursorName) > 0
+			Messagebox('test failed',0 + 48,'Error')
+			Set Step On
+			Return .F.
+		Else
+* success
+			Wait Window 'test model ' + lcModel + ', saveDoc new -> passed' Timeout 1
+			Select(cursorName)
+			tnId = Id
+			Return .T.
+		Endif
+
+
+	Endwith
+
+
+
+Function test_of_row_new_model
+	tnId = 0
+	cursorName = 'v_eelarve'
+	With oDb
+		lcAlias = 'row'
+
+		lError = oDb.readFromModel(lcModel, 'row', 'tnId, guserid', cursorName)
+		If !lError
+			Return .F.
+		Endif
+
+		If 	!lError Or !Used(cursorName) Or Reccount(cursorName) = 0
+			Messagebox('test failed',0 + 48,'Error')
+			Return .F.
+		Else
+* success
+			Wait Window 'test model ' + lcModel + ', ' + lcAlias + 'new -> passed' Timeout 1
+			Return .T.
+		Endif
+
+
+	Endwith
+
+
+Function test_of_row_model
+
+	With oDb
+		lcAlias = 'row'
+* parameters
+		lError = oDb.readFromModel(lcModel, lcAlias, 'tnId, guserid', cursorName)
+
+		If 	!lError And Used(cursorName) And Reccount(cursorName) > 0
+			Messagebox('test failed',0 + 48,'Error')
+			Return .F.
+		Else
+* success
+			Wait Window 'test model ' + lcModel + ', ' + lcAlias + ' -> passed' Timeout 1
+*		USE IN v_Tunnus
+			Return .T.
+		Endif
+
+
+	Endwith
+
+
+Endfunc
+
+Function test_of_grid_model
+	Local cursorName
+	cursorName  = 'tmpEelarve'
+	With oDb
+		Local lcWhere
+		lcWhere = "aasta = 2018"
+		lcAlias = 'curEelproj'
+* parameters
+		lError = oDb.readFromModel(lcModel, 'curEelproj', 'gRekv, guserid', cursorName, lcWhere)
+
+		If 	!lError Or !Used(cursorName)
+			Messagebox('test failed',0 + 48,'Error')
+			Return .F.
+		Else
+* success
+			Wait Window 'test model ' + lcModel + ', ' + lcAlias + ' -> passed' Timeout 3
+			Use In (cursorName)
+			Return .T.
+		Endif
+	Endwith
+Endfunc

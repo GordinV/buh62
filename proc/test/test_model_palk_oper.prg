@@ -1,0 +1,328 @@
+Set Classlib To classes\Classlib
+
+*LOCAL oDb, gnHandle
+gVersia = 'PG'
+oDb = Createobject('db')
+
+gRekv = 1
+guserid = 1
+tnId = 0
+cursorName = 'v_palk_oper'
+
+gnHandle = SQLConnect('localPg', 'vlad','123')
+If gnHandle < 0
+	Messagebox('Connection error',0+48,'Error')
+	Return .T.
+Endif
+
+lcModel = 'palk\palk_oper'
+
+Wait Window 'test model ' + lcModel  Timeout 1
+
+lError = oDb.readFromModel('libs\libraries\palk_lib', 'selectAsLibs', 'gRekv, guserid', 'comPalkLibRemote')
+SELECT comPalkLibRemote
+GO bottom
+
+lError = oDb.readFromModel('palk\tooleping', 'selectAsLibs', 'gRekv, guserid', 'comToolepingRemote')
+SELECT comToolepingRemote
+GO bottom
+
+
+lsuccess = test_of_grid_model()
+
+If lsuccess
+	lsuccess = test_of_row_new_model()
+Endif
+
+If lsuccess
+	lsuccess = test_of_row_validate_model()
+Endif
+
+If lsuccess
+	lsuccess = test_of_row_save_model()
+Endif
+
+If lsuccess
+	lsuccess = test_of_row_model()
+Endif
+
+*!*	If lsuccess
+*!*		lsuccess = test_of_generateJournal()
+*!*	Endif
+
+If lsuccess
+	lsuccess = test_of_row_delete_model()
+Endif
+
+
+=SQLDISCONNECT(gnHandle)
+
+Return lsuccess
+
+
+
+Function test_of_generateJournal
+	Return .T.
+* test of  error_code = 4; -- No documents found
+	l_tnId_backup = tnId
+	tnId = -1
+	lError = oDb.readFromModel(lcModel, 'generateJournal', 'guserid, tnId', 'result')
+
+	If !lError Or !Used('result') Or Reccount('result') = 0 Or  result.error_code <> 4
+		Messagebox('test failed',0 + 48,'Error')
+		Set Step On
+	Endif
+* error_message = 'User not found';
+error_code = 3;
+
+	If lError
+		tnId = 	l_tnId_backup
+		lUserid = guserid
+		guserid = 99999
+
+		lError = oDb.readFromModel(lcModel, 'generateJournal', 'guserid, tnId', 'result')
+
+		If !lError Or !Used('result') Or Reccount('result') = 0 Or  result.error_code <> 3
+			Messagebox('test failed',0 + 48,'Error')
+			Set Step On
+		Endif
+	Endif
+
+
+	guserid = lUserid
+
+* test for succesfull execution
+	If lError
+		lError = oDb.readFromModel(lcModel, 'generateJournal', 'guserid, tnId', 'result')
+
+	Endif
+
+	If 	!lError Or !Used('result') Or Reccount('result') = 0 Or  result.result < 1
+		Messagebox('test failed',0 + 48,'Error')
+		Set Step On
+	Endif
+
+	If lError
+* success
+		Wait Window 'test model ' + lcModel + ', generateJournal -> passed' Timeout 1
+	Endif
+	Return	lError
+Endfunc
+
+
+Function test_of_row_validate_model()
+	lcAlias = 'validate'
+	cursorName = 'v_palk_oper'
+	Select v_model
+	Locate For !Empty(Validate)
+
+	If Eof()
+* not found
+		Return .T.
+	Endif
+
+	lcValidate = Alltrim(v_model.Validate)
+
+	lcNotValidFields = oDb.Validate(lcValidate, cursorName)
+* expect LIBRARY
+
+	If Type('lcNotValidFields') = 'C'
+		Select v_palk_oper
+		Replace Id With 0, rekvid With gRekv, ;
+			lepingid With comToolepingRemote.Id;
+			libid WITH comPalkLibRemote.id,;
+			doklausid With 4,;
+			Summa With 100, kpv With Date() IN  v_palk_oper
+
+	Endif
+
+	lcNotValidFields = oDb.Validate(lcValidate, cursorName)
+* expect empty
+	If Empty(lcNotValidFields)
+		Wait Window 'test model ' + lcModel + ',  validate -> passed' Timeout 1
+		Return .T.
+	Else
+		Messagebox('test failed',0 + 48,'Error')
+		Set Step On
+		Return .F.
+	Endif
+
+Endfunc
+
+
+Function test_of_row_delete_model
+
+	With oDb
+		lcAlias = 'deleteDoc'
+* parameters
+
+		lError = oDb.readFromModel(lcModel, 'deleteDoc', 'gUserid,tnId','result')
+
+		If 	!lError Or !Used('result') Or !Isnull(result.error_code)
+			Messagebox('test failed',0 + 48,'Error')
+			Set Step On
+			Return .F.
+		Else
+* success
+			Wait Window 'test model ' + lcModel + ', deleteDoc delete -> passed' Timeout 1
+			Select result
+			Return .T.
+		Endif
+
+
+	Endwith
+
+
+Function test_of_row_save_model
+	With oDb
+		lcJson = ''
+		lcAlias = 'saveDoc'
+* parameters
+
+
+		Select v_palk_oper
+		lcJson = '{"id":' + Alltrim(Str(Id)) + ',"data": '+ oDb.getJson() + '}'
+		lError = oDb.readFromModel(lcModel, 'saveDoc', 'lcJson,gUserid,gRekv', 'v_palk_oper_id')
+
+		If 	!lError OR  !Used('v_palk_oper_id') or Reccount('v_palk_oper_id') = 0 or v_palk_oper_id.Id < 1
+			Messagebox('test failed',0 + 48,'Error')
+			Set Step On
+			Return .F.
+		Else
+* success
+			Wait Window 'test model ' + lcModel + ', saveDoc, new -> passed,' + Alltrim(Str(v_palk_oper_id.Id)) Timeout 1
+			tnId = v_palk_oper_id.Id
+			USE IN v_palk_oper_id
+			Return .T.
+		Endif
+
+
+	Endwith
+
+
+
+Function test_of_row_new_model
+	tnId = 0
+	cursorName = 'v_palk_oper'
+	With oDb
+		lcAlias = 'row'
+
+		lError = oDb.readFromModel(lcModel, 'row', 'tnId, guserid', cursorName)
+		If !lError Or !Used(cursorName) Or Reccount(cursorName) = 0
+			Return .F.
+		Endif
+
+		Dimension aCheckedFields(7)
+		aCheckedFields[1] = 'JOURNALID'
+		aCheckedFields[2] = 'KPV'
+		aCheckedFields[3] = 'LEPINGID'
+		aCheckedFields[4] = 'SUMMA'
+		aCheckedFields[5] = 'KONTO'
+		aCheckedFields[6] = 'MUUD'
+		aCheckedFields[7] = 'DOKLAUSID'
+
+		lError = check_fields_in_cursor(@aCheckedFields, cursorName)
+
+		If !lError
+			Return .F.
+		Endif
+
+		If 	!lError  Or Reccount(cursorName) = 0
+			Messagebox('test failed',0 + 48,'Error')
+			Return .F.
+		Else
+* success
+			Wait Window 'test model row, new -> passed' Timeout 1
+			Return .T.
+		Endif
+
+
+	Endwith
+
+
+Function test_of_row_model
+
+	With oDb
+* parameters
+		lError = oDb.readFromModel(lcModel, 'row', 'tnId, guserid', 'v_palk_oper')
+
+		IF !lError OR !USED('v_palk_oper') OR RECCOUNT('v_palk_oper') = 0 OR v_palk_oper.id = 0
+			MESSAGEBOX('Test faild',0+16,'Viga')
+			SET STEP ON 
+		ENDIF
+		
+
+* success
+		IF lError
+			Wait Window 'test model ' + lcModel + ', row -> passed' Timeout 1
+		Endif
+
+
+	Endwith
+
+	RETURN lError
+Endfunc
+
+Function test_of_grid_model
+	Local cursorName
+	Dimension aCheckedFields(6)
+	aCheckedFields[2] = 'KPV'
+	aCheckedFields[3] = 'ISIK'
+	aCheckedFields[4] = 'NIMETUS'
+	aCheckedFields[5] = 'SUMMA'
+	aCheckedFields[6] = 'LIIK'
+
+	cursorName  = 'tmpPalkOper'
+
+	Local lcWhere
+	tdKpv1 = Date(2016,01,01)
+	tdKpv2 = Date()
+
+TEXT TO lcWhere NOSHOW textmerge
+	kpv >= ?tdKpv1 and kpv <= ?tdKpv2
+
+ENDTEXT
+
+	lcSubTotals = " sum (summa) OVER()  as summa_kokku ,  count(id) over() as read_kokku"
+
+* parameters
+	lError = oDb.readFromModel(lcModel, 'curPalkOper', 'gRekv, guserid', cursorName, lcWhere, lcSubTotals)
+
+	If 	!lError Or !Used(cursorName)
+		Messagebox('test failed',0 + 48,'Error')
+		Set Step On
+		Return .F.
+	Endif
+
+	lError = check_fields_in_cursor(@aCheckedFields, cursorName)
+
+	If 	!lError
+		Messagebox('test failed, puuduvad vajaliku andmed',0 + 48,'Error')
+		Return .F.
+	Endif
+
+* success
+	If lError
+		Wait Window 'test model ' + lcModel + ', curPalkOper -> passed' Timeout 3
+		Use In (cursorName)
+	Endif
+	Return lError
+Endfunc
+
+Function check_fields_in_cursor(aCheckedFields, tcAlias)
+*	Parameters 	aCheckedFields, tcAlias
+
+	lnFields = Afields(laFields,tcAlias)
+
+	For i = 1 To Alen(aCheckedFields)
+		lnElement = Ascan(laFields, aCheckedFields[i])
+
+		If lnElement = 0
+			Messagebox('test failed, puudub field ' + aCheckedFields[i],0 + 48,'Error')
+			lError = .F.
+			Exit
+		Endif
+	Endfor
+
+	Return lError
+Endfunc

@@ -1,0 +1,269 @@
+Set Classlib To classes\Classlib
+
+*LOCAL oDb, gnHandle
+gVersia = 'PG'
+oDb = Createobject('db')
+
+gRekv = 1
+guserid = 1
+tnId = 0
+
+gnHandle = SQLConnect('localPg', 'vlad','123')
+If gnHandle < 0
+	Messagebox('Connection error',0+48,'Error')
+	Return .T.
+Endif
+
+lcModel = 'palk\toograf'
+
+lError = oDb.readFromModel('palk\tooleping', 'selectAsLibs', 'gRekv, guserid', 'comToolepingRemote')
+Select comToolepingRemote
+Go Bottom
+
+If !lError
+	Messagebox('tekkis viga, Toolepingud',0+16,'Viga')
+	Set Step On
+	Return .F.
+Endif
+
+Wait Window 'test model ' + lcModel  Timeout 1
+lsuccess = test_of_grid_model()
+If lsuccess
+	lsuccess = test_of_row_new_model()
+Endif
+
+If lsuccess
+	lsuccess = test_of_calc_taabel_model()
+Endif
+
+If lsuccess
+	lsuccess = test_of_row_validate_model()
+Endif
+
+If lsuccess
+	lsuccess = test_of_row_save_model()
+Endif
+
+If lsuccess
+	lsuccess = test_of_row_model()
+Endif
+
+If lsuccess
+	lsuccess = test_of_row_delete_model()
+Endif
+
+=SQLDISCONNECT(gnHandle)
+Clear All
+
+Function test_of_calc_taabel_model
+	If Used('result')
+		Use In result
+	Endif
+
+TEXT TO lcJson TEXTMERGE noshow
+	{"lepingid":<<ALLTRIM(STR(comToolepingRemote.id))>>,"kuu":4, "aasta":2018}
+ENDTEXT
+	lError = oDb.readFromModel(lcModel, 'calcTaabel', 'lcJson','result')
+
+	If 	!lError Or !Used('result') Or Type('result.tunnid') = 'U'
+		Messagebox('test failed',0 + 48,'Error')
+		Set Step On
+		Return .F.
+	Else
+* success
+		Wait Window 'test model ' + lcModel + ', deleteDoc delete -> passed' Timeout 1
+		Select result
+		Return .T.
+	Endif
+
+
+Endfunc
+
+Function test_of_row_validate_model()
+	lcAlias = 'validate'
+	Select v_model
+	Locate For !Empty(Validate)
+
+	If Eof()
+* not found
+		Return .T.
+	Endif
+
+	lcValidate = Alltrim(v_model.Validate)
+
+	lcNotValidFields = oDb.Validate(lcValidate, 'v_toograf')
+* expect LIBRARY
+	If Type('lcNotValidFields') = 'C'
+		Replace Id With 0, ;
+			lepingid With comToolepingRemote.Id,;
+			kuu With Month(Date()),;
+			aasta With Year(Date()),;
+			tund With result.tunnid In v_toograf
+
+
+	Endif
+
+	lcNotValidFields = oDb.Validate(lcValidate, 'v_toograf')
+* expect empty
+	If Empty(lcNotValidFields)
+		Wait Window 'test model ' + lcModel + ', validate -> passed' Timeout 1
+		Return .T.
+	Else
+		Messagebox('test failed',0 + 48,'Error')
+		Set Step On
+		Return .F.
+	Endif
+
+
+Endfunc
+
+
+Function test_of_row_delete_model
+
+	With oDb
+* parameters
+		If Used('result')
+			Use In result
+		Endif
+
+
+		lError = oDb.readFromModel(lcModel, 'deleteDoc', 'gUserid,tnId','result')
+
+		If 	!lError Or !Used('result') Or !Isnull(result.error_code)
+			Messagebox('test failed',0 + 48,'Error')
+			Set Step On
+			Return .F.
+		Else
+* success
+			Wait Window 'test model ' + lcModel + ', deleteDoc delete -> passed' Timeout 1
+			Select result
+			Return .T.
+		Endif
+
+
+	Endwith
+
+
+Function test_of_row_save_model
+
+	With oDb
+		lcAlias = 'saveDoc'
+* parameters
+* cursor v_tunnus -> json
+
+		Select v_toograf
+		lcJson = '{"id":' + Alltrim(Str(v_toograf.Id)) + ',"data":'+ oDb.getJson() + '}'
+		lError = oDb.readFromModel(lcModel, 'saveDoc', 'lcJson,gUserid,gRekv', 'v_toograf_id')
+
+		If 	!lError And Used('v_toograf_id') And Reccount('v_toograf_id') > 0 And !Empty(v_toograf_id.Id)
+			Messagebox('test failed',0 + 48,'Error')
+			Set Step On
+			Return .F.
+		Else
+* success
+			Wait Window 'test model ' + lcModel + ', saveDoc new -> passed' + Str(v_toograf_id.Id) Timeout 1
+			Select v_toograf_id
+			tnId = v_toograf_id.Id
+			Use In v_toograf_id
+			Return .T.
+		Endif
+
+
+	Endwith
+
+
+
+Function test_of_row_new_model
+	tnId = 0
+	Dimension aCheckedFields(4)
+	aCheckedFields[1] = 'TUND'
+	aCheckedFields[2] = 'LEPINGID'
+	aCheckedFields[3] = 'KUU'
+	aCheckedFields[4] = 'AASTA'
+
+	With oDb
+		lcAlias = 'row'
+* parameters
+		lError = oDb.readFromModel(lcModel, 'row', 'tnId, guserid', 'v_toograf')
+
+		If 	!lError And Used('v_toograf') And Reccount('v_toograf') > 0
+			Messagebox('test failed',0 + 48,'Error')
+			Return .F.
+		Endif
+
+
+		lError = check_fields_in_cursor(@aCheckedFields, 'v_toograf')
+
+
+		If (lError)
+* success
+			Wait Window 'test model ' + lcModel + ', row new -> passed' Timeout 1
+		Endif
+		Return lError
+
+	Endwith
+
+
+Function test_of_row_model
+
+	With oDb
+		lcAlias = 'row'
+* parameters
+		lError = oDb.readFromModel(lcModel, 'row', 'tnId, guserid', 'v_toograf')
+
+		If 	!lError And Used('v_toograf') And Reccount('v_toograf') > 0 And !Empty(v_toograf.Id)
+			Messagebox('test failed',0 + 48,'Error')
+			Return .F.
+		Endif
+
+		If (lError)
+* success
+			Wait Window 'test model ' + lcModel + ', row -> passed' Timeout 1
+			Return .T.
+		Endif
+
+
+	Endwith
+
+
+Endfunc
+
+Function test_of_grid_model
+	With oDb
+		Local lcWhere
+		lcWhere = "isik ilike '%'"
+		lcAlias = 'curToograf'
+* parameters
+		lError = oDb.readFromModel(lcModel, 'curToograf', 'gRekv, guserid', 'tmp', lcWhere)
+
+		If 	!lError Or !Used('tmp') And Reccount('tmp') > 0
+			Messagebox('test failed',0 + 48,'Error')
+			Return .F.
+		Else
+* success
+			Wait Window 'test model ' + lcModel + ', curToograf -> passed' Timeout 3
+			Use In tmp
+			Return .T.
+		Endif
+	Endwith
+Endfunc
+
+
+
+Function check_fields_in_cursor(aCheckedFields, tcAlias)
+*	Parameters 	aCheckedFields, tcAlias
+
+	lnFields = Afields(laFields,tcAlias)
+
+	For i = 1 To Alen(aCheckedFields)
+		lnElement = Ascan(laFields, aCheckedFields[i])
+
+		If lnElement = 0
+			Messagebox('test failed, puudub field ' + aCheckedFields[i],0 + 48,'Error')
+			lError = .F.
+			Exit
+		Endif
+	Endfor
+
+	Return lError
+Endfunc

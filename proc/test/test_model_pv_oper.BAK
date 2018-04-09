@@ -1,0 +1,642 @@
+Set Classlib To classes\Classlib
+
+*LOCAL oDb, gnHandle
+gVersia = 'PG'
+oDb = Createobject('db')
+
+gRekv = 1
+guserid = 1
+tnId = 0
+cursorName = 'v_pv_oper'
+
+gnHandle = SQLConnect('localPg', 'vlad','123')
+If gnHandle < 0
+	Messagebox('Connection error',0+48,'Error')
+	Return .T.
+Endif
+
+lcModel = 'pv\pv_oper'
+
+
+If !Used('comPvGruppRemote')
+	lError = oDb.readFromModel('libs\libraries\pv_kaart', 'selectAsLibs', 'gRekv, guserid', 'comPvKaartRemote')
+	Select comPvKaartRemote
+	Go Bottom
+Endif
+
+If !Used('comNomRemote')
+	lError = oDb.readFromModel('libs\libraries\nomenclature', 'selectAsLibs', 'gRekv, guserid', 'comnomRemote')
+	Select comnomRemote
+	Go Bottom
+Endif
+
+* checkPaigutus
+lnPaigutusId = get_po_noms('PAIGUTUS')
+If Empty(lnPaigutusId)
+	Messagebox('Paigutus oper ei leidnid',0 + 48,'Viga')
+	Set Step On
+	Return .F.
+Endif
+
+* checkKulum
+lnKulumId = get_po_noms('KULUM')
+If Empty(lnKulumId)
+	Messagebox('Kulum oper ei leidnid',0 + 48,'Viga')
+	Set Step On
+	Return .F.
+Endif
+
+* checkParandus
+lnParandusId = get_po_noms('PARANDUS')
+If Empty(lnParandusId)
+	Messagebox('Parandus oper ei leidnid',0 + 48,'Viga')
+	Set Step On
+	Return .F.
+Endif
+
+* checkMahakandmine
+lnMahakandmineId = get_po_noms('MAHAKANDMINE')
+If Empty(lnMahakandmineId)
+	Messagebox('Mahakandmine oper ei leidnid',0 + 48,'Viga')
+	Set Step On
+	Return .F.
+Endif
+
+* checkUmberhindamine
+lnUmberhindamineId = get_po_noms('UMBERHINDAMINE')
+If Empty(lnMahakandmineId)
+	Messagebox('Mahakandmine oper ei leidnid',0 + 48,'Viga')
+	Set Step On
+	Return .F.
+Endif
+
+
+Wait Window 'test model ' + lcModel  Timeout 1
+
+lsuccess = test_of_grid_model()
+
+If lsuccess
+	lsuccess = test_of_row_new_model()
+Endif
+
+If lsuccess
+	lsuccess = test_of_row_validate_model()
+Endif
+
+If lsuccess
+	lsuccess = test_of_row_save_model()
+Endif
+
+If lsuccess
+	lsuccess = test_of_generateJournal_model()
+Endif
+
+
+If lsuccess
+	lsuccess = test_of_row_model()
+Endif
+
+If lsuccess
+	lsuccess = test_of_row_delete_model()
+Endif
+
+If lsuccess
+*SET STEP ON
+	lsuccess = test_of_real_card()
+Endif
+
+=SQLDISCONNECT(gnHandle)
+
+Return lsuccess
+
+FUNCTION test_of_generateJournal_model
+	* test for succesfull execution
+	IF lError 
+		lError = oDb.readFromModel(lcModel, 'generateJournal', 'guserid, tnId', 'result')
+
+	ENDIF
+	
+	If 	!lError Or !Used('result') Or Reccount('result') = 0 Or  result.result < 1
+		Messagebox('test failed',0 + 48,'Error')
+		SET STEP ON 
+	ENDIF
+	
+	IF lError
+	* success
+		Wait Window 'test model ' + lcModel + ', generateJournal -> passed' Timeout 1
+	Endif
+	Return	lError
+	
+ENDFUNC
+
+
+
+
+Function test_of_real_card
+	If !Used('comPvGruppRemote')
+		lError = oDb.readFromModel('libs\libraries\pv_grupp', 'selectAsLibs', 'gRekv, guserid', 'comPvGruppRemote')
+		Select comPvGruppRemote
+		Go Bottom
+	Endif
+
+	Wait Window 'create PV kaart ..' Nowait
+* create PV kaart
+	tnId = 0
+	lError = oDb.readFromModel('libs\libraries\pv_kaart', 'row', 'tnId, guserid', 'v_pv_kaart')
+	If !lError
+		Set Step On
+		Return .F.
+	Endif
+
+
+
+	Replace Id With 0, rekvid With gRekv, kood With 'RCT_' + Left(Alltrim(Str(Rand() * 1000000)),14),;
+		nimetus With 'real card test PV_KAART',;
+		gruppid With comPvGruppRemote.Id,;
+		kulum With 20,;
+		soetmaks With 1000,;
+		library With 'POHIVARA'
+
+	Select v_pv_kaart
+	lcJson = '{"id":' + Alltrim(Str(Id)) + ',"data":'+ oDb.getJson() + '}'
+	lError = oDb.readFromModel('libs\libraries\pv_kaart', 'saveDoc', 'lcJson,gUserid,gRekv', 'v_pv_kaart_id')
+
+	If !lError Or !Used('v_pv_kaart_id') Or v_pv_kaart_id.Id < 1
+		Set Step On
+		Return .F.
+	Endif
+
+	Replace v_pv_kaart.Id With v_pv_kaart_id.Id In v_pv_kaart
+
+* paigutus
+	tnId = 0
+	lError = oDb.readFromModel(lcModel, 'row', 'tnId, guserid', 'v_pv_oper')
+	If !lError
+		Messagebox('test failed',0 + 48,'Error')
+		Set Step On
+		Return .F.
+	Endif
+
+	Replace Id With 0, rekvid With gRekv, ;
+		liik With 1,;
+		nomid With lnPaigutusId ,;
+		pv_kaart_id With v_pv_kaart.Id,;
+		kpv With Date(),;
+		summa With 100,;
+		konto With '133' In v_pv_oper
+
+	Select v_pv_oper
+	lcJson = '{"id":' + Alltrim(Str(Id)) + ',"data":'+ oDb.getJson() + '}'
+	lError = oDb.readFromModel(lcModel, 'saveDoc', 'lcJson,gUserid,gRekv', 'v_pv_oper_id')
+
+	If !lError Or !Used('v_pv_oper_id') Or v_pv_oper_id.Id < 1
+		Messagebox('test failed',0 + 48,'Error')
+		Set Step On
+		Return .F.
+	Endif
+	Use In v_pv_oper_id
+	Use In v_pv_oper
+* kulum
+* kulum summa
+	tnId = v_pv_kaart.Id
+	lError = oDb.readFromModel(lcModel, 'arvestaKulum', 'tnId, guserid', 'v_pv_oper_kulum')
+	If !lError Or !Used('v_pv_oper_kulum') Or v_pv_oper_kulum.result <> 1 Or v_pv_oper_kulum.Summa <> Round((100 * 0.20) / 12,2)
+		Messagebox('test failed',0 + 48,'Error')
+		Set Step On
+		Return .F.
+
+	Endif
+
+* operatsioon
+	tnId = 0
+	lError = oDb.readFromModel(lcModel, 'row', 'tnId, guserid', 'v_pv_oper')
+	If !lError
+		Messagebox('test failed',0 + 48,'Error')
+		Set Step On
+		Return .F.
+	Endif
+
+	Replace Id With 0, rekvid With gRekv, ;
+		liik With 2,;
+		nomid With lnKulumId ,;
+		pv_kaart_id With v_pv_kaart.Id,;
+		kpv With Date(),;
+		summa With v_pv_oper_kulum.Summa,;
+		konto With '233' In v_pv_oper
+
+	Select v_pv_oper
+	lcJson = '{"id":' + Alltrim(Str(Id)) + ',"data":'+ oDb.getJson() + '}'
+	lError = oDb.readFromModel(lcModel, 'saveDoc', 'lcJson,gUserid,gRekv', 'v_pv_oper_id')
+
+	If !lError Or !Used('v_pv_oper_id') Or v_pv_oper_id.Id < 1
+		Messagebox('test failed',0 + 48,'Error')
+		Set Step On
+		Return .F.
+	Endif
+	Use In v_pv_oper_id
+	Use In v_pv_oper
+	Use In v_pv_oper_kulum
+
+* parandus
+
+	tnId = 0
+	lError = oDb.readFromModel(lcModel, 'row', 'tnId, guserid', 'v_pv_oper')
+	If !lError
+		Messagebox('test failed',0 + 48,'Error')
+		Set Step On
+		Return .F.
+	Endif
+
+	Replace Id With 0, rekvid With gRekv, ;
+		liik With 3,;
+		nomid With lnParandusId ,;
+		pv_kaart_id With v_pv_kaart.Id,;
+		kpv With Date(),;
+		summa With 120,;
+		konto With '333' In v_pv_oper
+
+	Select v_pv_oper
+	lcJson = '{"id":' + Alltrim(Str(Id)) + ',"data":'+ oDb.getJson() + '}'
+	lError = oDb.readFromModel(lcModel, 'saveDoc', 'lcJson,gUserid,gRekv', 'v_pv_oper_id')
+
+	If !lError Or !Used('v_pv_oper_id') Or v_pv_oper_id.Id < 1
+		Messagebox('test failed',0 + 48,'Error')
+		Set Step On
+		Return .F.
+	Endif
+
+* will check parHind = 100 + 120 = 220
+	tnId = v_pv_kaart.Id
+	lError = oDb.readFromModel('libs\libraries\pv_kaart', 'row', 'tnId, guserid', 'v_pv_kaart')
+	If !lError Or v_pv_kaart.parhind <> 220
+		Messagebox('test failed, parHind is failed',0 + 48,'Error')
+		Set Step On
+		Return .F.
+	Endif
+
+
+	Use In v_pv_oper_id
+	Use In v_pv_oper
+
+* umberhindamine
+
+	tnId = 0
+	lError = oDb.readFromModel(lcModel, 'row', 'tnId, guserid', 'v_pv_oper')
+	If !lError
+		Messagebox('test failed',0 + 48,'Error')
+		Set Step On
+		Return .F.
+	Endif
+
+	Replace Id With 0, rekvid With gRekv, ;
+		liik With 5,;
+		nomid With lnUmberhindamineId ,;
+		pv_kaart_id With v_pv_kaart.Id,;
+		kpv With Date(),;
+		summa With 520,;
+		konto With '533' In v_pv_oper
+
+	Select v_pv_oper
+	lcJson = '{"id":' + Alltrim(Str(Id)) + ',"data":'+ oDb.getJson() + '}'
+	lError = oDb.readFromModel(lcModel, 'saveDoc', 'lcJson,gUserid,gRekv', 'v_pv_oper_id')
+
+	If !lError Or !Used('v_pv_oper_id') Or v_pv_oper_id.Id < 1
+		Messagebox('test failed',0 + 48,'Error')
+		Set Step On
+		Return .F.
+	Endif
+
+* will check parHind = 520
+	tnId = v_pv_kaart.Id
+	lError = oDb.readFromModel('libs\libraries\pv_kaart', 'row', 'tnId, guserid', 'v_pv_kaart')
+
+	If !lError Or v_pv_kaart.parhind <> 520
+		Messagebox('test failed, parHind is failed',0 + 48,'Error')
+		Set Step On
+		Return .F.
+	Endif
+
+
+	Use In v_pv_oper_id
+	Use In v_pv_oper
+
+
+* mahakandmine
+
+* open pv_kaart and get parhind
+	tnId = v_pv_kaart.Id
+	lError = oDb.readFromModel('libs\libraries\pv_kaart', 'row', 'tnId, guserid', 'v_pv_kaart')
+
+* new oper
+	tnId = 0
+	lError = oDb.readFromModel(lcModel, 'row', 'tnId, guserid', 'v_pv_oper')
+	If !lError
+		Messagebox('test failed',0 + 48,'Error')
+		Set Step On
+		Return .F.
+	Endif
+
+	Replace Id With 0, rekvid With gRekv, ;
+		liik With 4,;
+		nomid With lnMahakandmineId ,;
+		pv_kaart_id With v_pv_kaart.Id,;
+		kpv With Date(),;
+		summa With v_pv_kaart.parhind,;
+		konto With '433' In v_pv_oper
+
+	Select v_pv_oper
+	lcJson = '{"id":' + Alltrim(Str(Id)) + ',"data":'+ oDb.getJson() + '}'
+	lError = oDb.readFromModel(lcModel, 'saveDoc', 'lcJson,gUserid,gRekv', 'v_pv_oper_id')
+
+	If !lError Or !Used('v_pv_oper_id') Or v_pv_oper_id.Id < 1
+		Messagebox('test failed',0 + 48,'Error')
+		Set Step On
+		Return .F.
+	Endif
+
+* check PV status, should be = 2
+	tnId = v_pv_kaart.Id
+	lError = oDb.readFromModel('libs\libraries\pv_kaart', 'row', 'tnId, guserid', 'v_pv_kaart')
+
+	If !lError Or !Used('v_pv_kaart') Or v_pv_kaart.Status <> 2
+
+		Messagebox('test failed',0 + 48,'Error')
+		Set Step On
+		Return .F.
+	Endif
+
+* delete mahakandmine
+	tnId = v_pv_oper_id.Id
+	lError = oDb.readFromModel(lcModel, 'deleteDoc', 'guserid, tnId', 'v_pv_delete')
+
+	If !lError Or !Used('v_pv_delete') Or v_pv_delete.result <> 1
+		Messagebox('test failed',0 + 48,'Error')
+		Set Step On
+		Return .F.
+	Endif
+
+*!*	* check PV kaart status. Should be 1
+*!*		tnId = v_pv_kaart.Id
+*!*		lError = oDb.readFromModel('libs\libraries\pv_kaart', 'row', 'tnId, guserid', 'v_pv_kaart')
+
+*!*		If !lError Or !Used('v_pv_kaart') Or v_pv_kaart.Status <> 1
+
+*!*			Messagebox('test failed',0 + 48,'Error')
+*!*			Set Step On
+*!*			Return .F.
+*!*		Endif
+
+	Use In v_pv_oper_id
+	Use In v_pv_oper
+
+Endfunc
+
+
+
+Function test_of_row_validate_model()
+	lcAlias = 'validate'
+	cursorName = 'v_pv_oper'
+	Select v_model
+	Locate For !Empty(Validate)
+
+	If Eof()
+* not found
+		Return .T.
+	Endif
+
+	lcValidate = Alltrim(v_model.Validate)
+
+	lcNotValidFields = oDb.Validate(lcValidate, cursorName)
+* expect LIBRARY
+
+	If Type('lcNotValidFields') = 'C'
+		Select (cursorName)
+		Replace Id With 0, rekvid With gRekv, ;
+			liik With 1,;
+			nomid With lnPaigutusId ,;
+			pv_kaart_id With comPvKaartRemote.Id,;
+			kpv With Date(),;
+			summa With 100,;
+			konto With '133' In v_pv_oper
+	Endif
+
+	lcNotValidFields = oDb.Validate(lcValidate, cursorName)
+* expect empty
+	If Empty(lcNotValidFields)
+		Wait Window 'test model ' + lcModel + ', ' + lcAlias + ' validate -> passed' Timeout 1
+		Return .T.
+	Else
+		Messagebox('test failed',0 + 48,'Error')
+		Set Step On
+		Return .F.
+
+	Endif
+
+Endfunc
+
+
+Function test_of_row_delete_model
+
+	With oDb
+		lcAlias = 'deleteDoc'
+* parameters
+
+		lError = oDb.readFromModel(lcModel, lcAlias, 'gUserid,tnId','result')
+
+		If 	!lError Or !Used('result') Or !Isnull(result.error_code)
+			Messagebox('test failed',0 + 48,'Error')
+			Set Step On
+			Return .F.
+		Else
+* success
+			Wait Window 'test model ' + lcModel + ', ' + lcAlias + ' delete -> passed' Timeout 1
+			Select result
+			Return .T.
+		Endif
+
+
+	Endwith
+
+
+Function test_of_row_save_model
+	With oDb
+* parameters
+		Select(cursorName)
+		lcJson = '{"id":' + Alltrim(Str(Id)) + ',"data":'+ oDb.getJson() + '}'
+		lError = oDb.readFromModel(lcModel, 'saveDoc', 'lcJson,gUserid,gRekv', cursorName)
+
+
+		Select(cursorName)
+		If 	!lError Or !Used(cursorName) Or  Reccount(cursorName) < 1 Or Id = 0
+			Messagebox('test failed',0 + 48,'Error')
+			Set Step On
+			Return .F.
+		Else
+* success
+			Wait Window 'test model ' + lcModel + ', saveDoc -> passed' Timeout 1
+			Select(cursorName)
+			tnId = Id
+			Return .T.
+		Endif
+
+
+	Endwith
+
+
+
+Function test_of_row_new_model
+	tnId = 0
+	cursorName = 'v_pv_oper'
+	With oDb
+		lcAlias = 'row'
+
+		lError = oDb.readFromModel(lcModel, 'row', 'tnId, guserid', cursorName)
+		If !lError
+			Messagebox('test failed',0 + 48,'Error')
+			Set Step On
+			Return .F.
+		Endif
+
+
+		If lError
+* success
+			Wait Window 'test model ' + lcModel + ', row new -> passed' Timeout 1
+		Endif
+
+		Return lError
+	Endwith
+
+
+Function test_of_row_model
+	Dimension aCheckedFields(6)
+	aCheckedFields[1] = 'NOMID'
+	aCheckedFields[2] = 'SUMMA'
+	aCheckedFields[3] = 'PV_KAART_ID'
+	aCheckedFields[4] = 'KPV'
+	aCheckedFields[5] = 'KONTO'
+	aCheckedFields[6] = 'MUUD'
+
+	With oDb
+* parameters
+		lError = oDb.readFromModel(lcModel, 'row', 'tnId, guserid', cursorName)
+
+		If 	!lError or !Used(cursorName) OR Reccount(cursorName) = 0
+			Messagebox('test failed',0 + 48,'Error')
+			Set Step On
+			Return .F.
+		Endif
+
+		lError = check_fields_in_cursor(@aCheckedFields, cursorName)
+
+* success
+
+
+		If lError
+			Wait Window 'test model ' + lcModel + ', row -> passed' Timeout 1
+		Endif
+
+		Return lError
+	Endwith
+
+
+Endfunc
+
+Function test_of_grid_model
+	Local cursorName
+	cursorName  = 'tmpPohivara'
+
+	Dimension aCheckedFields(1)
+	aCheckedFields[1] = 'ID'
+
+	With oDb
+		Local lcWhere
+		lcWhere = "kood ilike 'test%'"
+* parameters
+		lError = oDb.readFromModel(lcModel, 'curPVoper', 'gRekv, guserid', cursorName, lcWhere)
+
+		If 	!lError Or !Used(cursorName)
+			Messagebox('test failed',0 + 48,'Error')
+		Endif
+
+		lnFields = Afields(laFields,cursorName)
+
+		For i = 1 To Alen(aCheckedFields)
+			lnElement = Ascan(laFields, aCheckedFields[i])
+
+			If lnElement = 0
+				Messagebox('test failed, puudub field ' + aCheckedFields[i],0 + 48,'Error')
+				lError = .F.
+				Exit
+			Endif
+		Endfor
+
+
+		If lError
+* success
+			Wait Window 'test model ' + lcModel + ', curPohivara -> passed' Timeout 3
+			Use In (cursorName)
+			Return .T.
+		Endif
+	Endwith
+Endfunc
+
+
+
+Function check_fields_in_cursor(aCheckedFields, tcAlias)
+*	Parameters 	aCheckedFields, tcAlias
+
+	lnFields = Afields(laFields,tcAlias)
+
+	For i = 1 To Alen(aCheckedFields)
+		lnElement = Ascan(laFields, aCheckedFields[i])
+
+		If lnElement = 0
+			Messagebox('test failed, puudub field ' + aCheckedFields[i],0 + 48,'Error')
+			lError = .F.
+			Exit
+		Endif
+	Endfor
+
+	Return lError
+Endfunc
+
+
+Function get_po_noms(tcDok)
+	Local returnId
+	Select comnomRemote
+	Locate For dok = tcDok
+	If !Found()
+* create
+		tnId = 0
+		lError = oDb.readFromModel('libs\libraries\nomenclature', 'row', 'tnId, guserid', 'v_nomenklatuur')
+		Replace kood With tcDok, nimetus With 'PV' + tcDok, dok With tcDok In v_nomenklatuur
+		If !lError
+			Set Step On
+		Endif
+
+
+* save
+		Select v_nomenklatuur
+		lcJson = '{"id":' + Alltrim(Str(0)) + ',"data":'+ oDb.getJson() + '}'
+		lError = oDb.readFromModel('libs\libraries\nomenclature', 'saveDoc', 'lcJson,gUserid,gRekv', 'v_nomenklatuur')
+		If !lError
+			Set Step On
+		Endif
+
+* reload
+		lError = oDb.readFromModel('libs\libraries\nomenclature', 'selectAsLibs', 'gRekv, guserid', 'comnomRemote')
+		If !lError
+			Set Step On
+		Endif
+
+
+* find
+		Select comnomRemote
+		Locate For Id = v_nomenklatuur.Id
+
+		Use In v_nomenklatuur
+	Endif
+	Return comnomRemote.Id
+
+Endfunc
+

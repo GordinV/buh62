@@ -1,0 +1,103 @@
+<?xml version = "1.0" encoding="Windows-1252" standalone="yes"?>
+<VFPData>
+  <grid>
+    <sql>select * 
+            from cur_pohivara l
+            where (l.rekvId = $1 or l.rekvid is null)</sql>
+    <alias>curPohivara</alias>
+  </grid>
+  <select>
+    <sql>select l.id, l.rekvid, l.kood, l.nimetus, l.muud, l.status, l.library, 
+                $2::integer as userid, 'POHIVARA' as doc_type_id,
+                (l.properties::jsonb -&gt;&gt; 'gruppid')::integer as gruppid,
+                (l.properties::jsonb -&gt;&gt; 'konto')::varchar(20) as konto,
+                coalesce((l.properties::jsonb -&gt;&gt; 'soetkpv')::date,now()::date) as soetkpv,
+                (l.properties::jsonb -&gt;&gt; 'kulum')::numeric(12,4) as kulum,
+                (l.properties::jsonb -&gt;&gt; 'algkulum')::numeric(12,4) as algkulum,
+                (l.properties::jsonb -&gt;&gt; 'soetmaks')::numeric(12,2) as soetmaks,
+                (l.properties::jsonb -&gt;&gt; 'parhind')::numeric(12,2) as parhind,
+                (l.properties::jsonb -&gt;&gt; 'jaak')::numeric(12,2) as jaak,
+                (l.properties::jsonb -&gt;&gt; 'vastisikid')::integer as vastIsikId,
+                (l.properties::jsonb -&gt;&gt; 'selg')::text as selg,
+                (l.properties::jsonb -&gt;&gt; 'rentnik')::text as rentnik,
+                (l.properties::jsonb -&gt;&gt; 'liik')::text as liik,
+                (l.properties::jsonb -&gt;&gt; 'mahakantud')::date as mahakantud,
+                coalesce(v.valuuta,'EUR')::varchar(20) as valuuta,
+                coalesce(v.kuurs,1)::numeric(12,2) as kuurs                
+                from libs.library l 
+                left outer join docs.dokvaluuta1 v on (l.id = v.dokid and v.dokliik = 18)
+                where l.id = $1</sql>
+    <sqlAsNew>SELECT
+                      $1 :: INTEGER       AS id,
+                      $2 :: INTEGER       AS userid,
+                      'POHIVARA'         AS doc_type_id,
+                      NULL :: TEXT       AS kood,
+                      NULL :: INTEGER    AS rekvid,
+                      NULL :: TEXT       AS nimetus,
+                      'POHIVARA' :: TEXT AS library,
+                      0 :: INTEGER       AS status,
+                      NULL :: TEXT       AS muud,
+                    NULL:: INTEGER AS gruppid,
+                    NULL :: VARCHAR (20) AS konto,
+                    now() ::date AS soetkpv,
+                    0:: NUMERIC (12, 4) AS kulum,
+                    0:: NUMERIC (12, 2) AS algkulum,
+                    0:: NUMERIC (12, 2) AS soetmaks,
+                    0:: NUMERIC (12, 2) AS parhind,
+                    0:: NUMERIC (12, 2) AS jaak,
+                    NULL :: INTEGER AS vastisikid,
+                    NULL :: TEXT AS selg,
+                    'põhivara' :: varchar(100) AS liik,
+                    null::date as mahakantud,
+                    'EUR'::varchar(20) as valuuta,
+                    1::numeric(12,2) as kuurs,
+                    NULL :: TEXT AS rentnik</sqlAsNew>
+    <query />
+    <multiple>false</multiple>
+    <alias>row</alias>
+  </select>
+  <select>
+    <sql>select $2 :: INTEGER       AS userid, 
+            $1 as pv_id,
+            po.*
+            from cur_pv_oper po</sql>
+    <multiple>true</multiple>
+    <alias>details</alias>
+  </select>
+  <selectAsLibs>
+    <sql>select * from cur_pohivara    l
+        where  (l.rekvId = $1 or l.rekvid is null)</sql>
+    <alias>selectAsLibs</alias>
+  </selectAsLibs>
+  <saveDoc>
+    <sql>select libs.sp_salvesta_pv_kaart($1, $2, $3) as id</sql>
+    <alias>saveDoc</alias>
+  </saveDoc>
+  <deleteDoc>
+    <sql>select error_code, result, error_message from libs.sp_delete_library($1::integer, $2::integer)</sql>
+    <alias>deleteDoc</alias>
+  </deleteDoc>
+  <requiredFields>
+    <validate>kood,nimetus,library,gruppid</validate>
+  </requiredFields>
+  <executeSql>
+    <sql></sql>
+    <alias></alias>
+  </executeSql>
+  <executeCommand>
+    <sql></sql>
+    <alias></alias>
+  </executeCommand>
+  <register>
+    <sql></sql>
+    <alias></alias>
+  </register>
+  <endProcess>
+    <sql />
+    <alias />
+  </endProcess>
+  <generateJournal>
+    <sql />
+    <alias />
+  </generateJournal>
+</VFPData>
