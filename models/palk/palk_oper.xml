@@ -47,8 +47,8 @@
                       p.doklausid                                            AS dokpropid,
                       coalesce(jid.number, 0) :: INTEGER                     AS lausend,
                       t.parentid,
-                      (pl.properties::jsonb-&gt;&gt;'liik')::integer as liik
-                                             
+                      (pl.properties::jsonb-&gt;&gt;'liik')::integer as liik,
+                      (pl.properties::jsonb-&gt;&gt;'asutusest')::integer as asutusest                                             
                     FROM docs.doc d
                       INNER JOIN palk.palk_oper p ON p.parentId = d.id
                       INNER JOIN palk.tooleping t ON t.id = p.lepingid
@@ -141,8 +141,8 @@
     <alias></alias>
   </executeSql>
   <executeCommand>
-    <sql></sql>
-    <alias></alias>
+    <sql>select * from sp_execute_task($1::integer, $2::JSON, $3::TEXT )</sql>
+    <alias>executeTask</alias>
   </executeCommand>
   <register>
     <sql></sql>
