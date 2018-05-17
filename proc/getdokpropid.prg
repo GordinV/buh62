@@ -2,7 +2,6 @@ LPARAMETER tcTyyp, tcModel
 LOCAL lnId
 lnId = 0
 
-
 IF !USED('comDokRemote') OR RECCOUNT('comDokRemote') = 0
 	IF EMPTY(tcModel)
 		oDb.use('comDokRemote')

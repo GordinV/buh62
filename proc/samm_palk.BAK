@@ -1,7 +1,5 @@
 Parameter tnIsikid
 
-SET TEXTMERGE ON
-
 Local lnResult, leRror
 leRror = .T.
 If  .Not. Used('curSource')
@@ -10,21 +8,21 @@ Endif
 If  .Not. Used('curValitud')
 	Create Cursor curValitud (Id Int, koOd C (20), niMetus C (120))
 Endif
-Create Cursor curResult (Id Int, osAkonnaid Int, paLklibid Int, pohikoht int)
+Create Cursor curResult (Id Int, osAkonnaid Int, paLklibid Int)
 lnStep = 1
 If Used('v_dokprop')
 	Use In v_dokprop
-Endif
-tnId = geTdokpropid('PALK')
-If  .Not. Used('v_dokprop')
-	odB.Use('v_dokprop','v_dokprop')
 ENDIF
+dokPropId = getdokpropId('PALK_OPER', 'libs\libraries\dokprops')
 
+=fnc_load_tootajad();
+
+l_success = .f.
 
 Do While lnStep>0
 	If  .Not. Empty(tnIsikid)
-		Insert Into curResult (osAkonnaid, pohikoht) ;
-			SELECT OSAKONDID, pohikoht From comTootajad Where Id = tnIsikid ;
+		Insert Into curResult (osAkonnaid) ;
+			SELECT OSAKONDID From comTootajad Where Id = tnIsikid ;
 			AND OSAKONDID >= Iif(fltrPalkOper.OSAKONDID > 0,fltrPalkOper.OSAKONDID,0);
 			AND OSAKONDID <= Iif(fltrPalkOper.OSAKONDID > 0,fltrPalkOper.OSAKONDID,999999999)
 
@@ -32,6 +30,7 @@ Do While lnStep>0
 		lnStep = 3
 		tnIsikid = 0
 	Endif
+
 	Do Case
 		Case lnStep=1
 			Do geT_osakonna_list
@@ -40,7 +39,8 @@ Do While lnStep>0
 		Case lnStep=3
 			Do geT_kood_list
 		Case lnStep>3
-			Do arVutus
+			l_success = arVutus()
+			lnStep = 0
 	Endcase
 Enddo
 If Used('curSource')
@@ -55,166 +55,62 @@ Endif
 If Used('tmpArvestaMinSots')
 	Use In tmpArvestaMinSots
 Endif
-
+RETURN l_success
 Endproc
 *
-Procedure arVutus
+function arVutus
 	Local leRror, lcOsakonnad
 	leRror = .T.
-	lcOsakonnad = ''
-	
-	With odB
-		Select Distinct paLklibid From curResult Where  Not  ;
-			EMPTY(curResult.paLklibid) Into Cursor ValPalkLib
-		Select Distinct Id From curResult Where  Not Empty(curResult.Id)  ;
-			INTO Cursor recalc1
-			
-		Select curResult
-		Scan For osAkonnaid > 0
-			If Len(lcOsakonnad) > 0
-				lcOsakonnad = lcOsakonnad + ','
-			Endif
-			lcOsakonnad = lcOsakonnad + Str(curResult.osAkonnaid)
-		Endscan
-		If Len(lcOsakonnad) > 0
-			lcOsakonnad = '(' + lcOsakonnad + ')'
-		Endif
 
-		Select recalc1
-		Scan
-			Select coMasutusremote
-			Seek recalc1.Id
-			Wait Window 'Arvestan: '+ Rtrim(coMasutusremote.niMetus) Nowait
+* parameterid
+	l_json = ''
+	l_lib_ids = ''
+	l_isik_ids = ''
+	l_osakond_ids = ''
 
-			tnId = recalc1.Id
+* lib_ids
+	Select Distinct paLklibid As Id From curResult Where  Not  ;
+		EMPTY(curResult.paLklibid) Into Cursor ValPalkLib
 
-*!*				If  .Not. Used('v_palk_kaart')
-*!*					.Use('v_palk_kaart')
-*!*				Else
-*!*					.dbReq('v_palk_kaart',gnHandle,'v_palk_kaart')
-*!*				Endif
-			
-			TEXT TO lcString NOSHOW
-				select pk.id, pk.parentid, pk.lepingid, pk.libid, pk.summa
-							 FROM Library l
-							 inner join Palk_kaart  pk on pk.libId = l.id
-							 inner join   Palk_lib pl on pl.parentId = l.id
-							 inner join tooleping t on pk.lepingId = t.id
-							 left outer join dokvaluuta1 on (pk.id = dokvaluuta1.dokid and dokvaluuta1.dokliik = 20)
-							 where pk.parentid = ?tnId
-							 and t.rekvid = ?gRekv
-							 and pk.status = 1
-							 and not EMPTY(pk.summa)
-							 and t.algab <= ?gdKpv
-							 and (t.lopp is null or t.lopp >= ?gdKpv)
-							 and (<<lcOsakonnad>>::text = ''  or t.osakondid  in <<lcOsakonnad>>)
-							 order by t.pohikoht desc, liik, case when empty(pl.tululiik) then 99::text else tululiik end, Pk.percent_ desc, pk.summa desc
-			ENDTEXT
-			
+	Select ValPalkLib
+	Scan
+		l_lib_ids = l_lib_ids + Iif(Len(l_lib_ids)> 0,',','') + Alltrim(Str(ValPalkLib.Id))
+	Endscan
+	Use In 	ValPalkLib
 
-			odB.execsql(lcString, 'qryPalkKaart')
-			Select qryPalkKaart
-			GO top
-			
-			IF tmpArvestaMinSots.kustuta = 1 
-				lcDate = 'date(' + STR(YEAR(gdKpv),4)+','+STR(MONTH(gdKpv),2)+ ','+ STR(DAY(gdKpv),2)+ ')'
-				* kustuta eelmine arvestus
-				TEXT TO lcString NOSHOW
-					DELETE FROM palk_oper WHERE lepingid in (select id FROM tooleping WHERE rekvid = ?gRekv AND parentid = ?tnId) AND kpv = <<lcDate>>
-				ENDTEXT
-				lError = odB.execsql(lcString)
-				IF EMPTY(lError) 
-					set STEP on 
-				ENDIF
-				
-			ENDIF
-			
+* osakond_ids
+	Select Distinct Id From curResult Where  Not Empty(curResult.Id)  ;
+		INTO Cursor recalc1
 
-			Select qryPalkKaart
-			Scan
-				Select ValPalkLib
-				Locate For ValPalkLib.paLklibid=qryPalkKaart.liBid
-				If Found()
-					leRror = edIt_oper(recalc1.Id)
-				Endif
-			Endscan
-			If !leRror
-				Exit
-			Endif
-		Endscan
-		If !leRror
-			If _vfp.StartMode = 0
-				Set Step On
-			Endif
-			Messagebox('Viga', 'Kontrol')
-		Endif
-		lnStep = 0
-	Endwith
-Endproc
-*
-Procedure edIt_oper
-	Parameter tnId
-	Local leRror, l_arvesta_min_sots, lcString
-	tnId = recalc1.Id
-	If Empty(gdKpv)
-		gdKpv = Date()
-		Do Form period
-	Endif
+	Select curResult
+	Scan For osAkonnaid > 0
+		l_osakond_ids = l_osakond_ids + Iif(Len(l_osakond_ids)>0,',','') +  Alltrim(Str(curResult.osAkonnaid))
+	Endscan
 
-	l_arvesta_min_sots = 0
+* isik_ids
+	Select recalc1
+	Scan
+		l_isik_ids = l_isik_ids + Iif(Len(l_isik_ids)>0,',','') +  Alltrim(Str(recalc1.Id))
+	Endscan
 
-	If Used('tmpArvestaMinSots')
-		l_arvesta_min_sots = tmpArvestaMinSots.arvesta
-	Endif
-
-	lcString = Str(qryPalkKaart.lepingId)+","+Str(qryPalkKaart.liBid)+;
-		","+Str(v_dokprop.Id)+", DATE("+;
-		STR(Year(gdKpv),4)+","+Str(Month(gdKpv),2)+","+Str(Day(gdKpv),2)+")"+",0,"+ Alltrim(Str(l_arvesta_min_sots))
-
-	leRror = odB.Exec("gen_palkoper ",lcString,'qryOper')
-	IF !lerror 
-		_cliptext = lcString
-		MESSAGEBOX('Viga',0,'Error')
-	ENDIF
-	
+TEXT TO lcJson TEXTMERGE noshow
+				{"osakond_ids":[<<l_osakond_ids>>],
+				"isik_ids":[<<l_isik_ids>>],
+				"lib_ids":[<<l_lib_ids>>],
+				"kpv":<<DTOC(gdKpv,1)>>,
+				"kas_kustuta":<<IIF(EMPTY(tmpArvestaMinSots.kustuta),'true','false')>>,
+				"kas_arvesta_minsots":<<IIF(EMPTY(tmpArvestaMinSots.arvesta),'true','false')>>,
+				"dokprop":<<ALLTRIM(STR(dokPropId))>>
+				}
+ENDTEXT
+SET STEP ON 
+* sql proc
+	task = 'palk.gen_palkoper'
+	_cliptext = lcJson
+	leRror = odB.readFromModel('palk\palk_oper', 'executeTask', 'guserid,lcJson,task', 'qryResult')
 	Return leRror
-Endproc
-*
-Procedure geT_osakonna_list
-	If Used('query1')
-		Use In query1
-	Endif
-	tcKood = '%%'
-	tcNimetus = '%%'
-	odB.Use('curOsakonnad','qryOsakonnad')
-	Select curSource
-	If Reccount('curSource')>0
-		Zap
-	Endif
-	Append From Dbf('qryOsakonnad')
-	Use In qrYosakonnad
-	Select curValitud
-	If Reccount('curvalitud')>0
-		Zap
-	Endif
-	Do Form Forms\samm To nrEsult With '1', Iif(coNfig.keEl=2, 'Osakonnad',  ;
-		'Отделы'), Iif(coNfig.keEl=2, 'Valitud osakonnad', 'Выбранные отделы'), gdKpv, 1
-	If nrEsult=1
-		Select Distinct Id From curValitud Into Cursor query1
-		Select query1
-		Scan
-			Insert Into curResult (osAkonnaid) Values (query1.Id)
-		Endscan
-		Use In query1
-		Select curValitud
-		Zap
-	Endif
-	If nrEsult=0
-		lnStep = 0
-	Else
-		lnStep = lnStep+nrEsult
-	Endif
-Endproc
+ENDFUNC
+
 *
 Procedure geT_isiku_list
 	If Used('query1')
@@ -229,13 +125,13 @@ Procedure geT_isiku_list
 	If Used('asutus')
 		Use In asUtus
 	Endif
-	tcIsik = '%%'
-	odB.Use('comTootajad','qryTootajad')
+	=fnc_load_tootajad()
+
 	Select curSource
 	If Reccount('curSource')>0
 		Zap
 	Endif
-	Select koOd, niMetus, Id From qryTootajad Where OSAKONDID In(Select  ;
+	Select isikukood As koOd, niMetus, Id From qryTootajad Where OSAKONDID In(Select  ;
 		osAkonnaid From curResult) Into Cursor query1
 	Select curSource
 	Append From Dbf('query1')
@@ -266,12 +162,10 @@ Procedure geT_kood_list
 	If Used('query1')
 		Use In query1
 	Endif
-	tcKood = '%%'
-	tcNimetus = '%%'
-	tnStatus = 0
-	TCTULULIIK = '%%'
-	odB.Use('curPalkLib','qryPalkLib')
-	Delete From qrYpalklib Where liIk=6
+	lcWhere = 'liik <> 6'
+
+	leRror = odB.readFromModel('libs\libraries\palk_lib', 'curPalklib', 'gRekv, guserid', 'qryPalkLib', lcWhere)
+
 	Select curSource
 	If Reccount('curSource')>0
 		Zap
@@ -304,3 +198,60 @@ Procedure geT_kood_list
 	Endif
 Endproc
 *
+
+
+Function fnc_load_tootajad
+	tcIsik = '%'
+	tnOsakondid1 = 0
+	tnOsakondid2 = 999999999
+	lcSqlWhere = ''
+	lcAlias = 'curTootajad'
+* parameters
+
+TEXT TO lcSqlWhere textmerge	noshow
+	nimetus ilike ?tcIsik
+	and (osakondid >= ?tnOsakondid1 or osakondid is null)
+	and (osakondId <= ?tnOsakondid2 or osakondid is null)
+	and (algab <= ?gdKpv or algab is null)
+	and (lopp >= ?gdKpv or lopp is null)
+ENDTEXT
+
+	leRror = odB.readFromModel('palk\tootaja', 'curTootajad', 'gRekv, guserid', 'qryTootajad', lcSqlWhere)
+
+Endfunc
+
+
+Procedure geT_osakonna_list
+	If Used('query1')
+		Use In query1
+	Endif
+	leRror = odB.readFromModel('libs\libraries\osakond', 'curOsakonnad', 'gRekv, guserid', 'qryOsakonnad')
+
+	Select curSource
+	If Reccount('curSource')>0
+		Zap
+	Endif
+	Append From Dbf('qryOsakonnad')
+	Use In qrYosakonnad
+	Select curValitud
+	If Reccount('curvalitud')>0
+		Zap
+	Endif
+	Do Form Forms\samm To nrEsult With '1', Iif(coNfig.keEl=2, 'Osakonnad',  ;
+		'Отделы'), Iif(coNfig.keEl=2, 'Valitud osakonnad', 'Выбранные отделы'), gdKpv, 1
+	If nrEsult=1
+		Select Distinct Id From curValitud Into Cursor query1
+		Select query1
+		Scan
+			Insert Into curResult (osAkonnaid) Values (query1.Id)
+		Endscan
+		Use In query1
+		Select curValitud
+		Zap
+	Endif
+	If nrEsult=0
+		lnStep = 0
+	Else
+		lnStep = lnStep+nrEsult
+	Endif
+Endproc

@@ -2,7 +2,7 @@ LPARAMETER tcTyyp, tcModel
 LOCAL lnId
 lnId = 0
 
-
+SET STEP ON 
 IF !USED('comDokRemote') OR RECCOUNT('comDokRemote') = 0
 	IF EMPTY(tcModel)
 		oDb.use('comDokRemote')
@@ -29,7 +29,6 @@ ENDIF
 IF Reccount('curDokProp')>1
 	lcForm = 'validok'
 	DO Form (lcForm) To lnId With tnId
-	WAIT WINDOW 'return value:' + STR(lnId,6) TIMEOUT 3 nowait 
 ELSE
 	IF Reccount('curDokProp')<1
 		IF  'RAAMA' $ curKey.VERSIA
