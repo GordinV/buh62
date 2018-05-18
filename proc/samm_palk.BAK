@@ -1,4 +1,4 @@
-Parameter tnIsikid
+Parameter tnIsikid, is_tasu
 
 Local lnResult, leRror
 leRror = .T.
@@ -103,7 +103,6 @@ TEXT TO lcJson TEXTMERGE noshow
 				"dokprop":<<ALLTRIM(STR(dokPropId))>>
 				}
 ENDTEXT
-SET STEP ON 
 * sql proc
 	task = 'palk.gen_palkoper'
 	_cliptext = lcJson
@@ -161,9 +160,13 @@ Endproc
 Procedure geT_kood_list
 	If Used('query1')
 		Use In query1
-	Endif
-	lcWhere = 'liik <> 6'
-
+	ENDIF
+	IF !is_tasu 
+		lcWhere = 'liik <> 6'
+	ELSE
+		lcWhere = 'liik = 6'
+	ENDIF
+	
 	leRror = odB.readFromModel('libs\libraries\palk_lib', 'curPalklib', 'gRekv, guserid', 'qryPalkLib', lcWhere)
 
 	Select curSource
