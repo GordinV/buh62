@@ -108,20 +108,21 @@ If lqUit=.F.
 	Set Procedure To classes\login
 	olOgin = Createobject('login', tcKey)
 	olOgin.Show()
-*!*		Do case
-*!*			Case config.debug = 0
-*!*				On error do err with program(), lineno(1)
-*!*			Case config.debug = 1
-*			On error
-*!*			Case config.debug = 2
-*!*				On error do ferr
-*!*		Endcase
+	Do case
+		Case config.debug = 0
+			On error do err with program(), lineno(1)
+		Case config.debug = 1
+			On error
+		Case config.debug = 2
+			On error do ferr
+	ENDCASE
 	If  .Not. Empty(config.baCkground)
 		_Screen.Picture = Trim(config.baCkground)
 	Endif
 	Set classlib to toolsrekl additive
 	oTools = createobject('Toolsrekl')
 	otOols.trAnslate()
+	oTools.show()
 	Read Events
 Endif
 Set Notify On

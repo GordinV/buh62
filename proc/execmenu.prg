@@ -1,12 +1,9 @@
 PARAMETERS tnId
 LOCAL lError
 SELECT curMenuRemote
-IF ORDER()<> 'ID'
-	SET ORDER TO id
-ENDIF
 LOCATE FOR id = tnId
  
-IF FOUND() AND !EMPTY(curMenuRemote.proc_)
-	lError =EXECSCRIPT(curMenuRemote.proc_)
+IF FOUND() AND !EMPTY(curMenuRemote.proc)
+	lError =EXECSCRIPT(curMenuRemote.proc)
 ENDIF
 RETURN lError
