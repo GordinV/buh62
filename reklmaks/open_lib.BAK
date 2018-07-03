@@ -13,6 +13,27 @@ SELECT comValuutaRemote
 Index On Id Tag Id
 Set Order To Id
 
+= OpenView('comNomRemote')
+SELECT comNomRemote
+Index On Id Tag Id
+Set Order To Id
+
+=OpenView('comDokRemote', .T.,'comDokRemote','libs\libraries\dok')
+Select comDokremote
+Index On LEFT(koOd,20) Tag koOd
+Index On Id Tag Id
+Set Order To Id
+
+*!*	tdKehtivus = Date() - 365
+*!*	IF (OpenView('comasutusRemote', .T.,'comAsutusRemote','libs\libraries\asutused'))
+*!*		Select coMasutusremote
+*!*		Index On Id Tag Id
+*!*		Index On LEFT(reGkood,40) Tag reGkood Additive
+*!*		Index On Left(Upper(niMetus), 40) Tag niMetus Additive
+*!*		Set Order To Id
+*!*	ENDIF
+
+
 *
 Procedure OpenView
 	Lparameter tcView, tlopt, tcCursor

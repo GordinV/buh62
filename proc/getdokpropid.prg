@@ -6,7 +6,7 @@ IF !USED('comDokRemote') OR RECCOUNT('comDokRemote') = 0
 	IF EMPTY(tcModel)
 		oDb.use('comDokRemote')
 	ELSE
-		lError = oDb.readFromModel(tcModel, 'selectAsLibs', 'gRekv, guserid', 'comDokRemote')
+		lError = oDb.readFromModel('libs\libraries\dokprops', 'selectAsLibs', 'gRekv, guserid', 'comDokRemote')
 	ENDIF
 	
 ENDIF
@@ -21,8 +21,8 @@ tnId = coMdokremote.Id
 IF EMPTY(tcModel)
 	odB.Use('curDokProp')
 ELSE
-	lcWhere = "dok = '" + ALLTRIM(coMdokremote.kood) + "'"
-	lError = oDb.readFromModel(tcModel, 'curDokprop', 'gRekv, guserid', 'curDokProp', lcWhere)
+	lcWhere = "dok = '" + ALLTRIM(tcTyyp) + "'"
+	lError = oDb.readFromModel('libs\libraries\dokprops', 'curDokprop', 'gRekv, guserid', 'curDokProp', lcWhere)
 ENDIF
 
 IF Reccount('curDokProp')>1
