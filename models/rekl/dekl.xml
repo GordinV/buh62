@@ -39,7 +39,11 @@
                       dp.selg :: VARCHAR(120)                                        AS dokprop,
                       coalesce(jid.number, 0) :: INTEGER                             AS lausend,
                       rekl.fnc_dekl_jaak(t.ID) as jaak,
-                      t.lisa-&gt;&gt;'dekltasud'::text as tasud                      
+                      t.lisa-&gt;&gt;'dekltasud'::text as tasud,
+                      t.lisa-&gt;&gt;'failid'::text as failid,
+                      ((lisa-&gt;&gt;'failid')::jsonb)-&gt;&gt;'fail' as fail, 
+                      ((lisa-&gt;&gt;'failid')::jsonb)-&gt;&gt;'tyyp' as storage_tyyp
+                      
                     FROM docs.doc d
                       INNER JOIN rekl.toiming t ON t.parentId = d.id
                       INNER JOIN ou.userid u ON u.id = $2 :: INTEGER
@@ -79,7 +83,10 @@
                      null::varchar(20) as konto, 
                      null::integer as lausend,
                      0::numeric as jaak,
-                     null::text as tasud                   
+                     null::text as tasud,
+                     null::text as failid,
+                     null::text as fail,
+                     null::text as storage_type                  
                     FROM libs.library t,
                       libs.library s,
                       (SELECT *

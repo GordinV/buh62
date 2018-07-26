@@ -25,7 +25,10 @@
                   r.kbmkood,
                   r.muud,
                   r.regkood,
-                  r.tel
+                  r.tel,
+                  ((r.properties-&gt;&gt;'reklftp')::jsonb-&gt;&gt;'ftp')::varchar(120) as ftp,
+                  ((r.properties-&gt;&gt;'reklftp')::jsonb-&gt;&gt;'login')::varchar(120) as login,
+                  ((r.properties-&gt;&gt;'reklftp')::jsonb-&gt;&gt;'parool')::varchar(120) as parool                  
                 FROM ou.rekv r 
                 where id = $1</sql>
     <sqlAsNew>SELECT
@@ -43,7 +46,10 @@
                       NULL :: VARCHAR(254) AS email,
                       NULL :: VARCHAR(254) AS juht,
                       NULL :: VARCHAR(254) AS raama,
-                      NULL :: TEXT         AS muud</sqlAsNew>
+                      NULL :: TEXT         AS muud,
+                     NULL :: VARCHAR(120) AS ftp,
+                     NULL :: VARCHAR(120) AS login,
+                     NULL :: VARCHAR(120) AS parool</sqlAsNew>
     <query />
     <multiple>false</multiple>
     <alias>row</alias>
