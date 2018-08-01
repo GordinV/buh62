@@ -21,7 +21,7 @@
  tcTpk = RTRIM(LTRIM(flTrjournal.tpK))+'%'
  tcKasutaja = RTRIM(LTRIM(flTrjournal.amEtnik))+'%'
  tcMuud = '%'+RTRIM(LTRIM(flTrjournal.muUd))+'%'
- tnParentid = grEkv
+ tnParentid = 3
  cqUery = 'curJournalSvod'
  odB.usE(cqUery,'journal_report1')
  SELECT joUrnal_report1
