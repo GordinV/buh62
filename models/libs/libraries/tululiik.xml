@@ -1,7 +1,9 @@
 <?xml version = "1.0" encoding="Windows-1252" standalone="yes"?>
 <VFPData>
   <grid>
-    <sql>select id, kood, nimetus,  $2::integer as userId
+    <sql>select id, kood, nimetus,  
+            $2::integer as userId,
+            tun1, tun2, tun3, tun4, tun5
             from libs.library l
             where l.library = 'MAKSUKOOD'
             and l.status &lt;&gt; 3

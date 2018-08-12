@@ -15,5 +15,6 @@ tcValuuta = '%'
 
 oDb.use('curPalkOper','PalkOper_report1')
 select palkoper_report1
+DELETE FROM palkoper_report1 WHERE summa = 0
 index on upper (left (isik,40)) tag isik
 set order to isik

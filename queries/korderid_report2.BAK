@@ -13,6 +13,7 @@ tnDb2 = Iif(Empty(fltrKorder.db2),999999999,fltrKorder.db2)
 tnKr1 = fltrKorder.kr1
 tnKr2 = Iif(Empty(fltrKorder.kr2),999999999,fltrKorder.kr2)
 tnTyyp = fltrKorder.tyyp
+tcValuuta = UPPER(Ltrim(Rtrim(fltrKorder.kassa)))+'%'
 oDb.use('curKorder','sorder_report2')
 select sorder_report2
 INDEX ON kpv TAG kpv

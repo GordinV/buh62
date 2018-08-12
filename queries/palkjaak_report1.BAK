@@ -18,12 +18,7 @@ tnSots2 = iif(empty(fltrPalkJaak.Sots2),999999999,fltrPalkJaak.Sots2)
 tnJaak1 = iif(empty(fltrPalkJaak.Jaak1),-999999999,fltrPalkJaak.Jaak1)
 tnJaak2 = iif(empty(fltrPalkJaak.Jaak2),999999999,fltrPalkJaak.Jaak2)
 tcOsakond = '%'+rtrim(ltrim(fltrPalkJaak.osakond))+'%'
-IF EMPTY(fltrAruanne.kond)
-	tnParent = 3
-ELSE
-	tnParent = 1
-ENDIF
-
+tnParent = 3
 tnParentRekvId = 9
 oDb.use(iif(empty (fltrPalkJaak.status),'curPalkJaak','curPalkJaak2'),'PalkJaak_report1')
 select palkJaak_report1

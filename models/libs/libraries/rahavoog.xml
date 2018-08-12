@@ -1,7 +1,9 @@
 <?xml version = "1.0" encoding="Windows-1252" standalone="yes"?>
 <VFPData>
   <grid>
-    <sql>select id, kood, nimetus,  $2::integer as userId
+    <sql>select id, kood, nimetus,  
+            $2::integer as userId,
+            muud 
             from libs.library l
             where l.library = 'RAHA'
             and l.status &lt;&gt; 3
@@ -17,7 +19,7 @@
             $2::integer as userid, 
             'RAHAVOOGS' as doc_type_id,
             null::text as  kood,
-            null::integer as rekvid,
+            0::integer as rekvid,
             null::text as nimetus,
             'RAHA'::text as library,
             0::integer as status,

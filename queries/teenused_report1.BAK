@@ -12,8 +12,8 @@ If !Used('curTeenused')
 	tnSumma2 = Iif(Empty(fltrTeenused.Summa2),999999999,fltrTeenused.Summa2)
 	tcUritus = '%'+Rtrim(Ltrim(fltrTeenused.uritus))+'%'
 	tcProj = '%'+Rtrim(Ltrim(fltrTeenused.proj))+'%'
-	tcValuuta = Rtrim(Ltrim(fltrTeenused.valuuta))+'%'
-	
+	tcValuuta = Rtrim(Ltrim(fltrTeenused.valuuta))+'%'	
+	tcKbm = Rtrim(Ltrim(fltrTeenused.kbm))+'%'
 	Select curTeenused
 	cQuery = 'curTeenused'
 	oDb.Use(cQuery,'teenused_report1')

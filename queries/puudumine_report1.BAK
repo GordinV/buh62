@@ -19,5 +19,3 @@ tcPohjus = '%'+ltrim(rtrim(fltrPuudumine.pohjus))+'%'
 tcLiik = '%'+ltrim(rtrim(fltrPuudumine.liik))+'%'
 oDb.use ('curPuudumine','puudumine_report1')
 select puudumine_report1
-brow
-cancel

@@ -2,8 +2,26 @@ Parameter cWhere
 If isdigit(alltrim(cWhere))
 	cWhere = val(alltrim(cWhere))
 Endif
-tnId = cWhere
-cQuery = 'v_library'
-oDb.use(cQuery,'artikkel_report1')
-&&use (cQuery) in 0 alias 'Artikkel_report1'
-select Artikkel_report1
+
+l_cursor = 'curEelProj'
+l_local_cursor = 'v_eelproj'
+l_output_cursor = 'eelproj_report1'
+
+IF EMPTY(cWhere) AND USED(l_cursor)
+	cWhere = EVALUATE(l_cursor + '.id')
+ENDIF
+
+l_cursor = IIF(USED(l_cursor),l_cursor,l_local_cursor)
+
+IF !USED(l_cursor)
+	SELECT 0
+	RETURN .f.
+ENDIF
+
+TEXT TO lcSql TEXTMERGE noshow
+	SELECT *, left(IIF(ISNULL(status) OR EMPTY(status)),'Anulleritud',iif(staatus = 1,'Aktiivne','Kinnitatud')),20) as status from <<l_cursor>> where id = <<cWhere>> INTO CURSOR <<l_output_cursor>>
+ENDTEXT
+
+&lcSql
+
+SELECT(l_output_cursor)

@@ -45,7 +45,7 @@ if !empty (lError) and used('tmpVara') and used('tmpVaraKond')
 		endscan
 	else
 		insert into varade_report1 (gruppikood, grupp, kalor, sahharid, rasv, vailkaine,kondkood, kondnimetus, kondkogus, kondmuud ) values ;
-			tmpVaraKond.gruppikood, tmpVaraKond.grupp, tmpVaraKond.kalor,tmpVaraKond.sahharid, tmpVaraKond.rasv, tmpVaraKond.vailkaine, ;
+			(tmpVaraKond.gruppikood, tmpVaraKond.grupp, tmpVaraKond.kalor,tmpVaraKond.sahharid, tmpVaraKond.rasv, tmpVaraKond.vailkaine, ;
 			tmpVaraKond.kood, tmpVaraKond.nimetus, tmpVaraKond.kogus, tmpVaraKond.muud) 
 	
 	endif

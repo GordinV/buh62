@@ -17,3 +17,6 @@ tnAasta1 = fltrTaabel1.aasta1
 tnAasta2 = iif(empty(fltrTaabel1.Aasta2),999,fltrTaabel1.Aasta2)
 oDb.use(IIF(empty (fltrTaabel1.status),'curTaabel1','curTaabel2'),'Taabel1_report1')
 select taabel1_report1
+INDEX ON UPPER(LEFT(isik,40))+'-'+STR(aasta,4)+'-'+STR(kuu,2) TAG kood
+SET ORDER TO kood
+

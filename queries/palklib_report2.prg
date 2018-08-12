@@ -1,10 +1,28 @@
 Parameter cWhere
-tnId = cWhere
-oDb.use ('v_library','qryPalkLib')
-tcKood = ltrim(rtrim(qrypalklib.kood))+'%'
-tcNimetus = ltrim(rtrim(qryPalklib.nimetus))+'%'
-tnStatus = qryPalkLib.tun5
 
-use in qryPalkLib
-oDb.use('curPalklib','Palklib_report1')
-select palklib_report1
+If isdigit(alltrim(cWhere))
+	cWhere = val(alltrim(cWhere))
+Endif
+
+l_cursor = 'curPalklib'
+l_local_cursor = 'v_library'
+l_output_cursor = 'palklib_report1'
+
+IF EMPTY(cWhere) AND USED(l_cursor)
+	cWhere = EVALUATE(l_cursor + '.id')
+ENDIF
+
+l_cursor = IIF(USED(l_cursor),l_cursor,l_local_cursor)
+
+IF !USED(l_cursor)
+	SELECT 0
+	RETURN .f.
+ENDIF
+
+TEXT TO lcSql TEXTMERGE noshow
+	SELECT * from <<l_cursor>> where id = <<cWhere>> INTO CURSOR <<l_output_cursor>>
+ENDTEXT
+
+&lcSql
+
+SELECT(l_output_cursor)

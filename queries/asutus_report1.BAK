@@ -13,19 +13,32 @@ lcString = lcString + IIF(!EMPTY(fltrAsutused.tp), ' tp = '+upper(ltrim(rtrim(fl
 
 replace v_filter.filtr WITH lcString IN v_filter
 
-cregKood = '%'+upper(ltrim(rtrim(fltrAsutused.regkood)))+'%'
-cOmVorm = '%'+upper(ltrim(rtrim(fltrAsutused.omvorm)))+'%'
-cNimetus = '%'+upper(ltrim(rtrim(fltrAsutused.nimetus)))+'%'
-tcTp = ltrim(rtrim(fltrAsutused.tp))+'%'
-tdkehtivus = fltrAsutused.kehtivus
-tcMark = '%'+ALLTRIM(fltrAsutused.mark)+'%'
-tcEmail = '%'+ALLTRIM(UPPER(fltrAsutused.email))+'%'
+SET STEP on
 
-oDb.use('curAsutused','Asutus_report1')
-select Asutus_report1
-brow
-index on left(upper(nimetus),40) tag nimetus
-set order to nimetus
-IF RECCOUNT('Asutus_report1') < 1
+l_cursor = 'curAsutused'
+l_output_cursor = 'Asutus_report1'
+
+IF !USED(l_cursor)
+	SELECT 0
+	RETURN .f.
+ENDIF
+
+
+SELECT (l_cursor)
+lcTag = TAG()
+*
+TEXT TO lcSql TEXTMERGE noshow
+	SELECT * from <<l_cursor>> ORDER BY <<IIF(EMPTY(lcTag),'id',lcTag)>> into CURSOR <<l_output_cursor>>
+ENDTEXT
+
+&lcSql
+
+IF !USED(l_output_cursor)
+	SELECT 0
+	RETURN .f.
+ENDIF
+SELECT (l_output_cursor)
+
+IF RECCOUNT(l_output_cursor) < 1
 	APPEND blank
 ENDIF

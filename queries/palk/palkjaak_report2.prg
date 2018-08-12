@@ -1,0 +1,63 @@
+Parameter tcWhere
+
+If Used('fltrPalkJaak')
+	tcNimetus = '%'+Rtrim(Ltrim(fltrPalkJaak.nimetus))+'%'
+Else
+	If !Empty (fltrAruanne.asutusid)
+		Select comAsutusRemote
+		Locate For Id = fltrAruanne.asutusid
+		tcNimetus = Ltrim(Rtrim(comAsutusRemote.nimetus))+'%'
+	Else
+		tcNimetus = '%'
+	Endif
+
+	If Empty(fltrAruanne.kond)
+		tnParent = 3
+	Else
+		tnParent = 1
+	Endif
+
+Endif
+
+If !Used('curPalkJaak')
+TEXT TO lcSqlWhere TEXTMERGE noshow
+		nimetus ilike '<<tcNimetus>>'
+ENDTEXT
+
+	lError = oDb.readFromModel('palk\palk_jaak', 'curPalkJaak', 'gRekv, guserid', 'tmpTaabel1', lcSqlWhere)
+Else
+	Select * From curPalkJaak Into Cursor tmpPalkJaak
+Endif
+
+TEXT TO lcSqlWhere TEXTMERGE noshow
+	isik ilike '<<tcNimetus>>'
+ENDTEXT
+
+lError = oDb.readFromModel('palk\palk_taabel', 'curTaabel1', 'gRekv, guserid', 'tmpTaabel1', lcSqlWhere)
+
+
+Select isik, arvestatud As arv, tulumaks, sotsmaks, tka, tki, kinni, workdays (1,tmpPalkJaak.kuu,tmpPalkJaak.aasta) As tpaevad,  ;
+	maxdays (tmpPalkJaak.kuu, tmpPalkJaak.aasta) As kpaevad, Iif(Isnull(tmpTaabel1.kokku),;
+	maxdays (tmpPalkJaak.kuu, tmpPalkJaak.aasta),tmpTaabel1.kokku) As kokku, mvt as g31 ;
+	from tmpPalkJaak  ;
+	Left Outer Join tmpTaabel1 ON (tmpTaabel1.isikukood = tmpPalkJaak.regkood ;
+	and tmpTaabel1.kuu = tmpPalkJaak.kuu And tmpTaabel1.aasta = tmpPalkJaak.aasta);
+	into Cursor tmpPalkJaak1
+
+Use In tmpTaabel1
+Use In tmpPalkJaak
+
+Select isik, Sum (arv) As arv, Sum (tulumaks) As tulumaks, Sum (sotsmaks) As sotsmaks, Sum (tki) As tki,;
+	sum (tka) As tka, Sum (kinni) As kinni, Sum (tpaevad) As tpaevad, Sum (kpaevad) As kpaevad, Sum(kokku) As kokku, Sum(g31) As g31;
+	from tmpPalkJaak1;
+	where !Isnull(isik);
+	order By isik;
+	group By isik;
+	into Cursor palkstat_report1
+Use In tmpPalkJaak1
+Select palkstat_report1
+
+Function maxdays
+	Parameter tnKuu, tnAasta
+	Return Day (Gomonth(Date (tnAasta, tnKuu,1),1)-1)
+

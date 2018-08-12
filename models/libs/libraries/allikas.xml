@@ -1,7 +1,7 @@
 <?xml version = "1.0" encoding="Windows-1252" standalone="yes"?>
 <VFPData>
   <grid>
-    <sql>select id, kood, nimetus,  $2::integer as userId
+    <sql>select id, kood, nimetus,  $2::integer as userId, muud
             from libs.library l
             where l.library = 'ALLIKAD'
             and l.status &lt;&gt; 3

@@ -13,6 +13,13 @@ tnAasta2 = 	iif (empty (fltrKuluTaitm.aasta2),YEAR(date()),fltrKuluTaitm.aasta2)
 tcTunnus = ltrim(rtrim(fltrKuluTaitm.tunnus))+'%'
 tcKood2 = ltrim(rtrim(fltrKuluTaitm.kood2))+'%'
 
+IF EMPTY(fltrAruanne.kond)
+	tnParent = 3
+ELSE
+	tnParent = 1
+ENDIF
+
+
 Select curKuluTaitm
 
 lError = odb.use (iif (oKulutaitm.pAGeframe1.ActivePage = 1,'curKassaTuluTaitm','curKassaKuluTaitm'),'qryEelaTaitm')

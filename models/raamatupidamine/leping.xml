@@ -9,13 +9,16 @@
     <alias>curLepingud</alias>
   </grid>
   <select>
-    <sql>select d.id, $2::integer as userid, to_char(created, 'DD.MM.YYYY HH:MM:SS')::text as created, to_char(lastupdate,'DD.MM.YYYY HH:MM:SS')::text as lastupdate, d.bpm, 
+    <sql>select d.id, $2::integer as userid, to_char(created, 'DD.MM.YYYY HH:MM:SS')::text as created, 
+                to_char(lastupdate,'DD.MM.YYYY HH:MM:SS')::text as lastupdate, d.bpm, 
                  trim(l.nimetus) as doc, trim(l.kood) as doc_type_id,
                  trim(s.nimetus) as status, d.status as doc_status,
-                 trim(a.number) as number, a.rekvId, to_char(a.kpv,'YYYY-MM-DD') as kpv, 
+                 trim(a.number) as number, a.rekvId, 
+                 a.kpv as kpv, 
                  a.asutusid,
-                 a.selgitus,                 
-                 to_char(a.tahtaeg,'YYYY-MM-DD') as tahtaeg, 
+                 a.selgitus, 
+                 a.doklausid,                
+                 a.tahtaeg, 
                  a.dok, 
                  a.pakettid,
                  a.objektid
@@ -32,10 +35,12 @@
                  trim(l.nimetus) as doc, trim(l.kood) as doc_type_id, 
                  trim(s.nimetus) as status, 0 as doc_status, 
                  docs.sp_get_number(u.rekvId, LEPING, year(date()), null) as number, 
-                 null as rekvId, to_char(now(),'YYYY-MM-DD') as kpv,
+                 null as rekvId, 
+                 now()::date as kpv,
+                 5 as doklausid,
                  null as asutusid, 
                  null::text as selgitus, 
-                 to_char(now()  + interval '365 days','YYYY-MM-DD') as tahtaeg, 
+                 (now()  + interval '365 days')::date as tahtaeg, 
                  null::text as dok, 
                  null::integer as pakettid, 
                  null::integer as objektId
@@ -50,7 +55,13 @@
   <select>
     <sql>select a1.id, $2::integer as userid, 
                  a1.nomid, a1.kogus, a1.hind, a1.kbm, a1.summa,
-                 trim(n.kood) as kood, trim(n.nimetus) as nimetus 
+                 trim(n.kood) as kood, trim(n.nimetus) as nimetus,
+                 a1.soodus,
+                 a1.soodusalg::date,
+                 a1.sooduslopp::date,
+                 a1.status,
+                 a1.formula,
+                 a1.muud
                  from docs.leping2 as a1 
                  inner join docs.leping1 a on a.id = a1.parentId 
                  inner join libs.nomenklatuur n on n.id = a1.nomId 
@@ -106,4 +117,5 @@
     <sql />
     <alias />
   </generateJournal>
+  <print></print>
 </VFPData>

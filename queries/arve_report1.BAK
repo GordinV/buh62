@@ -1,91 +1,76 @@
 Parameter cWhere
 If Isdigit(Alltrim(cWhere))
 	cWhere = Val(Alltrim(cWhere))
-ENDIF
-
+Endif
 
 tnId = cWhere
-cQuery = 'print_arv1'
-WITH odb
-	.Use(cQuery,'arve_report1')
 
-	Create Cursor arve_lausend (Id Int, lausend m)
-	Insert Into arve_lausend (Id) Values (arve_report1.JOURNALID)
-	tnId =arve_report1.JOURNALID
-	tnAasta = Year (arve_report1.kpv)
-	.Use ('QRYJOURNALNUMBER')
-	If Reccount ('QRYJOURNALNUMBER') > 0
-		tnId = QRYJOURNALNUMBER.JOURNALID
-		.Use ('v_journal1','qryJournal1')
-		Select qryJournal1
-		Scan
-			lcString =  'D '+Ltrim(Rtrim(qryJournal1.deebet))+Space(1)+;
-				'K '+Ltrim(Rtrim(qryJournal1.kreedit)) + Space(1)+;
-				alltrim(Str (qryJournal1.Summa,12,2)) + Chr(13)
-			Replace arve_lausend.lausend With lcString Additive In arve_lausend
-		Endscan
+lError = oDb.readFromModel('raamatupidamine\arv', 'row', 'tnId, guserid', 'qryArv')
 
-	Endif
-	If Used ('QRYJOURNALNUMBER')
-		Use In QRYJOURNALNUMBER
-	Endif
+IF !lError 
+	SET STEP ON 
+	RETURN .f.
+ENDIF
 
-ENDWITH
+lError = oDb.readFromModel('raamatupidamine\arv', 'details', 'tnId, guserid', 'qryArv1')
 
-SELECT arve_report1
-Select comAsutusRemote
-*!*	If Tag() <> 'ID'
-*!*		Set Order To Id
-*!*	Endif
-LOCATE FOR id =  arve_report1.asutusId
+IF !lError 
+	SET STEP ON 
+	RETURN .f.
+ENDIF
+
+tnId = qryArv.journalid
+
+lError = oDb.readFromModel('raamatupidamine\journal', 'details', 'tnId, guserid', 'qryJournal')
+
+Create Cursor arve_report1 (Id Int,Number c(20), kpv d, lisa c(120),tahtaeg d Null, asutusid Int,;
+	kood c(20), uhik c(20), doklausid Int, nomid Int, hind Y, kogus Y, soodus Y, kbm Y, Summa N(14,2), kbmta N(14,2), ;
+	reamuud m Null, nomnimi c(254), arvkbmta N(14,2), arvkbm N(14,2), kokku N(14,2), ;
+	muud m Null, regkood c(20), rk c(20), journalid Int, asutus c(254), aadress m, tel c(120), faks c(120),;
+	email c(120), reamark m Null, konto c(20), valuuta c(20), kuurs Y Default 1,;
+	lausend m Null, jaak N(14,2), arvperiod c(120), km c(2))
 
 
-If Found()
-	lnJaak = 0
-	IF !EMPTY(arve_report1.konto)
-		lnJaak = analise_formula('ASD('+Ltrim(Rtrim(arve_report1.konto))+','+Alltrim(Str(arve_report1.asutusId))+')', arve_report1.kpv, 'CursorAlgSaldo')
-	ENDIF
-	
-	Update arve_report1 Set asutus = Rtrim(Ltrim(comAsutusRemote.nimetus))+Space(1)+Trim(comAsutusRemote.omvorm), jaak = lnJaak
+Create Cursor arve_lausend (Id Int, lausend m)
+
+
+Select qryArv
+Go Top
+
+Select qryArv1
+Scan
+	Insert Into arve_report1 (Id, Number, kpv, lisa, tahtaeg, asutusid, kood, uhik, hind , kogus , soodus , kbm , Summa, kbmta, ;
+		nomnimi ,reamark, arvkbmta, arvkbm, kokku,	regkood, rk, km,;
+		journalid, asutus, aadress, jaak) ;
+		VALUES (qryArv.Id, qryArv.Number, qryArv.kpv, qryArv.lisa, qryArv.tahtaeg, qryArv.asutusid, qryArv1.kood, qryArv1.uhik, ;
+		qryArv1.hind, qryArv1.kogus, qryArv1.soodus, qryArv1.kbm, qryArv1.Summa, qryArv1.kbmta,;
+		qryArv1.nimetus, qryArv1.muud, qryArv.kbmta, qryArv.kbm, qryArv.Summa, qryArv.kmkr, qryArv.regkood, qryArv1.km,;
+		qryArv.laus_nr, qryArv.asutus, qryArv.aadress, qryArv.jaak)
+Endscan
+
+Insert Into arve_lausend (Id) Values (qryArv.laus_nr)
+
+If Reccount ('qryJournal') > 0
+	Select qryJournal
+	Scan
+		lcString =  'D '+Ltrim(Rtrim(qryJournal.deebet))+Space(1)+;
+			'K '+Ltrim(Rtrim(qryJournal.kreedit)) + Space(1)+;
+			alltrim(Str (qryJournal.Summa,12,2)) + Chr(13)
+		Replace arve_lausend.lausend With lcString Additive In arve_lausend
+	Endscan
 
 Endif
 
 Select arve_report1
-Scan
-	lnrecno = RECNO('arve_report1')
-	Select comNomRemote
-*!*		If Tag() <> 'ID'
-*!*			Set Order To Id
-*!*		Endif
-	LOCATE FOR id = arve_report1.nomid
-	lcKbm = ''
 
-	Do Case
-		Case comNomRemote.doklausid = 0
-			lcKbm =  '18%'
-		Case comNomRemote.doklausid = 1
-			lcKbm =  '0%'
-		Case comNomRemote.doklausid = 2
-			lcKbm =  '5%'
-		Case comNomRemote.doklausid = 4
-			lcKbm =  '9%'
-		Case comNomRemote.doklausid = 5
-			lcKbm =  '20%'
-		otherwise
-			lcKbm =  'Vaba'
-	Endcase
-	SELECT arve_report1
-	Replace km With lcKbm In arve_report1
-	GO lnRecno
-Endscan
 
 lcPeriod = ''
-DIMENSION aKuu(12)
+Dimension aKuu(12)
 
 aKuu(1) = 'Jaanuar'
 aKuu(2) = 'Veebruar'
 aKuu(3) = 'Marts'
-aKuu(4) = 'April'
+aKuu(4) = 'Aprill'
 aKuu(5) = 'Mai'
 aKuu(6) = 'Juuni'
 aKuu(7) = 'Juuli'
@@ -96,24 +81,36 @@ aKuu(11) = 'November'
 aKuu(12) = 'Detsember'
 
 
-CREATE CURSOR curEestiKuu (id int, kuu c(40))
-FOR i = 1 TO 12
-	INSERT INTO curEestiKuu (id, kuu)  VALUES (i,aKuu(i))
-ENDFOR
-aKuu = null
+Create Cursor curEestiKuu (Id Int, kuu c(40))
+For i = 1 To 12
+	Insert Into curEestiKuu (Id, kuu)  Values (i,aKuu(i))
+Endfor
+aKuu = Null
 
-SELECT arve_report1
-GO top
+IF USED('qryArv')
+	Use In qryArv
+ENDIF
+IF USED('qryArv1')
+	Use In qryArv1
+ENDIF
+IF USED('qryJournal')
+	Use In qryJournal
+ENDIF
 
-SELECT curEestiKuu 
-LOCATE FOR id =  MONTH(arve_report1.kpv)
+Use In qryJournal
 
-lcPeriod = ALLTRIM(curEestiKuu.kuu)+' ' + STR(YEAR(arve_report1.kpv),4)
-USE IN curEestiKuu
-UPDATE arve_report1 SET arvperiod = lcPeriod 
+Select arve_report1
+Go Top
+
+Select curEestiKuu
+Locate For Id =  Month(arve_report1.kpv)
+
+lcPeriod = Alltrim(curEestiKuu.kuu)+' ' + Str(Year(arve_report1.kpv),4)
+Use In curEestiKuu
+Update arve_report1 Set arvperiod = lcPeriod
 
 &&use (cQuery) in 0 alias arve_report1
 Select arve_report1
-INDEX ON KM TAG Km 
-SET ORDER TO KM
+Index On km Tag km
+Set Order To km
 

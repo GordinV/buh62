@@ -1,10 +1,14 @@
 Parameter tcWhere
+SET STEP ON 
+
+
 	tnIsik1 = 0
 	tnIsik2 = 999999999
 
 	tnLiik1 = 0
 	tnLiik2 = 999999999
 
+SELECT 0
 
 create cursor palkoper_report1 (liik int, kood c(20),mark c(3), nimetus c(254), journalid int, isik c(254), kpv d, summa y, kokku y, pank int, aa c(20), valuuta c(20))
 
@@ -35,7 +39,6 @@ else
 	tcKood = '%'
 endif
 
-SET STEP ON 
 oDb.use ('QRYPALKOPER1')
 sum (summa * kuurs) to lnKokku
 select palkoper_report1

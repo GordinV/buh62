@@ -10,7 +10,6 @@ index on rtrim(pohikonto)+alltrim(kood) tag konto
 set order to konto
 select printkontod
 scan
-	lcrecno = recno('printkontod')
 	lcType = ''
 	do case
 		case printkontod.type = 1
@@ -38,7 +37,6 @@ scan
 		lcType,printkontod.aasta, printkontod.algsaldo,lcLiik,; 
 		iif (printkontod.liik = 1 or printkontod.liik = 2,printkontod.kood, printkontod.pohikonto)  )
 	select printkontod
-	go lnrecno
 endscan
 use in printkontod
 select konto_report1

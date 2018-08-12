@@ -1,0 +1,34 @@
+Parameter cWhere
+
+
+IF !USED('curAllikad')
+	SELECT 0
+	RETURN .f.
+ENDIF
+SELECT curAllikad
+lcTag = TAG()
+*
+TEXT TO lcSql TEXTMERGE noshow
+	SELECT * from curAllikad ORDER BY <<IIF(EMPTY(lcTag),'id',lcTag)>> into CURSOR allikas_report1
+ENDTEXT
+
+&lcSql
+
+IF !USED('allikas_report1')
+	SELECT 0
+	RETURN .f.
+ENDIF
+SELECT allikas_report1
+
+*!*	SELECT * from curAlliad 
+*!*	tcKood = '%'+ltrim(rtrim(fltrAllikad.kood))+'%'
+*!*	tcNimetus = '%'+ltrim(rtrim(fltrAllikad.nimetus))+'%'
+*!*	if vartype(odb) <> 'O'
+*!*		set classlib to classes\classlib
+*!*		oDb = createobject('db')
+*!*	endif
+*!*	oDb.use('curAllikad','allikas_report1')
+*!*	&&use (cQuery) in 0 alias allikas_report1 nodata
+*!*	select allikas_report1
+*!*	&&=requery('allikas_report1')
+*!*	select allikas_report1

@@ -43,4 +43,12 @@
     <sql />
     <alias />
   </generateJournal>
+  <print>
+    <sql>SELECT
+                          p.*,
+                          $2 as user_id
+                        FROM palk.print_palk_jaak p
+                        WHERE p.rekvId in (select rekv_id from get_asutuse_struktuur($1))</sql>
+    <alias>printPalkJaak</alias>
+  </print>
 </VFPData>

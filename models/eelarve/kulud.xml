@@ -2,9 +2,10 @@
 <VFPData>
   <grid>
     <sql>SELECT
-                          d.*
+                          d.*, 
+                          'KULUD'::varchar(20) as liik
                         FROM cur_kulud d
-                        WHERE d.rekvId = $1
+                        WHERE d.rekvId in (select rekv_id from get_asutuse_struktuur($1)) 
                               AND coalesce(docs.usersRigths(d.id, 'select', $2), TRUE)</sql>
     <alias>curEelarve</alias>
   </grid>
@@ -29,7 +30,7 @@
                     coalesce(v.valuuta,'EUR') as valuuta,
                     coalesce(v.kuurs,1) as kuurs,
                     (enum_range(NULL :: DOK_STATUS))[e.status]::text as dok_status
-                    FROM eelarve.tulud e
+                    FROM eelarve.kulud e
                     LEFT OUTER JOIN docs.dokvaluuta1 v
                     ON v.id = dokid AND v.dokliik = array_position((enum_range(NULL :: DOK_VALUUTA)), 'eelarve')
                     WHERE e.id = $1</sql>

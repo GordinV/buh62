@@ -1,13 +1,18 @@
 Parameter cWhere
-tcKood = '%'+ltrim(rtrim(fltrObjekt.kood))+'%'
-tcNimetus = '%'+ltrim(rtrim(fltrObjekt.nimetus))+'%'
-cQuery = 'curObjekt'
-if vartype(odb) <> 'O'
-	set classlib to classes\classlib
-	oDb = createobject('db')
-endif
-oDb.use(cQuery,'objekt_report1')
-*!*	use (cQuery) in 0 alias objekt_report1 nodata
-*!*	select objekt_report1
-*!*	=requery('objekt_report1')
+IF !USED('curObjekt')
+	SELECT 0
+	RETURN .f.
+ENDIF
+
+SELECT curObjekt
+lcTag = TAG()
+
+
+TEXT TO lcSql TEXTMERGE NOSHOW 
+	SELECT * from curObjekt ORDER BY <<lcTag>> into CURSOR objekt_report1
+ENDTEXT
+
+&lcSql
+
+
 select objekt_report1

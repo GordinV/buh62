@@ -1,6 +1,8 @@
 Parameter cWhere
 With oDb
 	.Use ('curdoklausend','doklausend_report1',.T.)
+	INDEX ON id TAG id
+	SET ORDER TO id
 	If Isdigit(Alltrim(cWhere))
 		tnid = Val(Alltrim(cWhere))
 		.Use ('v_doklausheader','qryDokLausHeader')

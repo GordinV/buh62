@@ -17,6 +17,7 @@ Parameter cWhere
 
 *!*	oDb.use(cQuery,'avans_report2')
 &&use (cQuery) in 0 alias arve_report2
+
 SELECT * from curAvans INTO CURSOR avans_report2
 select avans_report2
 *!*	IF RECCOUNT() < 1

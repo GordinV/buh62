@@ -1,12 +1,24 @@
 Parameter cWhere
-	if vartype(oDb) <> 'O'
-		set classlib to classes\classlib
-		oDb = createobject('db')
-	endif
-tcNumber = '%'+ltrim(rtrim(fltrLepingud.number))+'%'
-tcSelgitus = '%'+ltrim(rtrim(fltrLepingud.selgitus))+'%'
-tcAsutus = '%'+ltrim(rtrim(fltrLepingud.asutus))+'%'
-dKpv1 = iif(empty(fltrLepingud.kpv1),date(year(date()),1,1),fltrLepingud.kpv1)
-dKpv2 = iif(empty(fltrLepingud.kpv2),date(year(date()),12,31),fltrLepingud.kpv2)
-oDb.use('curLepingud','Leping_report1')
-select Leping_report1
+
+
+l_cursor = 'curLepingud'
+l_output_cursor = 'Leping_report1'
+
+IF !USED(l_cursor)
+	SELECT 0
+	RETURN .f.
+ENDIF
+SELECT (l_cursor)
+lcTag = TAG()
+*
+TEXT TO lcSql TEXTMERGE noshow
+	SELECT * from <<l_cursor>> ORDER BY <<IIF(EMPTY(lcTag),'id',lcTag)>> into CURSOR <<l_output_cursor>>
+ENDTEXT
+
+&lcSql
+
+IF !USED(l_output_cursor)
+	SELECT 0
+	RETURN .f.
+ENDIF
+SELECT (l_output_cursor)

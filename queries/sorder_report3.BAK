@@ -3,36 +3,47 @@ If Isdigit(Alltrim(cWhere))
 	cWhere = Val(Alltrim(cWhere))
 Endif
 tnId = cWhere
-cQuery = 'print_sorder1'
-tcKood = '%'
-tcNimetus = '%'
 
-With oDb
-	.Use(cQuery,'sorder_report1')
-	IF RECCOUNT('sorder_report1') > 1
-		DELETE FOR RECNO('sorder_report1') > 1
-	ENDIF
-	GO top
-	tnId =sorder_report1.JOURNALid
-	.Use ('v_journalid','QRYJOURNALNUMBER' )
+IF !USED('v_korder1')
+	lError = oDb.readFromModel('raamatupidamine\sorder', 'row', 'tnId, guserid', 'v_korder1')
+	lError = oDb.readFromModel('raamatupidamine\sorder', 'details', 'tnId, guserid', 'v_korder2')	
+ENDIF
+
+SELECT v_korder1.id, v_Korder1.number, v_Korder1.kpv, v_Korder1.nimi,  v_Korder1.aadress, v_Korder1.dokument, v_Korder1.alus, ;
+	v_Korder2.nimetus,  v_Korder2.summa,  v_korder1.kassa AS aa, v_Korder1.kokku, ;
+	v_Korder2.kood1,  v_Korder2.kood2, v_Korder2.kood3, v_Korder2.kood4, v_Korder2.kood5, ;
+	v_Korder2.tunnus;
+	FROM  v_korder1, v_korder2 ;
+	ORDER BY v_korder2.nimetus ;
+	INTO CURSOR sorder_report1
+
+
+lError = oDb.readFromModel('raamatupidamine\journal', 'row', 'tnId, guserid', 'qryJournal')
+lError = oDb.readFromModel('raamatupidamine\journal', 'details', 'tnId, guserid', 'qryJournal1')
 
 	Create Cursor sorder_lausend (Id Int, lausend m)
 	Append Blank
-	If Reccount ('QRYJOURNALNUMBER') > 0
-		tnId = QRYJOURNALNUMBER.JOURNALid
-		.Use ('v_journal1','qryJournal1')
 		Select qryJournal1
-		Scan
-			lcString =  'D '+Ltrim(Rtrim(qryJournal1.deebet))+IIF(!EMPTY(qryJournal1.lisa_d),' TP '+Ltrim(Rtrim(qryJournal1.lisa_d)),'')++Space(1)+;
-				'K '+Ltrim(Rtrim(qryJournal1.kreedit)) + IIF(!EMPTY(qryJournal1.lisa_k),' TP '+Ltrim(Rtrim(qryJournal1.lisa_k)),'') + Space(1)+'Summa '+;
-				qryJournal1.valuuta+alltrim(Str (qryJournal1.Summa,12,2)) + Space(1)+IIF(!EMPTY(qryJournal1.kood5),' Eel. '+Ltrim(Rtrim(qryJournal1.kood5)),'')+Space(1)+;
-				IIF(!EMPTY(qryJournal1.kood1),' TT '+Ltrim(Rtrim(qryJournal1.kood1)),'') +Chr(13)
-			Replace Id With QRYJOURNALNUMBER.Number,;
+		SCAN
+			TEXT TO lcString TEXTMERGE noshow
+				D: <<allrim(qryJournal1.deebet)>> TP: <<alltrim(qryJournal1.lisa_d)>>  K: <<alltrim(qryJournal1.kreedit)>>  TP: <<alltrim(qryJournal1.lisa_k) 
+			ENDTEXT
+			TEXT TO lcString TEXTMERGE NOSHOW additive
+				Summa  <<alltrim(Str (qryJournal1.Summa,12,2))>> Eel: <<alltrim(qryJournal1.kood5)>> 				
+			endtext
+			TEXT TO lcString TEXTMERGE NOSHOW additive
+				TT: <<alltrim(qryJournal1.kood1)>>
+				
+			endtext
+							
+			Replace Id With qryJournal.Number,;
 				sorder_lausend.lausend With lcString Additive In sorder_lausend
 		Endscan
 	Endif
-	If Used ('QRYJOURNALNUMBER')
-		Use In QRYJOURNALNUMBER
+	If Used ('qryJournal')
+		Use In qryJournal
 	Endif
-Endwith
+	If Used ('qryJournal1')
+		Use In qryJournal1
+	Endif
 Select sorder_report1

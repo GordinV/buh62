@@ -6,24 +6,28 @@ If isdigit(alltrim(cWhere))
 else
 	tnId = curlepingud.id
 Endif
-if vartype(odb) <> 'O'
-	set classlib to classes\classlib
-	oDb = createobject('db')
-endif
+
 lcKood = ''
 lcNimetus = ''
 lcAsutus = ''
+
+lError = oDb.readFromModel('raamatupidamine\leping', 'row', 'tnId,gUserid', 'qryleping1')
+lError = oDb.readFromModel('raamatupidamine\leping', 'details', 'tnId,gUserid', 'qryleping2')
+
+IF !lError OR !USED('qryleping1') OR !USED('qryleping2')
+	SELECT 0
+	RETURN .f.
+ENDIF
+
+
 create cursor leping_report1 (id int, number c(20) default qryleping1.number , kpv d default qryleping1.kpv,;
 	tahtaeg d default qryleping1.tahtaeg, selgitus m default qryleping1.selgitus, asutus c(254) default lcAsutus, ;
 	kood c(20) default lcKood, nimetus c(120) default lcNimetus, hind y default qryleping2.hind, kogus n(12,3) default qryleping2.kogus,;
-	soodus n(12,3) default qryleping2.soodus, soodusAlg d default iif(isnull(qryleping2.soodusAlg),{},qryleping2.soodusAlg),;
-	 soodusLopp d default iif(isnull(qryleping2.soodusLopp),{},qryleping2.soodusLopp),; 
 	 summa y default qryleping2.summa, status c(20) default iif(qryleping2.status = 1,'Aktivne','Peatud'),;
-	 formula m default qryleping2.formula, muud m default qryleping2.muud)
-with oDb
-	.use ('v_leping1','qryleping1')
-	.use ('v_leping2','qryleping2')
-endwith
+	 formula m NULL default qryleping2.formula, muud m NULL default qryleping2.muud)
+
+
+
 select qryleping2
 scan
 	select comNomRemote

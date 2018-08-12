@@ -2,9 +2,10 @@
 <VFPData>
   <grid>
     <sql>SELECT
-                          d.*
+                          d.*,
+                          'TULUD'::varchar(20) as liik
                         FROM cur_tulud d
-                        WHERE d.rekvId = $1
+                        WHERE d.rekvId in (select rekv_id from get_asutuse_struktuur($1)) 
                               AND coalesce(docs.usersRigths(d.id, 'select', $2), TRUE)</sql>
     <alias>curEelarve</alias>
   </grid>
