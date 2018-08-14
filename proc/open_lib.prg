@@ -61,10 +61,11 @@ If Empty(tnOpt)
 
 Endif
 
-= OpenView('comObjektRemote')
+= OpenView('comObjektremote',.T., 'comObjektRemote', 'libs\libraries\objekt')
+
 Select comObjektRemote
 Index On Id Tag Id
-Index On koOd Tag koOd Additive
+Index On LEFT(koOd,40) Tag koOd Additive
 Set Order To Id
 
 =OpenView('comAaRemote',Iif ('EELARVE' $ curkey.versia,.F.,.T.), 'comAaRemote', 'ou\aa')
@@ -126,17 +127,11 @@ Index On Id Tag Id
 Index On LEFT(koOd,20) Tag koOd Additive
 Set Order To Id
 
-= OpenView('comPakettRemote')
-Select comPakettRemote
-Index On Id Tag Id
-Index On koOd Tag koOd Additive
-Set Order To Id
-
-= OpenView('comObjektRemote')
-Select comObjektRemote
-Index On Id Tag Id
-Index On koOd Tag koOd Additive
-Set Order To Id
+*!*	= OpenView('comPakettRemote')
+*!*	Select comPakettRemote
+*!*	Index On Id Tag Id
+*!*	Index On koOd Tag koOd Additive
+*!*	Set Order To Id
 
 
 *!*	= opEnview('comlausendRemote',iif ('RAAMA' $ curkey.versia ,.f.,.t.))
