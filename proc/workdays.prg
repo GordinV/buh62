@@ -1,5 +1,7 @@
  PARAMETER lnPaev, tnKuu, tnAasta, tnLopppaev, tnLepingid
  LOCAL lnMaxdays, lnHoliday, ldDate, lnReturn
+ 
+ 
  IF EMPTY(lnPaev)
       lnPaev = 1
  ENDIF
@@ -14,48 +16,65 @@
       tnAasta = gnAasta
  ENDIF
  lnReturn = 0
- WITH odB
-      IF  .NOT. EMPTY(tnLepingid)
-           .usE('qryToograf')
-           IF RECCOUNT('qryToograf')>0 .AND.  .NOT. EMPTY(qrYtoograf.tuNd)
-                IF  .NOT. USED('qryTooleping')
-                     .usE('qryTooleping')
-                ELSE
-                     IF qrYtooleping.id<>tnLepingid
-                          .dbReq('qryTooleping',gnHandle)
-                     ENDIF
-                ENDIF
-                IF qrYtooleping.toOpaev>0
-                     lnReturn = qrYtoograf.tuNd/qrYtooleping.toOpaev
-                     RETURN lnReturn
-                ENDIF
-           ENDIF
-           USE IN qrYtoograf
-      ENDIF
-      ldDate = DATE(tnAasta, tnKuu, lnPaev)
-      lnMaxdays = DAY(GOMONTH(DATE(tnAasta, tnKuu, 1), 1)-1)
-      IF lnMaxdays>tnLopppaev
-           lnMaxdays = tnLopppaev
-      ENDIF
-      IF  .NOT. USED('qryHoliday')
-           .usE('curHoliday','qryHoliday')
-      ENDIF
-      IF  .NOT. EMPTY(lnMaxdays)
-           FOR i = lnPaev TO lnMaxdays
-                IF DOW(ldDate, 2)=6 .OR. DOW(ldDate, 2)=7
-                     lnHoliday = lnHoliday+1
-                ELSE
-                     SELECT qrYholiday
-                     LOCATE FOR paEv=DAY(ldDate) .AND. kuU=MONTH(ldDate)
-                     IF FOUND()
-                          lnHoliday = lnHoliday+1
-                     ENDIF
-                ENDIF
-                ldDate = ldDate+1
-           ENDFOR
-           lnReturn = lnMaxdays-lnHoliday-lnPaev+1
-      ENDIF
- ENDWITH
- RETURN lnReturn
+lcParams = '{""}'
+TEXT TO lcParams TEXTMERGE noshow
+	{"kuu":<<tnKuu>>, "aasta":<<tnAasta>>, "paev":<<lnPaev>>,"lepingid":<<tnLepingid>>}
+ENDTEXT
+
+
+lcTaskName = 'public.sp_workdays'
+
+lError = oDb.readFromModel('palk\palk_oper', 'executeTask', 'guserid, lcParams,lcTaskName', 'qryWorkDays')
+IF lError AND USED('qryWorkDays') 
+	lnReturn = qryWorkDays.result
+	USE IN lnReturn
+ENDIF
+
+RETURN lnReturn
 ENDFUNC
+
+*!*	 WITH odB
+*!*	      IF  .NOT. EMPTY(tnLepingid)
+*!*	           .usE('qryToograf')
+*!*	           IF RECCOUNT('qryToograf')>0 .AND.  .NOT. EMPTY(qrYtoograf.tuNd)
+*!*	                IF  .NOT. USED('qryTooleping')
+*!*	                     .usE('qryTooleping')
+*!*	                ELSE
+*!*	                     IF qrYtooleping.id<>tnLepingid
+*!*	                          .dbReq('qryTooleping',gnHandle)
+*!*	                     ENDIF
+*!*	                ENDIF
+*!*	                IF qrYtooleping.toOpaev>0
+*!*	                     lnReturn = qrYtoograf.tuNd/qrYtooleping.toOpaev
+*!*	                     RETURN lnReturn
+*!*	                ENDIF
+*!*	           ENDIF
+*!*	           USE IN qrYtoograf
+*!*	      ENDIF
+*!*	      ldDate = DATE(tnAasta, tnKuu, lnPaev)
+*!*	      lnMaxdays = DAY(GOMONTH(DATE(tnAasta, tnKuu, 1), 1)-1)
+*!*	      IF lnMaxdays>tnLopppaev
+*!*	           lnMaxdays = tnLopppaev
+*!*	      ENDIF
+*!*	      IF  .NOT. USED('qryHoliday')
+*!*	           .usE('curHoliday','qryHoliday')
+*!*	      ENDIF
+*!*	      IF  .NOT. EMPTY(lnMaxdays)
+*!*	           FOR i = lnPaev TO lnMaxdays
+*!*	                IF DOW(ldDate, 2)=6 .OR. DOW(ldDate, 2)=7
+*!*	                     lnHoliday = lnHoliday+1
+*!*	                ELSE
+*!*	                     SELECT qrYholiday
+*!*	                     LOCATE FOR paEv=DAY(ldDate) .AND. kuU=MONTH(ldDate)
+*!*	                     IF FOUND()
+*!*	                          lnHoliday = lnHoliday+1
+*!*	                     ENDIF
+*!*	                ENDIF
+*!*	                ldDate = ldDate+1
+*!*	           ENDFOR
+*!*	           lnReturn = lnMaxdays-lnHoliday-lnPaev+1
+*!*	      ENDIF
+*!*	 ENDWITH
+*!*	 RETURN lnReturn
+*!*	ENDFUNC
 *

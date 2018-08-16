@@ -56,7 +56,7 @@
     <alias>row</alias>
   </select>
   <selectAsLibs>
-    <sql>select * from com_rekv</sql>
+    <sql>select * from ou.cur_userid where rekvid = $1</sql>
     <alias>selectAsLibs</alias>
   </selectAsLibs>
   <saveDoc>
@@ -90,4 +90,5 @@
     <sql />
     <alias />
   </generateJournal>
+  <print></print>
 </VFPData>
