@@ -9,7 +9,7 @@
     <alias>curTuludeAllikad</alias>
   </grid>
   <select>
-    <sql>select l.id, l.rekvid, l.kood, l.nimetus, l.muud, l.status, l.library, 
+    <sql>select l.id, l.rekvid, l.kood, l.nimetus, l.muud, l.status, l.library, l.tun5,
                 $2::integer as userid, 'ARTIKKEL' as doc_type_id
                 from libs.library l 
                 where l.id = $1</sql>
@@ -20,6 +20,7 @@
             null::integer as rekvid,
             null::text as nimetus,
             'TULUDEALLIKAD'::text as library,
+            1::integer as tun5,
             0::integer as status,
             null::text as muud</sqlAsNew>
     <query />
@@ -62,4 +63,5 @@
     <sql />
     <alias />
   </generateJournal>
+  <print></print>
 </VFPData>

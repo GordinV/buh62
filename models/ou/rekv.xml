@@ -27,6 +27,7 @@
                   r.muud,
                   r.regkood,
                   r.tel,
+                  ((r.properties-&gt;&gt;'arved')::jsonb-&gt;&gt;'tahtpaev')::integer as tahtpaev,
                   ((r.properties-&gt;&gt;'reklftp')::jsonb-&gt;&gt;'ftp')::varchar(120) as ftp,
                   ((r.properties-&gt;&gt;'reklftp')::jsonb-&gt;&gt;'login')::varchar(120) as login,
                   ((r.properties-&gt;&gt;'reklftp')::jsonb-&gt;&gt;'parool')::varchar(120) as parool                  
@@ -48,6 +49,7 @@
                       NULL :: VARCHAR(254) AS juht,
                       NULL :: VARCHAR(254) AS raama,
                       NULL :: TEXT         AS muud,
+                      null::integer as tahtpaev,
                      NULL :: VARCHAR(120) AS ftp,
                      NULL :: VARCHAR(120) AS login,
                      NULL :: VARCHAR(120) AS parool</sqlAsNew>
@@ -99,4 +101,5 @@
     <sql />
     <alias />
   </generateJournal>
+  <print></print>
 </VFPData>

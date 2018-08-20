@@ -1,3 +1,5 @@
+Parameters tnPvKaartId
+
 Local  lnResult
 If !Used('curSource')
 	Create Cursor curSource (Id Int, kood c(20), nimetus c(120))
@@ -7,7 +9,12 @@ If !Used('curValitud')
 Endif
 Create Cursor curResult (Id Int, gruppId Int, nomId Int)
 lnStep = 1
-SET STEP ON 
+
+If !Empty(tnPvKaartId)
+	Insert Into  curResult (Id) Values (tnPvKaartId)
+	lnStep = 3
+Endif
+
 Do While lnStep > 0
 	Do Case
 		Case lnStep = 1
@@ -33,53 +40,46 @@ Procedure arvutus
 	Local lError
 	If !Used('curKulumiarv')
 		Return .F.
-	ENDIF
-	odb.opentransaction()
+	Endif
+
 	Select Distinc Id From curResult Where !Empty(curResult.Id) Into Cursor recalc1
 	Select recalc1
+	lcParams = ''
 	Scan
-		lError=edit_oper(recalc1.Id)
-		If lError = .F.
-			Exit
-		Endif
+		lcParams = lcParams + Iif(Len(lcParams) > 0,',','') + Alltrim(Str(recalc1.Id))
 	Endscan
-	If lError = .T.
-		odb.commit()
-	Else
-		odb.Rollback()
-	Endif
-	If lError = .F.
-		Messagebox('Viga','Kontrol')
-	Endif
-	lnStep = 0
-Endproc
 
-Procedure edit_oper
-	Parameter tnid
-	If Used('v_pv_oper')
-		Use In v_pv_oper
+	If !Empty(lcParams)
+TEXT TO lcParams TEXTMERGE noshow
+		{"ids":[<<lcParams>>], "kpv":"<<curKulumiarv.kpv)>>","nomid":<<curKulumiarv.nomid>>,"doklausid":<<curKulumiarv.doklausid>>}
+ENDTEXT
+
+		_Cliptext = lcParams
+		* sql proc
+		task = 'docs.sp_samm_kulum'
+		lError = odB.readFromModel('palk\palk_oper', 'executeTask', 'guserid,lcParams,task', 'qryResult')
+
+		If !lError
+			Messagebox('Arvestuse viga',0+16,'Kontrol')
+			Set Step On
+		Else
+			*		MESSAGEBOX('Kokku arvestatud:' + ALLTRIM(STR(qryResult.result)),0+48,'Tulemus')
+			Messagebox('Kokku arvestatud:' + Alltrim(Str(qryResult.result)),0+48,'Tulemus')
+			Use In qryResult
+		Endif
 	Endif
-	If gVersia = 'VFP' Or gVersia = 'PG'
-		lcParam = Str(tnid)+","+Str(curKulumiarv.nomId)+","+;
-			STR(v_dokprop.Id)+",DATE("+Str(Year(curKulumiarv.kpv),4)+","+;
-			STR(Month(curKulumiarv.kpv),2)+","+Str(Day(curKulumiarv.kpv),2)+")"
-	Else
-		lcParam = Str(tnid)+","+Str(curKulumiarv.nomId)+","+;
-			STR(v_dokprop.Id)+",'"+Dtoc(curKulumiarv.kpv,1)+"')"
-	Endif
-	lError = odb.Exec ('sp_samm_kulum', lcParam)
+
+	lnStep = 0
 	Return lError
 Endproc
-
 
 Procedure get_grupp_list
 	If Used('query1')
 		Use In query1
 	Endif
-	tcKood = '%'
-	tcNimetus = '%'
-	tcKonto = '%'
-	odb.Use('curPvGruppid','qryPvGruppid')
+
+	lError = odB.readFromModel('libs\libraries\pv_grupp', 'curPvgruppid', 'gRekv, gUserid', 'qryPvGruppid')
+
 	Select curSource
 	If Reccount('curSource') > 0
 		Zap
@@ -107,46 +107,52 @@ Procedure get_grupp_list
 		lnStep = 0
 	Else
 		lnStep = lnStep + nResult
-	ENDIF
-	SELECT curResult 
-	brow
+	Endif
+	Select curResult
 Endproc
 
 Procedure get_pvkaart_list
-	If Used('query1')
-		Use In query1
-	ENDIF
-	tcKood = '%'
-	tcNimetus = '%'
-	tcKonto = '%'
-	tcVastIsik = '%'
-	tcGrupp = '%'
-	tcRentnik = '%'
-	tnSoetmaks1 = -999999999
-	tnSoetmaks2 = 999999999
-	tdSoetkpv1 = Gomonth(Date(),-360)
-	tdSoetkpv2 = GOMONTH(curKulumiarv.kpv,1) -1
-	tnTunnus = 1
-	
-	odb.Use('curPohivara','qryPohivara')
+	l_grupp_ids = ''
+
+	Select curResult
+	Scan For !Empty(gruppId)
+		l_grupp_ids = Iif(Len(l_grupp_ids) > 0,',','') + Alltrim(Str(l_grupp_ids))
+	Endscan
+
+
+TEXT TO lcWhere TEXTMERGE noshow
+		 soetmaks <= '<<GOMONTH(curKulumiarv.kpv,1) -1>>'
+		 and mahakantud is null
+ENDTEXT
+
+	If Len(l_grupp_ids) > 0
+TEXT TO lcWhere ADDITIVE TEXTMERGE noshow
+			and gruppid in (<<l_grupp_ids>>)
+ENDTEXT
+	Endif
+
+
+	lError = odB.readFromModel('libs\libraries\pv_kaart', 'curPohivara', 'gRekv', 'qryPohivara')
+
 	Select curSource
 	If Reccount('curSource') > 0
 		Zap
-	ENDIF
-	SELECT curResult
-	brow
-	Select kood, nimetus, Id From qryPohivara Where gruppId In (Select gruppId From curResult);
+	Endif
+	Select curResult
+	Select Distinct kood, nimetus, Id From qryPohivara;
 		into Cursor query1
 	Select curSource
 	Append From Dbf('query1')
 	Use In query1
-	brow
+
 	Select curValitud
 	If Reccount('curvalitud') > 0
 		Zap
 	Endif
+
 	Do Form Forms\samm With '2', Iif(config.keel = 2,'Inv. kaardid','Инвентарные карты'),;
 		iif(config.keel = 2,'Valitud lepingud','Выбранные договора') To nResult
+
 	If nResult = 1
 		Select Distinc Id From curValitud Into Cursor query1
 		Select query1
@@ -167,7 +173,7 @@ Procedure get_nom_list
 	If Used('query1')
 		Use In query1
 	Endif
-	Select kood, nimetus, Id From comNomremote Where DOK = 'KULUM' Into Cursor qryKulum
+	Select Distinct kood, nimetus, Id From comNomRemote Where DOK = 'KULUM' Into Cursor qryKulum
 	Select curSource
 	If Reccount('curSource') > 0
 		Zap

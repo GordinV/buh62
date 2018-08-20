@@ -213,7 +213,7 @@ Function edIt_arve
 			ldKpv = Gomonth(ldKpv,1)
 		Endif
 		lnDokPropId = v_dokprop.Id
-		ldKpv = ldArvKpv + Iif(!Used('v_config_') Or Empty(v_config_.tahtpaev),lnPaev,v_config_.tahtpaev)
+		ldKpv = ldArvKpv + Iif(Empty(qryRekv.tahtpaev),lnPaev,qryRekv.tahtpaev)
 
 	Endif
 
@@ -230,11 +230,6 @@ Function edIt_arve
 		Locate For Id = v_leping1.objektid
 		lcObjekt = comObjektRemote.koOd
 	Endif
-*SET STEP ON
-*!*		If !Used('v_config_')
-*!*			tnUserId = 0
-*!*			oDb.Use('v_config_')
-*!*		Endif
 
 	Select v_arv
 	If Reccount('v_arv') = 0
@@ -250,12 +245,6 @@ Function edIt_arve
 		objekt With lcObjekt,;
 		muud With v_leping1.selgitus In v_arv
 
-*!*		Insert Into v_arv (reKvid, Userid, doklausid, Number, kpv, asutusId, liSa, taHtaeg, objekt, muud) Values ;
-*!*			(gRekv, guserid, lnDokPropId, Alltrim(Str(lnDok)), ldArvKpv, v_leping1.asutusId, ;
-*!*			IIF(Upper(gcProgNimi) = 'ARVELDUSED.EXE','Viitenumber:'+fncViitenumber(Iif(v_config_.toolbar3 = 1,v_leping1.Id,0),;
-*!*			IIF(v_config_.toolbar3=2,v_leping1.asutusId,0),0),v_leping1.Number), ldKpv, lcObjekt,v_leping1.selgitus )
-
-*		SET STEP ON
 
 	=fnc_addfromleping(v_leping1.Id)
 

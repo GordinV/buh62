@@ -21,7 +21,8 @@
                  a.tahtaeg, 
                  a.dok, 
                  a.pakettid,
-                 a.objektid
+                 a.objektid,
+                 a.muud
                  from docs.doc d 
                  inner join libs.library l on l.id = d.doc_type_id 
                  inner join docs.leping1 a on a.parentId = d.id 
@@ -43,7 +44,8 @@
                  (now()  + interval '365 days')::date as tahtaeg, 
                  null::text as dok, 
                  null::integer as pakettid, 
-                 null::integer as objektId
+                 null::integer as objektId,
+                 null::text as muud
                  from libs.library l,   libs.library s, ou.userid u  
                  where l.library = 'DOK' and l.kood = 'LEPING' 
                  and u.id = $2::integer 

@@ -231,10 +231,10 @@ Function edIt_arve
 		lcObjekt = comObjektRemote.koOd
 	Endif
 *SET STEP ON
-	If !Used('v_config_')
-		tnUserId = 0
-		oDb.Use('v_config_')
-	Endif
+*!*		If !Used('v_config_')
+*!*			tnUserId = 0
+*!*			oDb.Use('v_config_')
+*!*		Endif
 
 	Select v_arv
 	If Reccount('v_arv') = 0

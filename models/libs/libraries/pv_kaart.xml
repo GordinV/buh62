@@ -36,33 +36,33 @@
                   LEFT OUTER JOIN libs.asutus a ON a.id = (l.properties :: JSONB -&gt;&gt; 'vastisikid') :: INTEGER
                 where l.id = $1</sql>
     <sqlAsNew>SELECT
-                      $1 :: INTEGER       AS id,
-                      $2 :: INTEGER       AS userid,
-                      'POHIVARA'         AS doc_type_id,
-                      NULL :: TEXT       AS kood,
-                      NULL :: INTEGER    AS rekvid,
-                      NULL :: TEXT       AS nimetus,
-                      'POHIVARA' :: TEXT AS library,
-                      0 :: INTEGER       AS status,
-                      NULL :: TEXT       AS muud,
-                    NULL:: INTEGER AS gruppid,
-                    NULL :: VARCHAR (20) AS konto,
-                    now() ::date AS soetkpv,
-                    0:: NUMERIC (12, 4) AS kulum,
-                    0:: NUMERIC (12, 2) AS algkulum,
-                    0:: NUMERIC (12, 2) AS soetmaks,
-                    0:: NUMERIC (12, 2) AS parhind,
-                    0:: NUMERIC (12, 2) AS jaak,
-                    NULL :: INTEGER AS vastisikid,
-                    NULL :: TEXT AS selg,
-                    'põhivara' :: varchar(100) AS liik,
-                    null::date as mahakantud,
-                    'EUR'::varchar(20) as valuuta,
-                    1::numeric(12,2) as kuurs,
-                    NULL::text as grupp,
-                    null::text as vastisik,
-                    0::numric as arv_kulum,
-                    NULL :: TEXT AS rentnik</sqlAsNew>
+                      $1 :: INTEGER               AS id,
+                      $2 :: INTEGER               AS userid,
+                      'POHIVARA'                 AS doc_type_id,
+                      NULL :: TEXT               AS kood,
+                      NULL :: INTEGER            AS rekvid,
+                      NULL :: TEXT               AS nimetus,
+                      'POHIVARA' :: TEXT         AS library,
+                      0 :: INTEGER               AS status,
+                      NULL :: TEXT               AS muud,
+                      NULL :: INTEGER            AS gruppid,
+                      NULL :: VARCHAR(20)        AS konto,
+                      now() :: DATE              AS soetkpv,
+                      0 :: NUMERIC(12, 4)        AS kulum,
+                      0 :: NUMERIC(12, 2)        AS algkulum,
+                      0 :: NUMERIC(12, 2)        AS soetmaks,
+                      0 :: NUMERIC(12, 2)        AS parhind,
+                      0 :: NUMERIC(12, 2)        AS jaak,
+                      NULL :: INTEGER            AS vastisikid,
+                      NULL :: TEXT               AS selg,
+                      'põhivara' :: VARCHAR(100) AS liik,
+                      NULL :: DATE               AS mahakantud,
+                      'EUR' :: VARCHAR(20)       AS valuuta,
+                      1 :: NUMERIC(12, 2)        AS kuurs,
+                      NULL :: TEXT               AS grupp,
+                      NULL :: TEXT               AS vastisik,
+                      0 :: NUMERIC               AS arv_kulum,
+                      NULL :: TEXT               AS rentnik</sqlAsNew>
     <query />
     <multiple>false</multiple>
     <alias>row</alias>
@@ -97,8 +97,8 @@
     <alias></alias>
   </executeSql>
   <executeCommand>
-    <sql></sql>
-    <alias></alias>
+    <sql>select * from sp_execute_task($1::integer, $2::JSON, $3::TEXT )</sql>
+    <alias>executeTask</alias>
   </executeCommand>
   <register>
     <sql></sql>
