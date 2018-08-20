@@ -134,9 +134,6 @@ Set Order To Id
 *!*	Set Order To Id
 
 
-*!*	= opEnview('comlausendRemote',iif ('RAAMA' $ curkey.versia ,.f.,.t.))
-*!*	Select coMlausendremote
-*!*	Index ON id TAG id
 = OpenView('comlausheadremote', Iif ('RAAMA' $ curkey.versia ,.F.,.T.))
 Select comlausheadremote
 Index On Id Tag Id

@@ -60,7 +60,7 @@ If Empty(tnOpt)
 
 
 Endif
-SET STEP ON 
+
 = OpenView('comObjektremote',.T., 'comObjektRemote', 'libs\libraries\objekt')
 
 Select comObjektRemote
