@@ -1,3 +1,5 @@
+Parameter tnIsikid
+
 Local lnResult
 If Empty(gnKuu) .Or. Empty(gnAasta)
 	Do Form period
@@ -10,6 +12,15 @@ If  .Not. Used('curValitud')
 Endif
 Create Cursor curResult (Id Int, osAkondid Int)
 lnStep = 1
+
+If  .Not. Empty(tnIsikid)
+	Insert Into curResult (Id) Values (tnIsikid)
+		
+	lnStep = 3
+	tnIsikid = 0
+Endif
+
+
 Do While lnStep>0
 	Do Case
 		Case lnStep=1
@@ -21,9 +32,9 @@ Do While lnStep>0
 			If Used('tmp_params') And Reccount('tmp_params') > 0
 * params
 				Select tmp_params
-				TEXT TO l_json TEXTMERGE noshow
+TEXT TO l_json TEXTMERGE noshow
 					[<<oDb.getJson()>>]
-				ENDTEXT
+ENDTEXT
 				lError = oDb.readFromModel('palk\palk_taabel', 'genTaabel', 'guserid,l_json', 'result')
 				If !lError
 					lcViga = ''
@@ -73,7 +84,7 @@ Procedure arVutus
 		CURSOR recalc1
 	Select recalc1
 	Scan
-		Insert Into tmp_params (lepingid, kuu, aasta) Values (recalc1.Id,gnKuu, gnAasta )
+		Insert Into tmp_params (lepingid, kuu, aasta) Values (recalc1.Id, gnKuu, gnAasta )
 	Endscan
 	lnStep = 0
 Endproc
@@ -115,21 +126,30 @@ Procedure geT_osakonna_list
 Endproc
 *
 Procedure geT_isiku_list
-	If Used('query1')
-		Use In query1
+	If !Used('comTootajadRemote')
+		leRror = odB.readFromModel('palk\tootaja', 'selectAsLibs', 'gRekv, guserid', 'comTootajadRemote')
+
+		If 	!leRror And Used('comTootajadRemote') And Reccount('comTootajadRemote') > 0
+			Messagebox('Töötajate nimekirja laadimine ebaõnnestus',0 + 48,'Error')
+			Return .F.
+		Endif
+
 	Endif
+
+
 	Select curSource
 	If Reccount('curSource')>0
 		Zap
-	Endif
-	Select isIkukood As koOd,; 
-		Left(Rtrim(nimetus)+Space(1)+Rtrim(amEt), 120) As niMetus, lepingId as id;
-		From comTootajad ;
+	ENDIF
+	
+	Select isIkukood As koOd,;
+		Left(Rtrim(niMetus)+Space(1)+Rtrim(amEt), 120) As niMetus, lepingid As Id;
+		From comTootajadRemote ;
 		Where osAkondid <> 0 ;
-		AND osakondId In (Select osAkondid  ;
+		AND osAkondid In (Select osAkondid  ;
 		FROM curResult) ;
 		Into Cursor query1
-		
+
 	Select curSource
 	Append From Dbf('query1')
 	Use In query1

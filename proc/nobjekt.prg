@@ -24,7 +24,7 @@
            oObject = &cVar
       ENDIF
       ooBject.shOw()
-      IF  .NOT. ocOnnect.chKmenu(ckLass)
+      IF LOWER(ooBject.name) <> 'editmenu' and .NOT. ocOnnect.chKmenu(ckLass)
            ooBject = .NULL.
            RETURN .F.
       ENDIF
