@@ -1,0 +1,6 @@
+Compiling c:\avpsoft\buh62\queries\kontoasutusandmik_report1.prg
+Select alg_saldo As algsaldo, , lopp_saldo As loppsaldo, deebet, kreedit,  kpv, regkood, asutus, tp, rekv_nimetus, rekv_id, Number,  dok, kood1, kood2, kood3, kood4, kood5, Proj, tunnus
+Error in line 18: Command contains unrecognized phrase/keyword.
+From tmpReport  Order By konto, asutus, rekv_nimetus, kpv  where !Empty (alg_saldo) Or !Empty (deebet) Or !Empty (kreedit) Or !Empty (lopp_saldo) into Cursor KontoAsutusAndmik_report1
+Error in line 22: Unrecognized command verb.
+
