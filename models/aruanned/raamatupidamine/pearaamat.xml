@@ -2,20 +2,21 @@
 <VFPData>
   <grid>
     <sql>SELECT
-                      qry.rekv_id,
-                      qry.asutus_id,
-                      qry.konto,
-                      l.nimetus,
-                      qry.saldo,
-                      a.regkood,
-                      a.nimetus as asutus,
-                      a.tp,
-                      a.aadress
-                    FROM docs.kontosaldoandmik($1::text, $2::integer, $3::date, $4::integer) qry
-                      INNER JOIN libs.asutus a on a.id = qry.asutus_id  
-                      INNER JOIN com_kontoplaan l ON l.kood = qry.konto
-                      WHERE qry.saldo &lt;&gt; 0</sql>
-    <alias>kontosaldoandmik_report</alias>
+                      sum(deebet)
+                        FILTER (WHERE korr_konto IS NULL) OVER (
+                        PARTITION BY rekv_id, konto ) AS alg_saldo,
+                      CASE WHEN korr_konto IS NOT NULL
+                        THEN deebet
+                      ELSE 0 END                      AS deebet,
+                      kreedit,
+                      sum(deebet - kreedit)
+                      OVER (
+                        PARTITION BY rekv_id, konto ) AS lopp_saldo,
+                      rekv_id,
+                      konto,
+                      korr_konto                    
+                    FROM docs.pearaamat($1::text, $2::date, $3 :: DATE, $4::integer)</sql>
+    <alias>pearaamat_report</alias>
   </grid>
   <select></select>
   <selectAsLibs>

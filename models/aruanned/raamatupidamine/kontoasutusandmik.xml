@@ -26,12 +26,12 @@
                         qryReport.kood5,
                         qryReport.proj,
                         qryReport.tunnus,
-                        a.regkood, a.nimetus as asutus, a.tp,
+                        a.regkood, a.nimetus as asutus, a.tp, a.aadress,
                         l.nimetus,
                         r.nimetus as rekv_nimetus,
                         r.parentid 
                       FROM docs.kontoasutusandmik($1::text, $2 :: INTEGER, $3::date, $4 :: DATE, $5::integer) qryReport
-                      inner join com_asutused a on a.id = qryReport.asutus_id
+                      inner join libs.asutus a on a.id = qryReport.asutus_id
                       inner join com_kontoplaan l on l.kood = qryReport.konto
                       inner join com_rekv r on r.id = qryReport.rekv_id
                       where qryReport.konto is not null</sql>

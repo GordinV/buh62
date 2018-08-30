@@ -2,20 +2,9 @@
 <VFPData>
   <grid>
     <sql>SELECT
-                      qry.rekv_id,
-                      qry.asutus_id,
-                      qry.konto,
-                      l.nimetus,
-                      qry.saldo,
-                      a.regkood,
-                      a.nimetus as asutus,
-                      a.tp,
-                      a.aadress
-                    FROM docs.kontosaldoandmik($1::text, $2::integer, $3::date, $4::integer) qry
-                      INNER JOIN libs.asutus a on a.id = qry.asutus_id  
-                      INNER JOIN com_kontoplaan l ON l.kood = qry.konto
-                      WHERE qry.saldo &lt;&gt; 0</sql>
-    <alias>kontosaldoandmik_report</alias>
+                      *
+                    FROM docs.varadearuanne($1::date, $2::date, $3::integer) qry</sql>
+    <alias>kulumiaruanne_report</alias>
   </grid>
   <select></select>
   <selectAsLibs>
