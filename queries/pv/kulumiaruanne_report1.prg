@@ -1,6 +1,4 @@
 Parameter cWhere
-Local lnDeebet, lnKreedit
-
 
 TEXT TO lcWhere TEXTMERGE noshow
 	rekv_id = <<gRekv>>
@@ -13,7 +11,7 @@ IF !EMPTY(fltrAruanne.grupp)
 	ENDTEXT
 ENDIF
 
-lError = oDb.readFromModel('aruanned\pv\varadearuanne', 'kulumiaruanne_report', 'fltrAruanne.kpv1,fltrAruanne.kpv2, gRekv', 'tmpReport', lcWhere)
+lError = oDb.readFromModel('aruanned\pv\kulumiaruanne', 'kulumiaruanne_report', 'fltrAruanne.kpv1,fltrAruanne.kpv2, gRekv', 'tmpReport', lcWhere)
 If !lError
 	Messagebox('Viga',0+16, 'Kulumiaruanne')
 	Set Step On
