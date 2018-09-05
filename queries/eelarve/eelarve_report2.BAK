@@ -26,16 +26,12 @@ If !lError
 	Return .F.
 Endif
 
-Select artikkel, l.nimetus, Sum(eelarve) As eelarve, Sum(Iif(Empty(fltrAruanne.kassakulud), tegelik, kassa)) As taitmine,;
-	rekv.regkood, rekv.nimetus As asutus ,;
-	parent.nimetus As parasutus,Parent.regkood As parregkood ;
+Select artikkel, nimetus, Sum(eelarve) As eelarve, Sum(Iif(Empty(fltrAruanne.kassakulud), tegelik, kassa)) As taitmine,;
+	regkood, asutus ,;
+	parasutus, parregkood ;
 	from tmpReport ;
-	LEFT Outer Join comEelarveRemote l On l.kood = tmpReport.artikkel ;
-	INNER Join comRekvRemote rekv On tmpReport.rekv_id = rekv.Id ;
-	LEFT Outer Join comRekvRemote Parent On rekv.parentid = Parent.Id ;
-	GROUP By artikkel, l.nimetus, rekv.regkood, rekv.nimetus,;
-	parent.nimetus,Parent.regkood ;
-	ORDER By Parent.nimetus, rekv.nimetus, artikkel;
+	GROUP By artikkel, nimetus, regkood, asutus, parasutus,parregkood ;
+	ORDER By parasutus,asutus,  artikkel ;
 	INTO Cursor eelarve_report2
 
 Use In tmpReport

@@ -1,142 +1,40 @@
 Parameter cWhere
-Create Cursor eelarve_report2 (rekvid Int, tegev c(20), kood c(20), nimetus c(254), eelarve n(18,6), taitmine n(18,6), asutus c(254), regkood c(254),;
-	parAsutus c(254), parregkood c(20))
-Index On Left(Ltrim(Rtrim(parregkood)),11)+Left(Ltrim(Rtrim(regkood)),11)+Alltrim(kood) Tag idx1
-Set Order To idx1
 
-If !Empty (fltrAruanne.asutusid)
-	Select comrekvremote
-	Locate For Id = fltrAruanne.asutusid
-	tcAsutus = Ltrim(Rtrim(comrekvremote.nimetus)) + '%'
-Else
-	tcAsutus = '%'
-Endif
-tnTunnus = fltrAruanne.tunn
-tcTunnus = Ltrim(Rtrim(fltrAruanne.tunnus))+'%'
-tckOOD1 = Ltrim(Rtrim(fltrAruanne.KOOD1))+'%'
-tckOOD2 = Ltrim(Rtrim(fltrAruanne.KOOD2))+'%'
-tckOOD4 = Ltrim(Rtrim(fltrAruanne.KOOD4))+'%'
-tckOOD5 = Ltrim(Rtrim(fltrAruanne.KOOD5))+'%'
-*tckOOD = Iif (Empty(fltrAruanne.KOOD4),'3',Ltrim(Rtrim(fltrAruanne.KOOD4)))+'%'
-tckOOD = Ltrim(Rtrim(fltrAruanne.KOOD5))+'%'
-tctegev = Ltrim(Rtrim(fltrAruanne.KOOD1))+'%'
-tcEelarve = '%'
-tcValuuta = '%'
-*tckOOD5
-tcNimetus = '%'
-tnSumma1 = 	-999999999.99
-tnSumma2 = 	999999999.99
-tnAasta1 = 	Year (fltrAruanne.kpv1)
-tnAasta2 = 	Year(fltrAruanne.kpv2)
-tnKuu1 = 	Month(fltrAruanne.kpv1)
-tnKuu2 = 	Month(fltrAruanne.kpv2)
-IF EMPTY(fltrAruanne.kond)
-	tnParent = 3
-ELSE
-	tnParent = 1
+
+TEXT TO lcWhere TEXTMERGE noshow
+	(EMPTY(<<fltrAruanne.asutusid>>) or rekv_id = <<fltrAruanne.asutusid>>)
+	and coalesce(tunnus,'') ilike '<<ALLTRIM(fltrAruanne.tunnus)>>%'
+	and coalesce(artikkel,'') like '<<ALLTRIM(fltrAruanne.kood5)>>%'
+	and coalesce(tegev,'') like '<<ALLTRIM(fltrAruanne.kood1)>>%'
+	and coalesce(allikas,'') like '<<ALLTRIM(fltrAruanne.kood2)>>%'
+ENDTEXT
+
+If Empty(fltrAruanne.kond)
+	TEXT TO lcWhere ADDITIVE TEXTMERGE noshow
+			and rekv_id = <<gRekv>>
+	ENDTEXT
 ENDIF
-
-IF tnKuu1 = 1 
-	tnKuu1 = 0
-endif
-
-IF tnTunnus > 0 
-	tdKpv = fltrAruanne.kpv
-ELSE
-	tdKpv = DATE(1900,01,01)
-ENDIF
-SET STEP on
-With oDb
-	.Use ('CUREELARVEKULUD', 'tmpeelarvekulud_')
-	.Use ('curKuluTaitm','tmpKuluTaitm',.T.)
-	.dbreq ('tmpKuluTaitm',gnhandle,IIF(fltrAruanne.kassakulud = 1,'curKassaKuluTaitm','curFaktKuluTaitm'))
-Endwith
-If gVersia = 'VFP'
-	If  Used('curKassaKuludeTaitmine_')
-		Use In curKassaKuludeTaitmine_
-	Endif
-Endif
-If fltrAruanne.kohalik = 1
-* только местный бюджет
-	Select rekvid, KOOD4, Sum(Summa*kuurs) As Summa, asutus, regkood, parAsutus, parregkood From tmpeelarvekulud_;
-		WHERE Empty(tmpeelarvekulud_.kood2) ;
-		order By parAsutus, parregkood, asutus, regkood,rekvid,  KOOD4;
-		group By parAsutus, parregkood, asutus, regkood,rekvid,  KOOD4;
-		into Cursor tmpeelarvekulud
-
-	Select Sum(Summa) As Summa, kood, rekvid From tmpKuluTaitm ;
-		WHERE EMPTY(kood2);
-		order By kood, rekvid;
-		group By kood, rekvid;
-		into Cursor qryKuluTaitm
+l_aasta = year(fltrAruanne.kpv1)
+l_kpv = fltrAruanne.kpv2
+l_kond = EMPTY(fltrAruanne.tunn)
 
 
-Else
-	Select rekvid, KOOD4, Sum(Summa*kuurs) As Summa, asutus, regkood, parAsutus, parregkood From tmpeelarvekulud_;
-		order By parAsutus, parregkood, asutus, regkood,rekvid,  KOOD4;
-		group By parAsutus, parregkood, asutus, regkood,rekvid,  KOOD4;
-		into Cursor tmpeelarvekulud
-
-
-	Select Sum(Summa) As Summa, kood, rekvid From tmpKuluTaitm ;
-		order By kood, rekvid;
-		group By kood, rekvid;
-		into Cursor qryKuluTaitm
-
+lError = oDb.readFromModel('aruanned\eelarve\kulud_allikad', 'kulud_report', 'l_aasta,l_kpv,l_kond, gRekv', 'tmpReport', lcWhere)
+If !lError
+	Messagebox('Viga',0+16, 'Eelarve kulud')
+	Set Step On
+	Select 0
+	Return .F.
 Endif
 
-Use In 	tmpeelarvekulud_
-Use In tmpKuluTaitm
+Select artikkel, nimetus, Sum(eelarve) As eelarve, Sum(Iif(Empty(fltrAruanne.kassakulud), tegelik, kassa)) As taitmine,;
+	regkood, asutus ,;
+	parasutus, parregkood ;
+	from tmpReport ;
+	GROUP By artikkel, nimetus, regkood, asutus, parasutus,parregkood ;
+	ORDER By parasutus,asutus,  artikkel ;
+	INTO Cursor eelarve_report2
 
-Select tmpeelarvekulud
-Scan
-	Select comEelarveRemote
-	Locate For kood = tmpeelarvekulud.KOOD4
-	lnTaitm = 0
-	Select * From comrekvremote Where Id = tmpeelarvekulud.rekvid Into Cursor qry_Rekv1
-	Select * From comrekvremote Where Id = qry_Rekv1.parentid Into Cursor qry_Rekv2
-
-	Insert Into eelarve_report2 (rekvid, kood, nimetus, eelarve, asutus, regkood,parAsutus, parregkood, taitmine) Values ;
-		(tmpeelarvekulud.rekvid, comEelarveRemote.kood,comEelarveRemote.nimetus,tmpeelarvekulud.Summa /fltrAruanne.devide,qry_Rekv1.nimetus,;
-		qry_Rekv1.regkood, qry_Rekv2.nimetus, qry_Rekv2.regkood,lnTaitm )
-Endscan
-
-Select qryKuluTaitm
-Scan
-	Select eelarve_report2
-	Locate For kood = qryKuluTaitm.kood And rekvid = qryKuluTaitm.rekvid
-*And eelarve = tmpeelarvetulud.KOOD5 And tegev = tmpeelarvetulud.KOOD1
-	If Found()
-		Replace taitmine With qryKuluTaitm.Summa /fltrAruanne.devide In eelarve_report2
-	Else
-		Select comEelarveRemote
-		Locate For kood = qryKuluTaitm.kood
-		Select * From comrekvremote Where Id = qryKuluTaitm.rekvid Into Cursor qry_Rekv1
-		Select * From comrekvremote Where Id = qry_Rekv1.parentid Into Cursor qry_Rekv2
-		Insert Into eelarve_report2 (rekvid, kood, nimetus, eelarve, asutus, regkood,parAsutus, parregkood, taitmine) Values ;
-			(qryKuluTaitm.rekvid, comEelarveRemote.kood,comEelarveRemote.nimetus,0 ,qry_Rekv1.nimetus,;
-			qry_Rekv1.regkood, qry_Rekv2.nimetus, qry_Rekv2.regkood,qryKuluTaitm.Summa /fltrAruanne.devide )
-	Endif
-Endscan
-
-If Used ('qry_rekv1')
-	Use In qry_Rekv1
-Endif
-If Used ('qry_rekv2')
-	Use In qry_Rekv2
-Endif
-
-Use In qryKuluTaitm
-Use In tmpeelarvekulud
-
-IF !EMPTY(fltrAruanne.tunnus)
-	SELECT comTunnusremote
-	LOCATE FOR ALLTRIM(kood) = ALLTRIM(fltrAruanne.tunnus)
-ENDIF
-
-
+Use In tmpReport
 Select eelarve_report2
-If Reccount() < 1
-	Append Blank
-Endif
 
