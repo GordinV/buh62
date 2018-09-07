@@ -1,27 +1,34 @@
  PARAMETER tcWhere
 
-lcWhere = ''
-lcWhere = IIF(EMPTY(fltrAruanne.kond),' rekv_id = ' + STR(gRekv), '')
-
-
-TEXT TO lcWhere ADDITIVE TEXTMERGE noshow
-	<<IIF(LEN(lcWhere) > 0, 'and', '')>> konto ilike '<<ALLTRIM(fltrAruanne.konto)>>%'
+TEXT TO lcWhere TEXTMERGE noshow
+	(EMPTY(<<fltrAruanne.asutusid>>) or rekv_id = <<fltrAruanne.asutusid>>)
+	and coalesce(artikkel,'') like '<<ALLTRIM(fltrAruanne.kood5)>>%'
+	and coalesce(tegev,'') like '<<ALLTRIM(fltrAruanne.kood1)>>%'
+	and coalesce(allikas,'') like '<<ALLTRIM(fltrAruanne.kood2)>>%'
 ENDTEXT
 
+If Empty(fltrAruanne.kond)
+	TEXT TO lcWhere ADDITIVE TEXTMERGE noshow
+			and rekv_id = <<gRekv>>
+	ENDTEXT
+ENDIF
+l_kpv1 = fltrAruanne.kpv1
+l_kpv2 = fltrAruanne.kpv2
 
-lError = oDb.readFromModel('aruanned\raamatupidamine\kontosaldoandmik', 'kontosaldoandmik_report', 'fltrAruanne.kpv1,fltrAruanne.kpv2, gRekv', 'tmpReport', lcWhere)
+lError = oDb.readFromModel('aruanned\eelarve\saldoandmik', 'saldoandmik_report', 'l_kpv1,l_kpv2, gRekv', 'tmpReport', lcWhere)
 If !lError
-	Messagebox('Viga',0+16, 'Konto saldoandmik')
+	Messagebox('Viga',0+16, 'Eelarve kulud')
 	Set Step On
-	SELECT 0
-	RETURN .f.
+	Select 0
+	Return .F.
 Endif
 
+Select konto, tp, tegev, allikas, artikkel, rahavoog, ;
+	IIF(EMPTY(tyyp) OR tyyp = 1 OR tyyp = 3, deebet - kreedit, 000000000.00) as deebet, ;
+	IIF(tyyp = 2 OR tyyp = 4, kreedit - deebet, 000000000.00 ) as kreedit ;
+	from tmpReport ;
+	ORDER By konto, tp, tegev, allikas, artikkel, rahavoog ;
+	INTO Cursor saldoaruanne_report1
 
-SELECT * from tmpReport ;
-ORDER by asutus_id, konto, rekv_id;
-INTO CURSOR saldoaruanne_report1
-
-USE IN tmpReport
- 
-SELECT saldoaruanne_report1
+Use In tmpReport
+Select saldoaruanne_report1
