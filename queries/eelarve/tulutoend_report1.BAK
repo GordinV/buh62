@@ -21,15 +21,12 @@ ENDTEXT
 
 lError = SQLEXEC(gnHandle, lcString, 'qryTuludTmp')
 
+If lError < 0
+	SELECT 0
+	glError = .t.
+	Return .f.
+Endif
 
-*!*	With oDb
-
-*!*	*!*		If !empty (fltrAruanne.kassakulud)
-*!*			lError = .use ('qryKassaTulud','qryTuludTmp')
-*!*	*!*		Else
-*!*	*!*			lError = .use ('qryTegelikTulud','qryTuludTmp')
-*!*	*!*		Endif
-*!*	Endwith
 Select qryTuludTmp.kood as kood,  sum (summa) as summa ;
 	from qryTuludTmp ;
 	order by qryTuludTmp.kood ;
@@ -44,11 +41,6 @@ SCAN
 endscan
 USE IN qry2
 
-Select tulutoend_report1
-If lError < 0
-	glError = .t.
-	Return .f.
-Endif
 Select tulutoend_report1
 IF RECCOUNT() < 1
 	APPEND blank
