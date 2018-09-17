@@ -23,8 +23,6 @@ If (l_test)
 	Endif
 
 Endif
-Set Procedure To Proc/fnc_currentValuuta Additive
-gcCurrentValuuta = fnc_currentValuuta('VAL',Date())
 
 
 If Empty(tnOpt)
@@ -72,16 +70,10 @@ Set Order To Id
 Index On Id Tag Id
 Set Order To Id
 
-= OpenView('comgrupp',Iif ('POHIVARA' $ curkey.versia,.F.,.T.),'comGruppRemote')
+= OpenView('comGruppRemote',Iif ('POHIVARA' $ curkey.versia,.F.,.T.),'comGruppRemote','libs\libraries\pv_grupp')
 Select comGruppRemote
 Index On Id Tag Id
-Index On koOd Tag koOd Additive
-Set Order To Id
-
-= OpenView('comPalkLib',Iif ('PALK' $ curkey.versia,.F.,.T.),'comPalkLibRemote')
-Select comPalkLibRemote
-Index On Id Tag Id
-Index On koOd Tag koOd Additive
+Index On LEFT(koOd,20) Tag koOd Additive
 Set Order To Id
 
 = OpenView('comProjremote', .t., 'comProjRemote','libs\libraries\project')
@@ -111,11 +103,6 @@ Index On LEFT(koOd,20) Tag koOd
 Index On Id Tag Id
 Set Order To Id
 
-
-= OpenView('comdoklausremote', Iif ('RAAMA' $ curkey.versia ,.F.,.T.))
-Select comdoklausremote
-Index On Id Tag Id
-Set Order To Id
 = OpenView('comkassaRemote', .t., 'comKassaRemote', 'ou\kassa')
 Select comkassaRemote
 Index On Id Tag Id
@@ -125,18 +112,6 @@ Set Order To Id
 Select coMkontodremote
 Index On Id Tag Id
 Index On LEFT(koOd,20) Tag koOd Additive
-Set Order To Id
-
-*!*	= OpenView('comPakettRemote')
-*!*	Select comPakettRemote
-*!*	Index On Id Tag Id
-*!*	Index On koOd Tag koOd Additive
-*!*	Set Order To Id
-
-
-= OpenView('comlausheadremote', Iif ('RAAMA' $ curkey.versia ,.F.,.T.))
-Select comlausheadremote
-Index On Id Tag Id
 Set Order To Id
 
 = OpenView('comnomRemote', .T.,'comnomRemote','libs\libraries\nomenclature')
@@ -154,37 +129,24 @@ Select comtunnusRemote
 Index On Id Tag Id
 Index On Left(koOd,20) Tag koOd Additive
 Set Order To Id
-*= OpenView('comAUTO')
-
-If Used('comArvRemote')
-	Use In coMarvremote
-Endif
-
-= OpenView('comArvRemote',.T.)
-Select coMarvremote
-Index On Id Tag Id
-Index On Number Tag Number Additive
-Set Order To Number
 
 = OpenView('comValuutaRemote',.t.,'comValuutaRemote','libs\libraries\valuuta')
 If Used('comValuutaRemote')
 	Select coMValuutaRemote
 	Index On Id Tag Id
-	Index On koOd Tag koOd Additive
+	Index On LEFT(koOd,20) Tag koOd Additive
 	Set Order To koOd
 Endif
-= OpenView('v_palk_config')
-= OpenView('v_config_')
 
-If gcProgNimi = 'HOOLDEKODU.EXE'
-	lcString = "select count(id) as kogus from hooettemaksud where staatus = 1"
-	lError = SQLEXEC(gnHandle,lcString,'qry')
-	If lError > 0 And Used('qry') And Val(Alltrim(qry.kogus)) > 0
-		Messagebox('Leitud klassifitseerimata ettemaksed')
-* leitud klassifitseerimata ettemasud, kaivitame ettemasu register
-		oTools.btnEttemaks.Click()
-	Endif
-Endif
+*!*	If gcProgNimi = 'HOOLDEKODU.EXE'
+*!*		lcString = "select count(id) as kogus from hooettemaksud where staatus = 1"
+*!*		lError = SQLEXEC(gnHandle,lcString,'qry')
+*!*		If lError > 0 And Used('qry') And Val(Alltrim(qry.kogus)) > 0
+*!*			Messagebox('Leitud klassifitseerimata ettemaksed')
+*!*	* leitud klassifitseerimata ettemasud, kaivitame ettemasu register
+*!*			oTools.btnEttemaks.Click()
+*!*		Endif
+*!*	Endif
 
 
 Return
@@ -202,6 +164,7 @@ Procedure OpenView
 		If !Empty(tcModel)
 			lError = oDb.readFromModel(tcModel, 'selectAsLibs', 'gRekv, guserid', tcView)
 			IF !lError
+				SET STEP ON 
 				RETURN .f.
 			ENDIF
 			

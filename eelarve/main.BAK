@@ -155,8 +155,9 @@ Endif
 cFile1 = 'EELPROJ\curPrinter.DBF'
 If File (cFile1)
 	Use (cFile1) In 0 Alias curPrinter3
+	SELECT * from curPrinter3 WHERE id NOT in (select id FROM curPrinter) INTO CURSOR qryPrinter3
 	Select curprinter
-	Append From Dbf('curPrinter3')
+	Append From Dbf('qryPrinter3') 
 	Use In curPrinter3
 Endif
 
