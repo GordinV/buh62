@@ -70,7 +70,7 @@
                       NULL::varchar(120)                            AS viitenr,
                       NULL::TEXT                                    AS selg,
                       NULL::TEXT                                    AS muud,
-                      1                                             AS opt,
+                      0                                             AS opt,
                       NULL::varchar(20)                             AS regkood,
                       NULL::varchar(254)                            AS asutus,
                       NULL::integer                                 AS arvid,
@@ -172,4 +172,5 @@
     <sql>select error_code, result, error_message from docs.gen_lausend_vmk($2, $1)</sql>
     <alias>generateJournal</alias>
   </generateJournal>
+  <print></print>
 </VFPData>

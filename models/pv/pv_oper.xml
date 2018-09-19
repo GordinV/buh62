@@ -133,4 +133,5 @@
     <sql>select error_code, result, error_message from docs.gen_lausend_pv_oper($2, $1)</sql>
     <alias>generateJournal</alias>
   </generateJournal>
+  <print></print>
 </VFPData>

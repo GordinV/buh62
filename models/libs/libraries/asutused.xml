@@ -31,10 +31,21 @@
     <multiple>false</multiple>
     <alias>row</alias>
   </select>
+  <select>
+    <sql>SELECT (e.element -&gt;&gt; 'aa') :: varchar(20) AS aa,
+                $2 :: INTEGER            AS userid
+                FROM libs.asutus a,
+                      json_array_elements((a.properties -&gt; 'asutus_aa') :: JSON) AS e(element)
+                WHERE a.id = $1</sql>
+    <query />
+    <multiple>true</multiple>
+    <alias>asutus_aa</alias>
+  </select>
   <selectAsLibs>
     <sql>select * from com_asutused a 
         where libs.check_asutus(a.id, $1) 
-        and (kehtivus is null or kehtivus &gt;= date())</sql>
+        and (kehtivus is null or kehtivus &gt;= date())
+        order by nimetus</sql>
     <alias>selectAsLibs</alias>
   </selectAsLibs>
   <saveDoc>
@@ -68,4 +79,5 @@
     <sql />
     <alias />
   </generateJournal>
+  <print></print>
 </VFPData>
