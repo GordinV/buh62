@@ -67,7 +67,7 @@
     <alias>details</alias>
   </select>
   <selectAsLibs>
-    <sql>select * from com_rekv</sql>
+    <sql>select id, nimetus::varchar(254), regkood::varchar(20), parentid from com_rekv</sql>
     <alias>selectAsLibs</alias>
   </selectAsLibs>
   <saveDoc>

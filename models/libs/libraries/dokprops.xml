@@ -8,10 +8,10 @@
                       l.nimetus AS nimetus, 
                       l.kood AS dok
                     FROM libs.library l
-                      LEFT OUTER JOIN libs.dokprop d ON l.id = d.parentId
+                      INNER JOIN libs.dokprop d ON l.id = d.parentId
                     WHERE l.library = 'DOK'
                           AND d.status &lt;&gt; 3
-                          AND (l.rekvId = $1 OR l.rekvid IS NULL)</sql>
+                          AND d.rekvId = $1 </sql>
     <alias>curDokprop</alias>
   </grid>
   <select>
@@ -20,7 +20,7 @@
               d.selg,
               l.id as parentid,
               l.nimetus                                          AS dok,
-              l.rekvid,
+              d.rekvid,
               $2 :: INTEGER                                       AS userid,
               coalesce((d.details :: JSONB -&gt;&gt; 'konto'),'') :: VARCHAR(20)    AS konto,
               coalesce((d.details :: JSONB -&gt;&gt; 'kbmkonto'),'') :: VARCHAR(20) AS kbmkonto,
@@ -92,4 +92,9 @@
     <sql />
     <alias />
   </endProcess>
+  <generateJournal>
+    <sql />
+    <alias />
+  </generateJournal>
+  <print></print>
 </VFPData>

@@ -57,6 +57,12 @@
     <multiple>false</multiple>
     <alias>row</alias>
   </select>
+  <select>
+    <sql>select distinct rekvid from ou.userid where kasutaja = $1</sql>
+    <query />
+    <multiple>true</multiple>
+    <alias>com_user_rekv</alias>
+  </select>
   <selectAsLibs>
     <sql>select * from ou.cur_userid where rekvid = $1</sql>
     <alias>selectAsLibs</alias>
