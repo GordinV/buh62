@@ -27,8 +27,7 @@
     <alias>row</alias>
   </select>
   <selectAsLibs>
-    <sql>select * from com_allikad l
-        where  (l.rekvId = $1 or l.rekvid is null)</sql>
+    <sql>select * from com_allikad l</sql>
     <alias>selectAsLibs</alias>
   </selectAsLibs>
   <saveDoc>
@@ -62,4 +61,5 @@
     <sql />
     <alias />
   </generateJournal>
+  <print></print>
 </VFPData>

@@ -26,9 +26,17 @@
     <multiple>false</multiple>
     <alias>row</alias>
   </select>
+  <select>
+    <sql>SELECT Library.id 
+                    FROM libs.library Library 
+                    WHERE Library.library = 'TEGEV'   
+                    AND RTRIM(LTRIM(Library.kood)) = $1</sql>
+    <query />
+    <multiple>true</multiple>
+    <alias>validate_tegev</alias>
+  </select>
   <selectAsLibs>
-    <sql>select * from com_tegev l
-        where  (l.rekvId = $1 or l.rekvid is null)</sql>
+    <sql>select * from com_tegev l</sql>
     <alias>selectAsLibs</alias>
   </selectAsLibs>
   <saveDoc>
@@ -62,4 +70,5 @@
     <sql />
     <alias />
   </generateJournal>
+  <print></print>
 </VFPData>

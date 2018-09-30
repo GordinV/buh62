@@ -13,7 +13,7 @@
                  trim(l.nimetus) as doc, trim(l.kood) as doc_type_id, 
                  trim(s.nimetus) as status, d.status as doc_status,
                  jid.number as number, 
-                 j.rekvId, j.kpv as kpv, j.asutusid,  trim(j.dok) as dok, j.selg, j.muud, j.objekt,
+                 j.rekvId, j.kpv as kpv, j.asutusid,  trim(j.dok)::varchar(120) as dok, j.selg, j.muud, j.objekt,
                  (select sum(j1.summa) as summa from docs.journal1 as j1 where parentid = j.id) as summa, 
                  asutus.regkood, trim(asutus.nimetus) as asutus,
                  u.ametnik as kasutaja
@@ -35,7 +35,7 @@
                     null::integer as rekvId,  
                     now()::date as kpv, 
                     null::integer as asutusid, 
-                    null::varchar(100) as dok, 
+                    null::varchar(120) as dok, 
                     null::text as selg, 
                     null::text as muud, 
                     null::varchar(20) as objekt,
@@ -53,12 +53,11 @@
   </select>
   <select>
     <sql>select j1.*, $2::integer as userid ,
-                    coalesce(v.kuurs,1)::numeric as kuurs, 
-                    coalesce(v.valuuta,'EUR')::varchar(20) as valuuta
+                    1::numeric as kuurs, 
+                    'EUR'::varchar(20) as valuuta
                     from docs.journal1 as j1 
                     inner join docs.journal j on j.id = j1.parentId 
                     inner join ou.userid u on u.id = $2::integer 
-                    left outer join dokvaluuta1 v on (j1.id = v.dokid and v.dokliik = array_position((enum_range(NULL :: DOK_VALUUTA)), 'journal1'))                      
                     where j.parentid = $1</sql>
     <query />
     <multiple>true</multiple>
@@ -105,4 +104,5 @@
     <sql />
     <alias />
   </generateJournal>
+  <print></print>
 </VFPData>

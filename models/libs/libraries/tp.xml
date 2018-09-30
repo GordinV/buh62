@@ -4,8 +4,7 @@
     <sql>select id, kood, nimetus,  $2::integer as userId
             from libs.library l
             where l.library = 'TP'
-            and l.status &lt;&gt; 3
-            and (l.rekvId = $1 or l.rekvid is null)</sql>
+            and l.status &lt;&gt; 3</sql>
     <alias>curTPR</alias>
   </grid>
   <select>
@@ -33,8 +32,7 @@
     <alias>row</alias>
   </select>
   <selectAsLibs>
-    <sql>select * from com_tp l
-        where  (l.rekvId = $1 or l.rekvid is null)</sql>
+    <sql>select * from com_tp l</sql>
     <alias>selectAsLibs</alias>
   </selectAsLibs>
   <saveDoc>
@@ -68,4 +66,5 @@
     <sql />
     <alias />
   </generateJournal>
+  <print></print>
 </VFPData>

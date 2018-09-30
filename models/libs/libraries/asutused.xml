@@ -41,6 +41,15 @@
     <multiple>true</multiple>
     <alias>asutus_aa</alias>
   </select>
+  <select>
+    <sql>SELECT Asutus.id 
+                    FROM libs.asutus Asutus 
+                    WHERE (rtrim(ltrim(Asutus.regkood)) = $1 or empty($1))
+                    or (rtrim(ltrim(Asutus.nimetus)) = $2 or empty($2))</sql>
+    <query />
+    <multiple>false</multiple>
+    <alias>validate_asutus</alias>
+  </select>
   <selectAsLibs>
     <sql>select * from com_asutused a 
         where libs.check_asutus(a.id, $1) 

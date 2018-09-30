@@ -2,8 +2,10 @@
 <VFPData>
   <grid>
     <sql>select l.id, l.kood, l.nimetus,
-            coalesce((l.properties::JSONB -&gt;&gt; 'konto'),'')::varchar(20) as konto,  
-            $2::integer as userId
+            coalesce((l.properties::JSONB -&gt;&gt; 'konto'),'')::varchar(20) as konto,
+            coalesce((l.properties::JSONB -&gt;&gt; 'kulum_konto'),'')::varchar(20) as  kulum_konto, 
+            $2::integer as userId,
+            l.muud
             from libs.library l
             where l.library = 'PVGRUPP'
             and l.status &lt;&gt; 3
@@ -33,6 +35,16 @@
     <query />
     <multiple>false</multiple>
     <alias>row</alias>
+  </select>
+  <select>
+    <sql>SELECT Library.id 
+                FROM libs.library Library 
+                    WHERE Library.rekvid = $1   
+                    AND Library.library = 'PVGRUPP'   
+                    AND RTRIM(LTRIM(Library.kood)) = $2</sql>
+    <query />
+    <multiple>true</multiple>
+    <alias>validate_pvgrupp</alias>
   </select>
   <selectAsLibs>
     <sql>select * from com_pv_gruppid l
@@ -70,4 +82,5 @@
     <sql />
     <alias />
   </generateJournal>
+  <print></print>
 </VFPData>

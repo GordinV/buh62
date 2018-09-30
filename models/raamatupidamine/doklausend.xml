@@ -1,7 +1,20 @@
 <?xml version = "1.0" encoding="Windows-1252" standalone="yes"?>
 <VFPData>
   <grid>
-    <sql>SELECT *
+    <sql>SELECT  d.id,
+                        d.rekvid,
+                        d.dok,
+                        d.selg::varchar(254),
+                        d.deebet,
+                        d.kreedit,
+                        d.summa,
+                        d.tegev,
+                        d.allikas,
+                        d.rahavoog,
+                        d.artikkel,
+                        d.lisa_d,
+                        d.lisa_k,
+                        d.lausend
                     FROM cur_doklausend d
                     WHERE (d.rekvId = $1 or d.rekvid is null)</sql>
     <alias>curDoklausend</alias>
@@ -79,4 +92,5 @@
     <sql />
     <alias />
   </generateJournal>
+  <print></print>
 </VFPData>

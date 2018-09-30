@@ -7,16 +7,24 @@
     <alias>curTunnus</alias>
   </grid>
   <select>
-    <sql>select l.*, $2::integer as userid, 'TUNNUS' as doc_type_id
+    <sql>select 
+                l.id, 
+                l.kood::varchar(20) as kood, 
+                l.nimetus::varchar(254) as nimetus, 
+                l.library::varchar(20), l.muud,
+                $2::integer as userid, 
+                'TUNNUS' as doc_type_id
                 from libs.library l 
                 where l.library = 'TUNNUS' and l.id = $1</sql>
-    <sqlAsNew>select  $1::integer as id , $2::integer as userid, 'TUNNUS' as doc_type_id,
-            null::text as  kood,
-            null::integer as rekvid,
-            null::text as nimetus,
-            'TUNNUS'::varchar(20) as library,
-            null::text as muud,
-            null::text as properties</sqlAsNew>
+    <sqlAsNew>select  
+                    $1::integer as id , 
+                    $2::integer as userid, 
+                    'TUNNUS' as doc_type_id,
+                    null::varchar(20) as  kood,
+                    null::integer as rekvid,
+                    null::varchar(254) as nimetus,
+                    'TUNNUS'::varchar(20) as library,
+                    null::text as muud</sqlAsNew>
     <query />
     <multiple>false</multiple>
     <alias>row</alias>
@@ -25,7 +33,11 @@
     <sql>select * from (
         select 0 as id, ''::varchar(20) as kood, ''::varchar(254) as nimetus 
         union 
-        select id, trim(kood) as kood, trim(nimetus) as name from cur_tunnus ) qry  order by kood</sql>
+        select id, trim(kood) as kood, trim(nimetus) as name 
+        from cur_tunnus 
+        where rekvid = $1
+        ) qry  
+        order by kood</sql>
     <alias>selectAsLibs</alias>
   </selectAsLibs>
   <saveDoc>
@@ -59,4 +71,5 @@
     <sql />
     <alias />
   </generateJournal>
+  <print></print>
 </VFPData>

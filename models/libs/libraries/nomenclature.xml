@@ -1,31 +1,32 @@
 <?xml version = "1.0" encoding="Windows-1252" standalone="yes"?>
 <VFPData>
   <grid>
-    <sql>select id, coalesce(kood,'') as kood, coalesce(nimetus,'') as nimetus,  $2::integer as userId, dok
+    <sql>select id, coalesce(kood,'')::varchar(20) as kood, coalesce(nimetus,'')::varchar(254) as nimetus,  $2::integer as userId, dok
             from libs.nomenklatuur n
             where (n.rekvId = $1 or n.rekvid is null) and n.status &lt;&gt; 3</sql>
     <alias>curNomenklatuur</alias>
   </grid>
   <select>
-    <sql>select n.*, $2::integer as userid, 'NOMENCLATURE' as doc_type_id,
-                v.valuuta, v.kuurs,
-                (n.properties::jsonb -&gt;&gt;'vat')::text as vat,
-                (n.properties::jsonb -&gt;&gt;'konto')::text as konto,
-                (n.properties::jsonb -&gt;&gt;'projekt')::text as projekt,
-                (n.properties::jsonb -&gt;&gt;'tunnus')::text as tunnus,
-                (n.properties::jsonb -&gt;&gt;'tegev')::text as tegev,
-                (n.properties::jsonb -&gt;&gt;'allikas')::text as allikas,
-                (n.properties::jsonb -&gt;&gt;'rahavoog')::text as rahavoog,
-                (n.properties::jsonb -&gt;&gt;'artikkel')::text as artikkel                
+    <sql>select n.kood, n.id, n.nimetus, n.dok, n.muud, n.rekvid, $2::integer as userid, 'NOMENCLATURE' as doc_type_id,
+                'EUR' as valuuta, 1 as kuurs,
+                n.uhik as uhik,
+                n.hind as hind,
+                (n.properties::jsonb -&gt;&gt;'vat')::varchar(20) as vat,
+                (n.properties::jsonb -&gt;&gt;'konto')::varchar(20) as konto,
+                (n.properties::jsonb -&gt;&gt;'projekt')::varchar(20) as projekt,
+                (n.properties::jsonb -&gt;&gt;'tunnus')::varchar(20) as tunnus,
+                (n.properties::jsonb -&gt;&gt;'tegev')::varchar(20) as tegev,
+                (n.properties::jsonb -&gt;&gt;'allikas')::varchar(20) as allikas,
+                (n.properties::jsonb -&gt;&gt;'rahavoog')::varchar(20) as rahavoog,
+                (n.properties::jsonb -&gt;&gt;'artikkel')::varchar(20) as artikkel                
                 from libs.nomenklatuur n 
-                left outer join docs.dokvaluuta1 v on v.dokliik = array_position((enum_range(NULL :: DOK_VALUUTA)), 'nomenklatuur') and v.dokid = n.id
                 where n.id = $1</sql>
     <sqlAsNew>select  $1::integer as id , $2::integer as userid, 'NOMENCLATURE' as doc_type_id,
-            null::text as  kood,
+            null::varchar(20) as  kood,
             null::integer as rekvid,
-            null::text as nimetus,
-            null::text as dok,
-            null::text as uhik,
+            null::varchar(254) as nimetus,
+            null::varchar(20) as dok,
+            null::varchar(20) as uhik,
             0::numeric as hind,
             0::numeric as ulehind,
             1::numeric as kogus,
@@ -34,14 +35,14 @@
             null::text as muud,
             null::text as properties,
             'EUR' as valuuta, 1 as kuurs,
-            '20'::text as vat,
-            null::text as konto,
-            null::text as projekt,
-            null::text as tunnus,
-            null::text as tegev,
-            null::text as allikas,
-            null::text as rahavoog,
-            null::text as artikkel</sqlAsNew>
+            '20'::varchar(20) as vat,
+            null::varchar(20) as konto,
+            null::varchar(20) as projekt,
+            null::varchar(20) as tunnus,
+            null::varchar(20) as tegev,
+            null::varchar(20) as allikas,
+            null::varchar(20) as rahavoog,
+            null::varchar(20) as artikkel</sqlAsNew>
     <query />
     <multiple>false</multiple>
     <alias>row</alias>
@@ -83,4 +84,5 @@
     <sql />
     <alias />
   </generateJournal>
+  <print></print>
 </VFPData>

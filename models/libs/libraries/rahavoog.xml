@@ -6,8 +6,7 @@
             muud 
             from libs.library l
             where l.library = 'RAHA'
-            and l.status &lt;&gt; 3
-            and (l.rekvId = $1 or l.rekvid is null)</sql>
+            and l.status &lt;&gt; 3</sql>
     <alias>curRaha</alias>
   </grid>
   <select>
@@ -28,9 +27,17 @@
     <multiple>false</multiple>
     <alias>row</alias>
   </select>
+  <select>
+    <sql>SELECT Library.id 
+                    FROM libs.library Library 
+                    WHERE Library.library = 'RAHA'   
+                    AND RTRIM(LTRIM(Library.kood)) = ltrim(rtrim($1))</sql>
+    <query />
+    <multiple>true</multiple>
+    <alias>validate_rahavoog</alias>
+  </select>
   <selectAsLibs>
-    <sql>select * from com_rahavoog l
-        where  (l.rekvId = $1 or l.rekvid is null)</sql>
+    <sql>select * from com_rahavoog l</sql>
     <alias>selectAsLibs</alias>
   </selectAsLibs>
   <saveDoc>
@@ -64,4 +71,5 @@
     <sql />
     <alias />
   </generateJournal>
+  <print></print>
 </VFPData>

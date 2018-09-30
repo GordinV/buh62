@@ -1,17 +1,17 @@
 <?xml version = "1.0" encoding="Windows-1252" standalone="yes"?>
 <VFPData>
   <grid>
-    <sql>select id, trim(kood) as kood, trim(nimetus) as nimetus,  $2::integer as userId,
-            case when l.tun5 = 1 then 'SD' when l.tun5 = 2 then 'SK' when l.tun5 = 3 then 'D' when l.tun5 = 4 then 'K' else null end::text as konto_tyyp
+    <sql>select id, trim(kood)::varchar(20) as kood, trim(nimetus)::varchar(254) as nimetus,  $2::integer as userId,
+            case when l.tun5 = 1 then 'SD' when l.tun5 = 2 then 'SK' when l.tun5 = 3 then 'D' when l.tun5 = 4 then 'K' else null end::varchar(20) as konto_tyyp
             from libs.library l
             where library = 'KONTOD' 
-            and l.status &lt;&gt; 3
-            and (l.rekvId = $1 or l.rekvid is null)</sql>
+            and l.status &lt;&gt; 3</sql>
     <alias>curKontod</alias>
   </grid>
   <select>
-    <sql>select l.rekvid, case when l.tun5 = 1 then 'SD' when l.tun5 = 2 then 'SK' when l.tun5 = 3 then 'D' when l.tun5 = 4 then 'K' else null end::text as konto_tyyp, 
-                l.id, trim(l.kood) as kood, trim(l.nimetus) as nimetus, 
+    <sql>select l.rekvid, 
+                case when l.tun5 = 1 then 'SD' when l.tun5 = 2 then 'SK' when l.tun5 = 3 then 'D' when l.tun5 = 4 then 'K' else null end::varchar(20) as konto_tyyp, 
+                l.id, trim(l.kood)::varchar(20) as kood, trim(l.nimetus)::varchar(254) as nimetus, 
                 l.library, l.tun1, l.tun2, l.tun3, l.tun4, l.muud, $2::integer as userid, 
                 'KONTOD' as doc_type_id, l.tun5 as tyyp, 
                 l.status,
@@ -19,10 +19,10 @@
                 from libs.library l 
                 where id = $1</sql>
     <sqlAsNew>select null::integer as rekvId, 
-            'SD'::text as konto_tyyp, 
+            'SD'::varchar(20) as konto_tyyp, 
             $1::integer as id , $2::integer as userid, 'KONTOD' as doc_type_id,
-            null::text as  kood,
-            null::text as nimetus,
+            null::varchar(20) as  kood,
+            null::varchar(20) as nimetus,
             'KONTOD'::text as library,
             null::integer as tun1,
             null::integer as tun2,
@@ -49,7 +49,7 @@
     <alias>subkonto</alias>
   </select>
   <selectAsLibs>
-    <sql>select * from com_kontoplaan l where (l.rekvId = $1 or l.rekvid is null) order by kood</sql>
+    <sql>select *, $1 as rekv_id from com_kontoplaan l order by kood</sql>
     <alias>selectAsLibs</alias>
   </selectAsLibs>
   <saveDoc>
@@ -83,4 +83,5 @@
     <sql />
     <alias />
   </generateJournal>
+  <print></print>
 </VFPData>
