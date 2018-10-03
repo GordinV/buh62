@@ -69,6 +69,12 @@
     <multiple>true</multiple>
     <alias>relations</alias>
   </select>
+  <select>
+    <sql>select * from libs.asutus where regkood = $1 order by staatus limit </sql>
+    <query />
+    <multiple>false</multiple>
+    <alias>validate_asutus</alias>
+  </select>
   <selectAsLibs>
     <sql></sql>
     <alias>selectAsLibs</alias>

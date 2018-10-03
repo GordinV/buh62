@@ -46,6 +46,7 @@ gnHandle = 0
 gUserId = 0
 gRekv = 0
 glMvt = .T.
+gcCurrentValuuta = 'EUR'
 *!*	grekv = 1
 *!*	gUserid = 1
 Local lError

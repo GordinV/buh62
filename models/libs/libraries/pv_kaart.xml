@@ -3,7 +3,7 @@
   <grid>
     <sql>select * 
             from cur_pohivara l
-            where (l.rekvId = $1 or l.rekvid is null)</sql>
+            where l.rekvId = $1</sql>
     <alias>curPohivara</alias>
   </grid>
   <select>

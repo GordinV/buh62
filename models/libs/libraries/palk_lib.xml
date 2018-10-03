@@ -4,7 +4,8 @@
     <sql>select l.id, l.kood, l.nimetus, l.tun5 as kehtiv,
             coalesce((l.properties::JSONB -&gt;&gt; 'tululiik'),'')::varchar(20) as tululiik,  
             coalesce((l.properties::JSONB -&gt;&gt; 'liik')::integer,1) as liik,
-            $2::integer as userId
+            $2::integer as userId,
+            l.tun5 as is_arhiiv
             from libs.library l
             where l.library = 'PALK'
             and l.status &lt;&gt; 3
@@ -25,7 +26,7 @@
                 (l.properties::JSONB -&gt;&gt; 'korrkonto') :: varchar(20) as korrkonto,
                 (l.properties::JSONB -&gt;&gt; 'tunnusid') :: integer as tunnusId,
                 (l.properties::JSONB -&gt;&gt; 'elatis') :: integer as elatis,
-                (l.properties::JSONB -&gt;&gt; 'uritus') :: varchar(20) as uritus,
+                (l.properties::JSONB -&gt;&gt; 'uuritus') :: varchar(20) as uuritus,
                 (l.properties::JSONB -&gt;&gt; 'proj') :: varchar(20) as proj,
                 (l.properties::JSONB -&gt;&gt; 'tegev') :: varchar(20) as tegev,
                 (l.properties::JSONB -&gt;&gt; 'allikas') :: varchar(20) as allikas,
@@ -54,7 +55,7 @@
             NULL::varchar(20) as korrkonto,
             null::integer as tunnusId,
             null::integer as elatis,
-            null::varchar(20) as uritus,
+            null::varchar(20) as uuritus,
             null::varchar(20) as proj,
             null::varchar(20) as tegev,
             null::varchar(20) as allikas,
@@ -101,4 +102,5 @@
     <sql />
     <alias />
   </generateJournal>
+  <print></print>
 </VFPData>
