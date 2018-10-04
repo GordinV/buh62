@@ -33,7 +33,8 @@
                       coalesce((dp.details :: JSONB -&gt;&gt; 'konto'), '') :: VARCHAR(20) AS konto,
                       dp.selg :: VARCHAR(120)                                        AS dokprop,
                       d1.dokpropid,
-                      coalesce(jid.number, 0) :: INTEGER                             AS lausend
+                      coalesce(jid.number, 0) :: INTEGER                             AS lausend,
+                      (select sum(summa) from docs.avans2 where parentid = d1.id)::numeric(14,2) as summa
                     FROM docs.doc d
                       INNER JOIN docs.avans1 d1 ON d1.parentId = d.id
                       INNER JOIN ou.userid u ON u.id = $2 :: INTEGER
@@ -73,7 +74,8 @@
                      0 as doklausid,
                      null::integer as journalid,
                      null::integer as dokpropid,
-                     null::integer as lausend
+                     null::integer as lausend,
+                     0::numeric(14,2) as summa
                     FROM libs.library l,
                       libs.library s,
                       (SELECT *
@@ -89,8 +91,8 @@
   <select>
     <sql>SELECT
                       $2 :: INTEGER    AS userid,
-                      trim(n.kood)    AS kood,
-                      trim(n.nimetus) AS nimetus,
+                      trim(n.kood)::varchar(20)    AS kood,
+                      trim(n.nimetus)::varchar(254) AS nimetus,
                       a2.*,
                       coalesce(v.valuuta,'EUR')::varchar(20) as valuuta,
                       coalesce(v.kuurs,1)::numeric(12,4) as kuurs

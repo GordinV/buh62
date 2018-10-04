@@ -129,7 +129,7 @@
   </select>
   <selectAsLibs>
     <sql>select * from palk.com_tootajad a 
-        where (rekvid = $1 or rekvid is null)</sql>
+        where rekvid = $1</sql>
     <alias>selectAsLibs</alias>
   </selectAsLibs>
   <saveDoc>

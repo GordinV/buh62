@@ -56,12 +56,12 @@
                       trim(l.nimetus)                               AS doc,
                       trim(l.kood)                                  AS doc_type_id,
                       trim(s.nimetus)                               AS status,
-                      (SELECT max(val(array_to_string(regexp_match(number, '\d+'),'')))
+                      coalesce((SELECT max(val(array_to_string(regexp_match(number, '\d+'),'')))
                        FROM docs.mk
                        WHERE opt = 0 
                        and rekvid in (
                        select rekvid from ou.userid where id = $2)
-                       ) :: INTEGER + 1                             AS number,
+                       ),0) :: INTEGER + 1                          AS number,
                       now() :: DATE                                 AS maksepaev,
                       aa.id                                         AS aaid,
                       trim(aa.name)                                 AS pank,
@@ -101,19 +101,18 @@
   <select>
     <sql>SELECT
                       $2 :: INTEGER    AS userid,
-                      trim(n.kood)    AS kood,
-                      trim(n.nimetus) AS nimetus,
-                      trim(a.nimetus) AS asutus,
+                      trim(n.kood)::varchar(20)    AS kood,
+                      trim(n.nimetus)::varchar(254) AS nimetus,
+                      trim(a.nimetus)::varchar(254) AS asutus,
                       k1.*,
-                      coalesce(v.valuuta,'EUR')::varchar(20) as valuuta,
-                      coalesce(v.kuurs,1)::numeric(12,4) as kuurs,
+                      'EUR'::varchar(20) as valuuta,
+                      1::numeric(12,4) as kuurs,
                       coalesce(jid.number,0)::integer as lausnr
                     FROM docs.mk1 AS k1
                       INNER JOIN docs.mk k ON k.id = k1.parentId
                       INNER JOIN libs.nomenklatuur n ON n.id = k1.nomid
                       INNER JOIN libs.asutus a ON a.id = k1.asutusid
                       INNER JOIN ou.userid u ON u.id = $2 :: INTEGER
-                      LEFT OUTER JOIN docs.dokvaluuta1 v ON (v.dokid = k1.id AND v.dokliik = array_position((enum_range(NULL :: DOK_VALUUTA)), 'mk1'))
                       left outer join docs.doc d on k1.journalid = d.id
                       left outer join docs.journal j on j.parentid = d.id
                       left outer join docs.journalid jid on jid.journalid = j.id
