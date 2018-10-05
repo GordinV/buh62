@@ -3,7 +3,7 @@
   <grid>
     <sql>SELECT
                           d.*
-                        FROM get_eelarve_taitmine(true, $1, false, $2) as d</sql>
+                        FROM get_eelarve_taitmine(true, $1, false, $2, $3) as d</sql>
     <alias>curTuluTaitm</alias>
   </grid>
   <selectAsLibs>
