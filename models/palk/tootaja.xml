@@ -127,6 +127,14 @@
     <multiple>true</multiple>
     <alias>curUsed_mvt</alias>
   </select>
+  <select>
+    <sql>SELECT a.id 
+                    FROM libs.asutus a
+                    WHERE  RTRIM(LTRIM(a.regkood)) = RTRIM(LTRIM($1))</sql>
+    <query />
+    <multiple>true</multiple>
+    <alias>validate_asutus</alias>
+  </select>
   <selectAsLibs>
     <sql>select * from palk.com_tootajad a 
         where rekvid = $1</sql>
