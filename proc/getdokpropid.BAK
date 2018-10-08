@@ -22,7 +22,7 @@ IF EMPTY(tcModel)
 	odB.Use('curDokProp')
 ELSE
 	lcWhere = "dok = '" + ALLTRIM(tcTyyp) + "'"
-	lError = oDb.readFromModel(tcModel, 'curDokprop', 'gRekv, guserid', 'curDokProp', lcWhere)
+	lError = oDb.readFromModel('libs\libraries\dokprops', 'curDokprop', 'gRekv, guserid', 'curDokProp', lcWhere)
 ENDIF
 
 IF Reccount('curDokProp')>1

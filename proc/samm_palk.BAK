@@ -1,32 +1,85 @@
 Parameter tnIsikid, is_tasu
 
-Local lnResult, leRror
+Local lnResult, leRror, l_error
 leRror = .T.
+l_dokprop = 0
+
 If  .Not. Used('curSource')
 	Create Cursor curSource (Id Int, koOd C (20), niMetus C (120))
 Endif
 If  .Not. Used('curValitud')
 	Create Cursor curValitud (Id Int, koOd C (20), niMetus C (120))
 Endif
-Create Cursor curResult (Id Int, osAkonnaid Int, paLklibid Int)
+Create Cursor curResult (Id Int, osAkonnaid Int, paLklibid Int, lepingid int)
 lnStep = 1
 If Used('v_dokprop')
 	Use In v_dokprop
 ENDIF
-dokPropId = getdokpropId('PALK_OPER', 'libs\libraries\dokprops')
 
-=fnc_load_tootajad();
+
+l_test = .f.
+If (l_test)
+	gcProgNimi = 'EELARVE'
+	Create Cursor curkey (versia c(20))
+	Insert Into curkey (versia) Values ('EELARVE')
+	
+	CREATE CURSOR config (keel int)
+	INSERT INTO config (keel) VALUES (2) 
+
+	Set Classlib To classes\Classlib
+	gVersia = 'PG'
+	oDb = Createobject('db')
+
+	gRekv = 63
+	guserid = 2477
+	tnId = 0
+	gdKpv = DATE()
+	* palk_oper, rekvid = 63
+	l_dokprop = 1716 
+
+* test_server
+	gnHandle = SQLConnect('test_server', 'vlad','Vlad490710')
+*	gnHandle = SQLConnect('localPg', 'vlad','123')
+	gnHandleAsync = gnHandle
+
+	If gnHandle < 0
+		Messagebox('Connection error',0+48,'Error')
+		Return .T.
+	Endif
+	tdKpv = Date()
+	* Vlad Gordin, rekvid = 63
+	tnIsikid = 29518
+
+	If !Used('qryRekv')
+		lError = oDb.readFromModel('ou\rekv', 'row', 'gRekv, guserid', 'qryRekv')
+
+	Endif
+	SET STEP ON 
+
+Endif
+
+IF EMPTY(l_dokprop) 
+	SET PROCEDURE TO proc/getdokpropId additive
+	l_dokprop = getdokpropId('PALK_OPER', 'libs\libraries\dokprops')
+ENDIF
+
+
+l_error = fnc_load_tootajad()
+if EMPTY(l_error)
+	MESSAGEBOX('Tekkis viga',0+16,'Töötajate nimekirja')
+	RETURN .f.
+ENDIF
+
 
 l_success = .f.
 
 Do While lnStep>0
 	If  .Not. Empty(tnIsikid)
 		Insert Into curResult (osAkonnaid) ;
-			SELECT OSAKONDID From comTootajad Where Id = tnIsikid ;
-			AND OSAKONDID >= Iif(fltrPalkOper.OSAKONDID > 0,fltrPalkOper.OSAKONDID,0);
-			AND OSAKONDID <= Iif(fltrPalkOper.OSAKONDID > 0,fltrPalkOper.OSAKONDID,999999999)
+			SELECT OSAKONDID From qryTootajad Where Id = tnIsikid
+			 
+		Insert Into curResult (Id) Values (tnIsikid) 
 
-		Insert Into curResult (Id) Values (tnIsikid)
 		lnStep = 3
 		tnIsikid = 0
 	Endif
@@ -92,7 +145,7 @@ function arVutus
 	Scan
 		l_isik_ids = l_isik_ids + Iif(Len(l_isik_ids)>0,',','') +  Alltrim(Str(recalc1.Id))
 	Endscan
-
+SET STEP ON 
 TEXT TO lcJson TEXTMERGE noshow
 				{"osakond_ids":[<<l_osakond_ids>>],
 				"isik_ids":[<<l_isik_ids>>],
@@ -100,12 +153,11 @@ TEXT TO lcJson TEXTMERGE noshow
 				"kpv":<<DTOC(gdKpv,1)>>,
 				"kas_kustuta":<<IIF(EMPTY(tmpArvestaMinSots.kustuta),'true','false')>>,
 				"kas_arvesta_minsots":<<IIF(EMPTY(tmpArvestaMinSots.arvesta),'true','false')>>,
-				"dokprop":<<ALLTRIM(STR(dokPropId))>>
+				"dokprop":<<ALLTRIM(STR(l_dokprop))>>
 				}
 ENDTEXT
 * sql proc
 	task = 'palk.gen_palkoper'
-	_cliptext = lcJson
 	leRror = odB.readFromModel('palk\palk_oper', 'executeTask', 'guserid,lcJson,task', 'qryResult')
 	Return leRror
 ENDFUNC
@@ -220,7 +272,11 @@ TEXT TO lcSqlWhere textmerge	noshow
 ENDTEXT
 
 	leRror = odB.readFromModel('palk\tootaja', 'curTootajad', 'gRekv, guserid', 'qryTootajad', lcSqlWhere)
-
+	IF lError AND !USED('qryTootajad')
+		lError = .f.
+	ENDIF
+	
+	RETURN leRror
 Endfunc
 
 

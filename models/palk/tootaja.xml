@@ -78,8 +78,12 @@
                     lepingid,
                     libid,
                     summa,
-                    percent_,
-                    tulumaks,
+                    case WHEN not empty(percent_::INTEGER)
+                        THEN 'JAH'
+                      ELSE 'EI' END :: VARCHAR(5) AS percent_,
+                    CASE WHEN empty(tulumaks::INTEGER)
+                        THEN 'JAH'
+                      ELSE 'EI' END :: VARCHAR(5) AS tulumaks_,                    tulumaks,
                     tulumaar,
                     status,
                     muud,
@@ -130,7 +134,7 @@
   <select>
     <sql>SELECT a.id 
                     FROM libs.asutus a
-                    WHERE  RTRIM(LTRIM(a.regkood)) = RTRIM(LTRIM($1))</sql>
+                    WHERE  RTRIM(LTRIM(a.regkood)) = RTRIM(LTRIM($1)) order by id desc limit 1</sql>
     <query />
     <multiple>true</multiple>
     <alias>validate_asutus</alias>
