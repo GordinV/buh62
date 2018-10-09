@@ -1,5 +1,6 @@
 Parameter cWhere
 
+
 lcWhere = ''
 lcWhere = IIF(EMPTY(fltrAruanne.kond),' rekv_id = ' + STR(gRekv), '')
 

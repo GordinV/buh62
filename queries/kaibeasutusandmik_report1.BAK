@@ -1,5 +1,6 @@
 Parameter cWhere
 
+
 lcWhere = ''
 lcWhere = IIF(EMPTY(fltrAruanne.kond),' rekv_id = ' + STR(gRekv), '')
 
@@ -8,8 +9,8 @@ TEXT TO lcWhere ADDITIVE TEXTMERGE noshow
 	<<IIF(LEN(lcWhere) > 0, 'and', '')>> konto ilike '<<ALLTRIM(fltrAruanne.konto)>>%'
 ENDTEXT
 
-
-lError = oDb.readFromModel('aruanned\raamatupidamine\kaibeasutusandmik', 'kaibeandmik_report',; 
+SET STEP ON
+lError = oDb.readFromModel('aruanned\raamatupidamine\kaibeasutusandmik', 'kaibeasutusandmik_report',; 
 	'ALLTRIM(fltrAruanne.konto), fltrAruanne.asutusid, fltrAruanne.kpv1, fltrAruanne.kpv2, gRekv', 'tmpReport', lcWhere)
 If !lError
 	Messagebox('Viga',0+16, 'Kaibeasutusandmik')
