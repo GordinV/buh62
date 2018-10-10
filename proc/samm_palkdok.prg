@@ -15,13 +15,16 @@ Endif
 Create Cursor curResult (Id Int, osAkonnaid Int, paLklibid Int)
 lnStep = 1
 
-dokPropId = getdokpropId('PALK_OPER', 'libs\libraries\dokprops')
-
 Do While lnStep>0
 	If  .Not. Empty(tnIsikid)
-		Insert Into curResult (Id) Values (tnIsikid)
+		Insert Into curResult (osAkonnaid) ;
+			SELECT OSAKONDID From qryTootajad Where Id = tnIsikid
+			 
+		Insert Into curResult (Id) Values (tnIsikid) 
+
 		lnStep = 3
 		tnIsikid = 0
+
 	Endif
 	Do Case
 		Case lnStep=1
@@ -94,6 +97,7 @@ TEXT TO lcJson TEXTMERGE noshow
 ENDTEXT
 * sql proc
 	task = 'palk.gen_palk_dok'
+	_cliptext = lcJson
 	leRror = odB.readFromModel('palk\palk_oper', 'executeTask', 'guserid,lcJson,task', 'qryResult')
 	lnStep = 0
 	If leRror And qryResult.result > 0

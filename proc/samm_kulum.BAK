@@ -53,10 +53,10 @@ Procedure arvutus
 TEXT TO lcParams TEXTMERGE noshow
 		{"ids":[<<lcParams>>], "kpv":"<<curKulumiarv.kpv)>>","nomid":<<curKulumiarv.nomid>>,"doklausid":<<curKulumiarv.doklausid>>}
 ENDTEXT
-
-		_Cliptext = lcParams
 		* sql proc
 		task = 'docs.sp_samm_kulum'
+		SET STEP ON 
+		_cliptext = lcParams
 		lError = odB.readFromModel('palk\palk_oper', 'executeTask', 'guserid,lcParams,task', 'qryResult')
 
 		If !lError

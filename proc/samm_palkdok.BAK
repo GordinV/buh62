@@ -19,9 +19,14 @@ dokPropId = getdokpropId('PALK_OPER', 'libs\libraries\dokprops')
 
 Do While lnStep>0
 	If  .Not. Empty(tnIsikid)
-		Insert Into curResult (Id) Values (tnIsikid)
+		Insert Into curResult (osAkonnaid) ;
+			SELECT OSAKONDID From qryTootajad Where Id = tnIsikid
+			 
+		Insert Into curResult (Id) Values (tnIsikid) 
+
 		lnStep = 3
 		tnIsikid = 0
+
 	Endif
 	Do Case
 		Case lnStep=1
@@ -94,6 +99,7 @@ TEXT TO lcJson TEXTMERGE noshow
 ENDTEXT
 * sql proc
 	task = 'palk.gen_palk_dok'
+	_cliptext = lcJson
 	leRror = odB.readFromModel('palk\palk_oper', 'executeTask', 'guserid,lcJson,task', 'qryResult')
 	lnStep = 0
 	If leRror And qryResult.result > 0
@@ -186,9 +192,6 @@ Procedure geT_isiku_list
 Endproc
 *
 Procedure geT_kood_list
-	If Used('query1')
-		Use In query1
-	Endif
 
 	lcWhere = 'liik = 6'
 	leRror = odB.readFromModel('libs\libraries\palk_lib', 'selectAsLibs', 'gRekv, guserid', 'qryPalkLib',lcWhere)
