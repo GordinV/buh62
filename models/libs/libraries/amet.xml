@@ -66,7 +66,7 @@
   </select>
   <selectAsLibs>
     <sql>select * from com_ametid l
-        where  (l.rekvId = $1 or l.rekvid is null)</sql>
+        where  l.rekvId = $1</sql>
     <alias>selectAsLibs</alias>
   </selectAsLibs>
   <saveDoc>

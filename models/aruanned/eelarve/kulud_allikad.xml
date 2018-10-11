@@ -3,12 +3,12 @@
   <grid>
     <sql>SELECT
                         qryReport.*,
-                        a.nimetus,
-                        t.nimetus as tegev_nimetus,
-                        r.regkood,
-                        r.nimetus AS asutus,
-                        p.regkood AS parregkood,
-                        p.nimetus AS parasutus
+                        a.nimetus::varchar(254),
+                        t.nimetus::varchar(254) as tegev_nimetus,
+                        r.regkood::varchar(20),
+                        r.nimetus::varchar(254) AS asutus,
+                        coalesce(p.regkood,'')::varchar(20) AS parregkood,
+                        coalesce(p.nimetus,'')::varchar(254) AS parasutus
                     FROM eelarve.eelarve_kulud($1::integer, $2::date, $3::boolean, $4::integer) qryReport
                     LEFT OUTER JOIN com_artikkel a ON ltrim(rtrim(a.kood)) = ltrim(rtrim(qryReport.artikkel))
                     LEFT OUTER JOIN com_tegev t ON ltrim(rtrim(t.kood)) = ltrim(rtrim(qryReport.tegev))

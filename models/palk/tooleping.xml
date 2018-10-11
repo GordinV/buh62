@@ -64,7 +64,7 @@
   </select>
   <selectAsLibs>
     <sql>select * from palk.com_toolepingud a 
-        where (rekvid = $1 or rekvid is null)</sql>
+        where rekvid = $1 </sql>
     <alias>selectAsLibs</alias>
   </selectAsLibs>
   <saveDoc>
@@ -98,4 +98,5 @@
     <sql />
     <alias />
   </generateJournal>
+  <print></print>
 </VFPData>

@@ -30,7 +30,7 @@ Select artikkel, nimetus, Sum(eelarve) As eelarve, Sum(Iif(Empty(fltrAruanne.kas
 	regkood, asutus ,;
 	parasutus, parregkood ;
 	from tmpReport ;
-	GROUP By artikkel, nimetus, regkood, asutus, parasutus,parregkood ;
+	GROUP By artikkel, nimetus, regkood, asutus, parasutus, parregkood ;
 	ORDER By parasutus,asutus,  artikkel ;
 	INTO Cursor eelarve_report2
 

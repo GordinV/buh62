@@ -2,15 +2,15 @@
 <VFPData>
   <grid>
     <sql>SELECT
-                        qryReport.*,
-                        a.nimetus,
-                        r.regkood,
-                        r.nimetus AS asutus,
-                        p.regkood AS parregkood,
-                        p.nimetus AS parasutus
+                        qryReport.*,                        
+                        a.nimetus::varchar(254),
+                        r.regkood::varchar(20),
+                        r.nimetus::varchar(254) AS asutus,
+                        coalesce(p.regkood,'')::varchar(20) AS parregkood,
+                        coalesce(p.nimetus,'')::varchar(254) AS parasutus
                     FROM eelarve.eelarve_tulud($1::integer, $2::date, $3::boolean, $4::integer) qryReport
-                    LEFT OUTER JOIN com_artikkel a ON ltrim(rtrim(a.kood)) = ltrim(rtrim(qryReport.artikkel))
                     INNER JOIN ou.rekv r ON r.id = qryReport.rekv_id
+                    LEFT OUTER JOIN com_artikkel a ON a.kood::text = qryReport.artikkel::text
                     LEFT OUTER JOIN ou.rekv p ON r.parentid = p.id                    </sql>
     <alias>tulud_report</alias>
   </grid>
