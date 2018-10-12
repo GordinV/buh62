@@ -1,5 +1,7 @@
 PARAMETER tcProc, tnLineno, lcError, lcMessage, lcCode
 LOCAL lcAlias, lnRecno, lcFile, lnFiles, lcVersia, lnError
+SET STEP ON 
+
 lcError = IIF(EMPTY(lcError), STR(ERROR()), lcError)
 lcMessage = IIF(EMPTY(lcMessage) or ISNULL(lcmessage), MESSAGE(), lcMessage)
 lcCode = IIF(EMPTY(lcCode), MESSAGE(1), lcMessage)
