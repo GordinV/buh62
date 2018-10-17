@@ -20,18 +20,20 @@ Endif
 Create Cursor Version(Head m)
 
 * check last version
-If File('version')
+l_version_file = 'c:\temp\buh60\version'
+If File(l_version_file)
 	Append Blank
-	Append Memo Head From Version
+	Append Memo Head From (l_version_file)
 	l_hash = Left(Mline(Version.Head, 1),7)
 Endif
 
 * looking for last updates
-If File('updates')
+l_updates_file = 'c:\temp\buh60\updates'
+If File(l_updates_file)
 	Select 	Version
 	Delete All
 	Append Blank
-	Append Memo Head From updates
+	Append Memo Head From (l_updates_file)
 	l_last_hash = Left(Mline(Version.Head, 1),7)
 Endif
 

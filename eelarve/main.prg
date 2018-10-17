@@ -124,42 +124,42 @@ Append From Dbf('curPrinter0')
 
 Use In curPrinter0
 
-cFile = 'palk\curPrintertsd.DBF'
-If File (cFile)
-	Use (cFile) In 0 Alias curPrinter1
-	Select curprinter
-	Append From Dbf('curPrinter1')
-	Use In curPrinter1
-Endif
+*!*	cFile = 'palk\curPrintertsd.DBF'
+*!*	If File (cFile)
+*!*		Use (cFile) In 0 Alias curPrinter1
+*!*		Select curprinter
+*!*		Append From Dbf('curPrinter1')
+*!*		Use In curPrinter1
+*!*	Endif
 
 
-cFile = 'EELARVE\saldoandmik\curPrinter.DBF'
-If File (cFile)
-	Use (cFile) In 0 Alias curPrinter1
-Else
-	Use curprinter In 0 Alias curPrinter1
-Endif
-Select curprinter
-Append From Dbf('curPrinter1')
+*!*	cFile = 'EELARVE\saldoandmik\curPrinter.DBF'
+*!*	If File (cFile)
+*!*		Use (cFile) In 0 Alias curPrinter1
+*!*	Else
+*!*		Use curprinter In 0 Alias curPrinter1
+*!*	Endif
+*!*	Select curprinter
+*!*	Append From Dbf('curPrinter1')
 
-Use In curPrinter1
+*!*	Use In curPrinter1
 
-cFile = 'ladu\curPrinter.DBF'
-If File (cFile)
-	Use (cFile) In 0 Alias curPrinter2
-	Select curprinter
-	Append From Dbf('curPrinter2')
-	Use In curPrinter2
-Endif
+*!*	cFile = 'ladu\curPrinter.DBF'
+*!*	If File (cFile)
+*!*		Use (cFile) In 0 Alias curPrinter2
+*!*		Select curprinter
+*!*		Append From Dbf('curPrinter2')
+*!*		Use In curPrinter2
+*!*	Endif
 
-cFile1 = 'EELPROJ\curPrinter.DBF'
-If File (cFile1)
-	Use (cFile1) In 0 Alias curPrinter3
-	SELECT * from curPrinter3 WHERE id NOT in (select id FROM curPrinter) INTO CURSOR qryPrinter3
-	Select curprinter
-	Append From Dbf('qryPrinter3') 
-	Use In curPrinter3
-Endif
+*!*	cFile1 = 'EELPROJ\curPrinter.DBF'
+*!*	If File (cFile1)
+*!*		Use (cFile1) In 0 Alias curPrinter3
+*!*		SELECT * from curPrinter3 WHERE id NOT in (select id FROM curPrinter) INTO CURSOR qryPrinter3
+*!*		Select curprinter
+*!*		Append From Dbf('qryPrinter3') 
+*!*		Use In curPrinter3
+*!*	Endif
 
 cFile1 = 'ERI\curPrinter.DBF'
 If File (cFile1)

@@ -7,16 +7,15 @@ If !Used('config')
 	Use config In 0
 Endif
 
-*!*	If Empty(config.uuEnda) Or !File('git_pull.bat')
-*!*		Return .F.
-*!*	Endif
+If Empty(config.uuEnda) Or !File('git_pull.bat')
+	Return .F.
+Endif
 
-*!*	Wait Window 'Kontrollin uuendused ...' Nowait
-*!*	If File('check_for_update.bat')
-*!*		! /N7 check_for_update.bat
-*!*	Endif
+Wait Window 'Kontrollin uuendused ...' Nowait
+If File('check_for_update.bat')
+	! /N7 check_for_update.bat
+Endif
 
-SET STEP ON 
 
 Create Cursor Version(Head m)
 
