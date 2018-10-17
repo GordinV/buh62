@@ -12,6 +12,7 @@ DEFINE CLASS login AS dokument
  auTocenter = .T.
  shOwwindow = 2
  wiNdowtype = 1
+ alwaysOnTop = .t.
  keY = ''
  meSsage = ''
  ADD OBJECT coMrekv AS myCombo WITH toP = 5, leFt = 100, wiDth = 400,  ;
@@ -34,10 +35,12 @@ DEFINE CLASS login AS dokument
      "lblParool", caPtion = "Parool:"
 *
      PROCEDURE btNok.click
+     
       SET CLASSLIB TO logo
       olOgo = CREATEOBJECT('logo')
       olOgo.shOw()
       WITH thIsform
+      		.visible = .f.
            ocOnnect = NEWOBJECT('connect', 'connect')
            SELECT coMkey
            leRror = ocOnnect.odB(SYS(2007, ALLTRIM(coMkey.omAnik)), ;

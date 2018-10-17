@@ -119,7 +119,6 @@ If File(cFileUuend)
 Endif
 
 
-
 Select curprinter
 Append From Dbf('curPrinter0')
 
@@ -132,7 +131,6 @@ If File (cFile)
 	Append From Dbf('curPrinter1')
 	Use In curPrinter1
 Endif
-
 
 
 cFile = 'EELARVE\saldoandmik\curPrinter.DBF'
@@ -195,8 +193,7 @@ Use In qryComkey
 Select comkey
 =secure('OFF')
 lQuit = .F.
-If !Empty (config.reserved1) And File ('updater1.exe')
-	lresult = checkuuendused(config.reserved1)
+lresult = checkuuendused()
 	If Used ('ajalugu')
 		Use In ajalugu
 	Endif
@@ -206,11 +203,11 @@ If !Empty (config.reserved1) And File ('updater1.exe')
 	If lresult = .T.
 		lnResult = Messagebox (Iif(config.keel = 2,'Kas uuenda programm?','Обновить приложение?'),1+32+0,'Uuendamine')
 		If lnResult = 1
-			! /N updater1.Exe
+			! /N git_pull.bat 
 			lQuit = .T.
 		Endif
-	Endif
-Endif
+	ENDIF
+	
 If lQuit = .F.
 	Set Sysmenu To
 	Set Sysmenu Automatic

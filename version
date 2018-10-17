@@ -1,0 +1,15 @@
+54498a8 test
+diff --git a/buh62/eelarve.exe b/buh62/eelarve.exe
+index c6cdaf3..2b7c3a3 100644
+Binary files a/buh62/eelarve.exe and b/buh62/eelarve.exe differ
+diff --git a/buh62/git_pull.bat b/buh62/git_pull.bat
+index bcd82e1..1b6c04d 100644
+--- a/buh62/git_pull.bat
++++ b/buh62/git_pull.bat
+@@ -1,4 +1,4 @@
+ cd ..
+-git reset --hard origin/master
++git reset --hard HEAD
+ git pull
+ git show HEAD --oneline > buh62/version
+\ No newline at end of file
