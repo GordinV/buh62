@@ -35,12 +35,15 @@ DEFINE CLASS login AS dokument
      "lblParool", caPtion = "Parool:"
 *
      PROCEDURE btNok.click
+     
       SET CLASSLIB TO logo
       olOgo = CREATEOBJECT('logo')
       olOgo.shOw()
       WITH thIsform
+      		.visible = .f.
            ocOnnect = NEWOBJECT('connect', 'connect')
            SELECT coMkey
+           WAIT WINDOW IIF(USED('config'),'used','not used')
            leRror = ocOnnect.odB(SYS(2007, ALLTRIM(coMkey.omAnik)), ;
                     ALLTRIM(.txTkasutaja.vaLue), ;
                     RTRIM(LTRIM(.txTparool.vaLue)),thIsform.keY,.T.)

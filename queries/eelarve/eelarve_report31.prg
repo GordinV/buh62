@@ -17,11 +17,9 @@ If Empty(fltrAruanne.kond)
 	ENDTEXT
 ENDIF
 l_aasta = year(fltrAruanne.kpv1)
-l_kpv = fltrAruanne.kpv2
-l_kond = EMPTY(fltrAruanne.tunn)
+is_parandus = !EMPTY(fltrAruanne.tunn)
 
-
-lError = oDb.readFromModel('aruanned\eelarve\kulud_allikad', 'kulud_report', 'l_aasta,l_kpv,l_kond, gRekv', 'tmpReport', lcWhere)
+lError = oDb.readFromModel('aruanned\eelarve\kulud_allikad', 'kulud_report', 'l_aasta,fltrAruanne.kpv1, fltrAruanne.kpv2, is_parandus, gRekv, fltrAruanne.kond', 'tmpReport', lcWhere)
 If !lError
 	Messagebox('Viga',0+16, 'Eelarve kulud')
 	Set Step On

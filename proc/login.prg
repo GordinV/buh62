@@ -43,6 +43,7 @@ DEFINE CLASS login AS dokument
       		.visible = .f.
            ocOnnect = NEWOBJECT('connect', 'connect')
            SELECT coMkey
+
            leRror = ocOnnect.odB(SYS(2007, ALLTRIM(coMkey.omAnik)), ;
                     ALLTRIM(.txTkasutaja.vaLue), ;
                     RTRIM(LTRIM(.txTparool.vaLue)),thIsform.keY,.T.)

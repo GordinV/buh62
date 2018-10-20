@@ -22,34 +22,17 @@ Public gnHandle,gnHandleAsync, gcWindow, gRekv,gUserId, oPrintform2, oFinder, gR
 gnPaev = 0
 gcAmetnik = ''
 tcKasutaja = '%'
-tcMuud = '%'
-tcOsakond = '%'
-tnOsakondId1 = 0
-tnOsakondId2 = 999999999
 gcKey = tcKey
 gcProgNimi = 'EELARVE.EXE'
-tcTunnus = '%'
 cCaption = _Screen.Caption
-tcAllikas = '%'
-tcArtikkel = '%'
-tcObjekt = '%'
-tcProj = '%'
-tcUritus = '%'
-tcgrupp = '%'
-
-tcTegev = '%'
-tcEelAllikas = '%'
 glError = .F.
 gVersia = 'MSSQL'
 gdKpv = Date()
-cKasutaja = ''
 gnHandle = 0
 gUserId = 0
 gRekv = 0
 glMvt = .T.
-gcCurrentValuuta = 'EUR'
-*!*	grekv = 1
-*!*	gUserid = 1
+
 Local lError
 Close Data All
 Set Udfparms To Value
@@ -90,7 +73,6 @@ Endif
 Create Cursor curprinter (Id Int, objekt c(40), nimetus1 c(120), nimetus2 c(120), procfail c(120), reportfail c(120),;
 	reportvene c(120), Parameter m)
 
-
 cFile = 'EELARVE\curPrinter.DBF'
 If File (cFile)
 	Use (cFile) In 0 Alias curPrinter0
@@ -98,68 +80,10 @@ Else
 	Use curprinter In 0 Alias curPrinter0
 Endif
 
-* uuendamine curPrinter
-cFileUuend = 'TMP\tmpPrinter.dbf'
-cFileUuendFpt = 'TMP\tmpPrinter.fpt'
-If File(cFileUuend)
-	Use (cFileUuend) In 0 Alias tmpPrinter
-	Select tmpPrinter
-	Scan
-		Select curPrinter0
-		Locate For Id = tmpPrinter.Id And Alltrim(Upper(curPrinter0.objekt)) = Alltrim(Upper(tmpPrinter.objekt))
-		If !Found()
-			Insert Into curPrinter0 (Id, objekt, nimetus1, nimetus2, procfail, reportfail, reportvene, Parameter) ;
-				VALUES (tmpPrinter.Id, tmpPrinter.objekt, tmpPrinter.nimetus1, tmpPrinter.nimetus2, tmpPrinter.procfail, ;
-				tmpPrinter.reportfail, tmpPrinter.reportvene, tmpPrinter.Parameter)
-		Endif
-	Endscan
-	Use In tmpPrinter
-	Erase (cFileUuend)
-	Erase (cFileUuendFpt)
-Endif
-
-
 Select curprinter
 Append From Dbf('curPrinter0')
 
 Use In curPrinter0
-
-*!*	cFile = 'palk\curPrintertsd.DBF'
-*!*	If File (cFile)
-*!*		Use (cFile) In 0 Alias curPrinter1
-*!*		Select curprinter
-*!*		Append From Dbf('curPrinter1')
-*!*		Use In curPrinter1
-*!*	Endif
-
-
-*!*	cFile = 'EELARVE\saldoandmik\curPrinter.DBF'
-*!*	If File (cFile)
-*!*		Use (cFile) In 0 Alias curPrinter1
-*!*	Else
-*!*		Use curprinter In 0 Alias curPrinter1
-*!*	Endif
-*!*	Select curprinter
-*!*	Append From Dbf('curPrinter1')
-
-*!*	Use In curPrinter1
-
-*!*	cFile = 'ladu\curPrinter.DBF'
-*!*	If File (cFile)
-*!*		Use (cFile) In 0 Alias curPrinter2
-*!*		Select curprinter
-*!*		Append From Dbf('curPrinter2')
-*!*		Use In curPrinter2
-*!*	Endif
-
-*!*	cFile1 = 'EELPROJ\curPrinter.DBF'
-*!*	If File (cFile1)
-*!*		Use (cFile1) In 0 Alias curPrinter3
-*!*		SELECT * from curPrinter3 WHERE id NOT in (select id FROM curPrinter) INTO CURSOR qryPrinter3
-*!*		Select curprinter
-*!*		Append From Dbf('qryPrinter3') 
-*!*		Use In curPrinter3
-*!*	Endif
 
 cFile1 = 'ERI\curPrinter.DBF'
 If File (cFile1)
@@ -168,11 +92,6 @@ If File (cFile1)
 	Append From Dbf('curPrinter4')
 	Use In curPrinter4
 Endif
-
-
-Use config In 0
-Select config
-=CursorSetProp('buffering',3)
 
 If File ('KEY.DBF')
 	Use Key In 0
@@ -193,21 +112,18 @@ Use In qryComkey
 Select comkey
 =secure('OFF')
 lQuit = .F.
+
+
 lresult = checkuuendused()
-	If Used ('ajalugu')
-		Use In ajalugu
+
+If lresult = .T.
+	lnResult = Messagebox ('Kas uuenda programm?',1+32+0,'Uuendamine')
+	If lnResult = 1
+		! /N git_pull.bat
+		lQuit = .T.
 	Endif
-	If Used ('uuendus')
-		Use In uuendus
-	Endif
-	If lresult = .T.
-		lnResult = Messagebox (Iif(config.keel = 2,'Kas uuenda programm?','Обновить приложение?'),1+32+0,'Uuendamine')
-		If lnResult = 1
-			! /N git_pull.bat 
-			lQuit = .T.
-		Endif
-	ENDIF
-	
+Endif
+
 If lQuit = .F.
 	Set Sysmenu To
 	Set Sysmenu Automatic
@@ -221,23 +137,7 @@ If lQuit = .F.
 	oTools = Createobject('Toolseelarve')
 
 	oTools.translate()
-*	oTools.Show()
-
-
-&&	Do createmenu with 'MAIN',iif(config.keel = 1,.f.,.t.),.f.
-	If !Empty(config.background)
-		_Screen.Picture = Trim(config.background)
-	Endif
-*!*		Set classlib to checkKontoIntegrity additive
-*!*		oRI = createobject('checkKontoIntegrity')
-	Do Case
-		Case config.Debug = 0
-			On Error Do err With Program(), Lineno(1)
-		Case config.Debug = 1
-			On Error
-		Case config.Debug = 2
-			On Error Do Ferr
-	Endcase
+	On Error Do err With Program(), Lineno(1)
 
 	If !Empty(tcKey) And tcKey = '-m'
 		Do valirekv
@@ -246,36 +146,11 @@ If lQuit = .F.
 
 	Read Events
 Endif
-If File ('buh50viga.log') And ;
-		used ('qryRekv') And !Empty (qryRekv.email) ;
-		and !Empty (Mline(qryRekv.muud,1)) And;
-		!Isnull(qryRekv.muud) And !Empty (config.reserved3)
-	Create Cursor Mail (smtpto c(254), cclist c(254), bcclist c(254), subject c(50),;
-		attachment c(254), Message m)
-	cAttach = Sys(5)+Sys(2003)+'\buh50viga.log'
-	Insert Into Mail (smtpto, subject, attachment);
-		values (Ltrim(Rtrim(config.reserved3)),'Raamatupidamine 5.0 Viga',cAttach)
-	Set Classlib To classe\email
-	oEmail = Createobject('email')
-	With oEmail
-		.SmtpFrom = Ltrim(Rtrim(qryRekv.email))
-		.SmtpReply = Ltrim(Rtrim(qryRekv.email))
-		.SmtpServer = Ltrim(Rtrim(Mline (qryRekv.muud,1)))
-		lError = .Send()
-		If lError = .T.
-			Erase (cAttach)
-		Endif
-	Endwith
-	Use In Mail
-	Release oEmail
-Endif
 Set Proc To
-If gnHandle >0 And gVersia <> 'VFP'
-	=sqldisconnect(gnHandle)
-	gnHandle = 0
-Endif
+=sqldisconnect(gnHandle)
+gnHandle = 0
+
 _Screen.Caption = cCaption
-&&set help to
 On Key
 Set Sysmenu To Default
 _Screen.Picture = ''

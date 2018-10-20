@@ -41,7 +41,7 @@ a_arts[7] = '28'
 a_arts[7] = '29'
 a_arts[7] = '34'
 
-SET STEP ON 	
+	
 Select ;
 	IIF(LEFT(r.artikkel,2) = '21', r.eelarve, 0) as a21,;
 	IIF(LEFT(r.artikkel,2) = '22', r.eelarve, 0) as a22,;

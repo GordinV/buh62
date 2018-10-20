@@ -17,7 +17,6 @@ l_aasta = year(fltrAruanne.kpv1)
 l_kpv = fltrAruanne.kpv2
 l_kond = EMPTY(fltrAruanne.tunn)
 
-SET STEP ON 
 
 lError = oDb.readFromModel('aruanned\eelarve\tulud_allikad', 'tulud_report', 'l_aasta,l_kpv,l_kond, gRekv', 'tmpReport', lcWhere)
 If !lError

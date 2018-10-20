@@ -3,19 +3,9 @@ Local loRequest, lcUrl, lcFilename, l_last_hash,l_hash
 l_last_hash = ''
 l_hash = ''
 
-If !Used('config')
-	Use config In 0
-Endif
-
-If Empty(config.uuEnda) Or !File('git_pull.bat')
+If !File('git_pull.bat')
 	Return .F.
 Endif
-
-Wait Window 'Kontrollin uuendused ...' Nowait
-If File('check_for_update.bat')
-	! /N7 check_for_update.bat
-Endif
-
 
 Create Cursor Version(Head m)
 
@@ -25,7 +15,13 @@ If File(l_version_file)
 	Append Blank
 	Append Memo Head From (l_version_file)
 	l_hash = Left(Mline(Version.Head, 1),7)
-Endif
+ENDIF
+
+IF FILE('check_for_update.bat')
+	WAIT WINDOW 'Loen uuendused' nowait
+	! check_for_update.bat
+ENDIF
+
 
 * looking for last updates
 l_updates_file = 'c:\temp\buh60\updates'

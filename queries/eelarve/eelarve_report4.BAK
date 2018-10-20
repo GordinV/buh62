@@ -5,10 +5,10 @@ Parameter cWhere
 
 TEXT TO lcWhere TEXTMERGE noshow
 	(EMPTY(<<fltrAruanne.asutusid>>) or rekv_id = <<fltrAruanne.asutusid>>)
-	and tunnus ilike '<<ALLTRIM(fltrAruanne.tunnus)>>%'
-	and artikkel like '<<ALLTRIM(fltrAruanne.kood5)>>%'
-	and tegev like '<<ALLTRIM(fltrAruanne.kood1)>>%'
-	and allikas like '<<ALLTRIM(fltrAruanne.kood2)>>%'
+	and coalesce(tunnus,'') ilike '<<ALLTRIM(fltrAruanne.tunnus)>>%'
+	and coalesce(artikkel,'') like '<<ALLTRIM(fltrAruanne.kood5)>>%'
+	and coalesce(tegev,'') like '<<ALLTRIM(fltrAruanne.kood1)>>%'
+	and coalesce(allikas,'') like '<<ALLTRIM(fltrAruanne.kood2)>>%'
 ENDTEXT
 
 If Empty(fltrAruanne.kond)
