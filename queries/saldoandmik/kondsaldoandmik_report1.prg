@@ -1,5 +1,21 @@
 Parameter tcWhere
 
+IF !EMPTY(fltrAruanne.arvestus)
+	TEXT TO l_params TEXTMERGE NOSHOW 
+		{"kpv":"<<DTOC(fltrAruanne.kpv2,1)>>","tyyp":1}
+	ENDTEXT
+	WAIT WINDOW 'Arvestan ...' nowait
+	lError = oDb.readFromModel('aruanned\eelarve\kond_saldoandmik', 'koosta_saldoandmik', 'gUserId,l_params', 'tmpTulemus')
+	If !lError
+		Messagebox('Viga',0+16, 'Eelarve kondsaldoandmik')
+		Set Step On
+		Select 0
+		Return .F.
+	Endif
+	WAIT WINDOW 'Arvestan ...tehtud' nowait
+ENDIF
+
+
 TEXT TO lcWhere TEXTMERGE noshow
 	(EMPTY(<<fltrAruanne.asutusid>>) or rekv_id = <<fltrAruanne.asutusid>>)
 	and coalesce(konto,'') like '<<ALLTRIM(fltrAruanne.konto)>>%'
@@ -20,9 +36,9 @@ If Empty(fltrAruanne.kond)
 	ENDTEXT
 ENDIF
 
-lError = oDb.readFromModel('aruanned\eelarve\kond_saldoandmik', 'kond_saldoandmik_report', 'l_kpv2, l_rekv', 'tmpReport', lcWhere,l_subTotals)
+lError = oDb.readFromModel('aruanned\eelarve\kond_saldoandmik', 'kond_saldoandmik_report', 'l_kpv2, l_rekv, fltrAruanne.kond', 'tmpReport', lcWhere,l_subTotals)
 If !lError
-	Messagebox('Viga',0+16, 'Eelarve kulud')
+	Messagebox('Viga',0+16, 'Eelarve kondsaldoandmik')
 	Set Step On
 	Select 0
 	Return .F.
@@ -30,7 +46,7 @@ Endif
 
 Select * ;
 	from tmpReport ;
-	ORDER By konto, tp, tegev, allikas, rahavoo ;
+	ORDER By konto, tp, tegev, allikas, rahavoog ;
 	INTO Cursor saldoaruanne_report1
 
 Use In tmpReport
