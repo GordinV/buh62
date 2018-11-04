@@ -2,11 +2,17 @@ Parameter tnIsikid
 
 Local lnResult
 If Empty(gnKuu) .Or. Empty(gnAasta)
-	Do Form period
-Endif
+	Do Form period TO l_result
+	IF EMPTY(l_result)
+		* katkestus
+		RETURN .f.
+	ENDIF	
+ENDIF
+
 If  .Not. Used('curSource')
 	Create Cursor curSource (Id Int, koOd C (20), niMetus C (120))
-Endif
+ENDIF
+
 If  .Not. Used('curValitud')
 	Create Cursor curValitud (Id Int, koOd C (20), niMetus C (120))
 Endif
@@ -36,7 +42,7 @@ TEXT TO l_json TEXTMERGE noshow
 					[<<oDb.getJson()>>]
 ENDTEXT
 				lError = oDb.readFromModel('palk\palk_taabel', 'genTaabel', 'guserid,l_json', 'result')
-				If !lError
+				If !lError OR !USED('result') OR EMPTY(result.result) 
 					lcViga = ''
 					If Used('result')
 						lcViga = result.error_message

@@ -1,5 +1,4 @@
 Lparameter tnSumma, tnRound
-SET STEP ON 
 Local lnSumma
 If Empty(tnSumma)
 	tnSumma = 0

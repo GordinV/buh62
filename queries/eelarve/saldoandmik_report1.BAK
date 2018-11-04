@@ -1,5 +1,5 @@
  PARAMETER tcWhere
-SET STEP ON 
+
 TEXT TO lcWhere TEXTMERGE noshow
 	(EMPTY(<<fltrAruanne.asutusid>>) or rekv_id = <<fltrAruanne.asutusid>>)
 	and coalesce(artikkel,'') like '<<ALLTRIM(fltrAruanne.kood5)>>%'
@@ -24,8 +24,8 @@ If !lError
 Endif
 
 Select konto, tp, tegev, allikas, artikkel, rahavoog, ;
-	IIF(EMPTY(tyyp) OR tyyp = 1 OR tyyp = 3, deebet - kreedit, 0) as deebet, ;
-	IIF(tyyp = 2 OR tyyp = 4, kreedit - deebet, 0 ) as kreedit ;
+	IIF(EMPTY(tyyp) OR tyyp = 1 OR tyyp = 3, deebet - kreedit, 000000000.00) as deebet, ;
+	IIF(tyyp = 2 OR tyyp = 4, kreedit - deebet, 000000000.00 ) as kreedit ;
 	from tmpReport ;
 	ORDER By konto, tp, tegev, allikas, artikkel, rahavoog ;
 	INTO Cursor saldoaruanne_report1

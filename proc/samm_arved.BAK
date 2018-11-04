@@ -1,7 +1,7 @@
 Parameter tnLepingId, tdKpv, tnPreliminary
 Local l_test
 
-l_test = .F.
+l_test = .f.
 If (l_test)
 	gcProgNimi = 'EELARVE'
 	Create Cursor curkey (versia c(20))
@@ -11,11 +11,11 @@ If (l_test)
 	gVersia = 'PG'
 	oDb = Createobject('db')
 
-	gRekv = 1
-	guserid = 1
+	gRekv = 63
+	guserid = 70
 	tnId = 0
 
-	gnHandle = SQLConnect('localPg', 'vlad','123')
+	gnHandle = SQLConnect('test_server', 'temp','12345')
 	gnHandleAsync = gnHandle
 
 	If gnHandle < 0
@@ -23,7 +23,7 @@ If (l_test)
 		Return .T.
 	Endif
 	tdKpv = Date()
-	tnLepingId = 297264
+	tnLepingId = 1438054
 
 	If !Used('comAsutusRemote')
 		lError = oDb.readFromModel('libs\libraries\asutused', 'selectAsLibs', 'gRekv, guserid', 'comAsutusRemote')
@@ -37,14 +37,12 @@ If (l_test)
 		lError = oDb.readFromModel('ou\rekv', 'row', 'gRekv, guserid', 'qryRekv')
 
 	Endif
-
 Endif
 
 
 If !Empty(tdKpv)
 	ldArvKpv = tdKpv
 Else
-*	ldArvKpv = Gomonth(Date(Year(Date()),Month(Date()),1),1)-1
 	ldArvKpv = Date()
 Endif
 
@@ -69,10 +67,14 @@ With oDb
 	If Empty(tnPreliminary)
 		If Used('v_dokprop')
 			Use In v_dokprop
-		Endif
+		ENDIF
+IF (l_test)		
+	nId = 0
+else
 		Set Procedure To Proc\getdokpropId Additive
+		
 		nId = getdokpropId('ARV', 'libs\libraries\dokprops')
-
+ENDIF
 
 		If !Used ('V_DOKPROP')
 			tnId = nId
@@ -84,9 +86,14 @@ With oDb
 	Do While lnStep>0
 		If  .Not. Empty(tnLepingId)
 			Insert Into curResult (Id, lePingud) Values (tnLepingId, 1)
-			If !Used('v_leping2')
-				lError = oDb.readFromModel('raamatupidamine\leping', 'row', 'tnLepingId, guserid', 'v_leping1')
-				lError = oDb.readFromModel('raamatupidamine\leping', 'details', 'tnLepingId, guserid', 'v_leping2')
+			
+			tnId = tnLepingId
+			If !Used('v_leping1') OR RECCOUNT('v_leping1') = 0 OR EMPTY(v_leping1.id)
+				lError = oDb.readFromModel('raamatupidamine\leping', 'row', 'tnId, guserid', 'v_leping1')
+			ENDIF
+			
+			If !Used('v_leping2')	
+				lError = oDb.readFromModel('raamatupidamine\leping', 'details', 'tnId, guserid', 'v_leping2')
 			Endif
 
 			Select v_leping2
@@ -138,17 +145,18 @@ Procedure arVutus
 	Select Distinct Id From curResult Where lePingud=1 Into Cursor recalc1
 	Select recalc1
 	Scan
-
 		lError = edIt_arve(recalc1.Id)
 
 		If lError=.T. And v_arv.Summa > 0 And Empty(tnPreliminary)
 			Wait Window 'Salvestan arve number:'+Alltrim(v_arv.Number) Nowait
-			lError = saVe_arve()
+
+			lError = saVe_arve(recalc1.Id)
 			If Empty(lError)
 				Exit
 			Endif
-		Endif
-		If !Empty(tnPreliminary) And v_arv.Summa > 0
+		ENDIF
+		
+		If !EMPTY(lError) and !Empty(tnPreliminary) And v_arv.Summa > 0
 			Wait Window 'Salvestan aruanne..' Nowait
 			Select comAsutusRemote
 			Locate For Id = v_arv.asutusId
@@ -184,7 +192,7 @@ Function edIt_arve
 	Endif
 
 	tnId = 0
-	lError = oDb.readFromModel('raamatupidamine\arv', 'row', 'tnId, guserid', 'v_arv')
+	lError = oDb.readFromModel('raamatupidamine\arv', 'row', 'tnId, guserid', 'v_arv')	
 	lError = oDb.readFromModel('raamatupidamine\arv', 'details', 'tnId, guserid', 'v_arvread')
 	If !lError Or !Used('v_arv') Or !Used('v_arvread')
 		Messagebox('Viga arve laadimisel',0+16,'Error')
@@ -196,15 +204,17 @@ Function edIt_arve
 	lnPaev = 1
 	ldKpv = Date()
 	lnDokPropId = 0
+	
+	* arvestame tahtpaev
 	If Empty(tnPreliminary)
 		lnMaxDay = Day(Gomonth(Date(Year(Date()),Month(Date()),1),1)-1)
 		Select v_arv
-		If !Empty(v_leping1.doklausid)
+		If !ISNULL(v_leping1.doklausid) AND !Empty(v_leping1.doklausid)
 			lnPaev = Iif( lnMaxDay < v_leping1.doklausid, lnMaxDay, v_leping1.doklausid)
 		Else
 			lnPaev = 15
 		Endif
-		If Empty(v_leping1.doklausid) Or v_leping1.doklausid >= 30
+		If ISNULL(v_leping1.doklausid) OR Empty(v_leping1.doklausid) Or v_leping1.doklausid >= 30
 			lnPaev = lnMaxDay
 		Endif
 
@@ -213,12 +223,12 @@ Function edIt_arve
 			ldKpv = Gomonth(ldKpv,1)
 		Endif
 		lnDokPropId = v_dokprop.Id
-		ldKpv = ldArvKpv + Iif(!Used('v_config_') Or Empty(v_config_.tahtpaev),lnPaev,v_config_.tahtpaev)
+		ldKpv = ldArvKpv + Iif(ISNULL(qryRekv.tahtpaev) or Empty(qryRekv.tahtpaev),lnPaev,qryRekv.tahtpaev)
 
 	Endif
 
 	lcObjekt = ''
-	If !Empty(v_leping1.objektid)
+	If !ISNULL(v_leping1.objektid) AND !Empty(v_leping1.objektid)
 
 		If !Used('comObjektRemote')
 			lError = oDb.readFromModel('libs\libraries\objekt', 'selectAsLibs', 'gRekv, guserid', 'comObjektRemote')
@@ -230,11 +240,6 @@ Function edIt_arve
 		Locate For Id = v_leping1.objektid
 		lcObjekt = comObjektRemote.koOd
 	Endif
-*SET STEP ON
-*!*		If !Used('v_config_')
-*!*			tnUserId = 0
-*!*			oDb.Use('v_config_')
-*!*		Endif
 
 	Select v_arv
 	If Reccount('v_arv') = 0
@@ -245,17 +250,11 @@ Function edIt_arve
 	Replace v_arv.doklausid With lnDokPropId,;
 		kpv With ldArvKpv,;
 		asutusId With v_leping1.asutusId,;
-		liSa With v_leping1.number,;		
+		liSa With v_leping1.Number,;
 		taHtaeg With ldKpv,;
 		objekt With lcObjekt,;
 		muud With v_leping1.selgitus In v_arv
 
-*!*		Insert Into v_arv (reKvid, Userid, doklausid, Number, kpv, asutusId, liSa, taHtaeg, objekt, muud) Values ;
-*!*			(gRekv, guserid, lnDokPropId, Alltrim(Str(lnDok)), ldArvKpv, v_leping1.asutusId, ;
-*!*			IIF(Upper(gcProgNimi) = 'ARVELDUSED.EXE','Viitenumber:'+fncViitenumber(Iif(v_config_.toolbar3 = 1,v_leping1.Id,0),;
-*!*			IIF(v_config_.toolbar3=2,v_leping1.asutusId,0),0),v_leping1.Number), ldKpv, lcObjekt,v_leping1.selgitus )
-
-*		SET STEP ON
 
 	=fnc_addfromleping(v_leping1.Id)
 
@@ -284,10 +283,10 @@ Function edIt_arve
 	Delete From v_arvread Where nomid Not In (Select Id From curResult Where teEnused = 1) Or Summa = 0
 	If lnKoef < 1
 		Scan
-
+			lnVat = IIF(ISDIGIT(v_arvread.km),VAL(v_arvread.km),0) / 100
 			Replace kogus With kogus * lnKoef,;
 				v_arvread.kbmta With hind * kogus,;
-				v_arvread.kbm With (v_arvread.kbmta - v_arvread.soodus) * v_arvread.kbmaar,;
+				v_arvread.kbm With (v_arvread.kbmta - v_arvread.soodus) * lnVat,;
 				v_arvread.Summa With (v_arvread.kbmta - v_arvread.soodus) + v_arvread.kbm In v_arvread
 		Endscan
 	Endif
@@ -296,8 +295,15 @@ Function edIt_arve
 	Sum (v_arvread.kbmta-v_arvread.soodus) To lnKbmta
 	Sum kbm To lnKbm
 	Sum Summa To lnSumma
-	Replace v_arv.kbmta With frOund(lnKbmta), v_arv.kbm With frOund(lnKbm),  ;
-		v_arv.Summa With frOund(lnSumma), jaAk With frOund(lnSumma) In v_arv
+	Replace v_arv.kbmta With lnKbmta, v_arv.kbm With lnKbm,  ;
+		v_arv.Summa With lnSumma, jaAk With lnSumma In v_arv
+		
+	IF RECCOUNT('v_arvread') > 0
+		RETURN .t.
+	ELSE
+		RETURN .f.
+	ENDIF
+	
 Endfunc
 *
 Function coNvert_muud
@@ -354,8 +360,11 @@ Function coNvert_muud
 Endfunc
 *
 Function saVe_arve
+LPARAMETERS l_leping_id
 	Local lError
 	lError = .T.
+	
+	
 	Select v_arv
 
 	If v_arv.Summa > 0
@@ -368,19 +377,22 @@ Function saVe_arve
 			Go Top
 			lcJson = '"gridData":['+ oDb.getJson() + ']'
 
-			Select v_arv
+			Select v_leping1.id as leping_id, * from v_arv INTO CURSOR qryArv
+			SELECT  qryArv
 			lcJson = '{"id":' + Alltrim(Str(Id)) + ',"data": '+ oDb.getJson(lcJson) + '}'
 			lError = oDb.readFromModel('raamatupidamine\arv', 'saveDoc', 'lcJson,gUserid,gRekv', 'v_arv')
 
-			If !lError
+_cliptext = lcJson
+			If !lError OR !USED('v_arv') OR EMPTY(v_arv.id)
 				Messagebox('Viga arve salvestamisel',0+16,'Error')
 				Return .F.
-			Endif
-			Wait Window 'Salvestan arve nr.:'+Alltrim(v_arv.Number) + '..salvestatud ' Nowait
-
+			ENDIF
+			
+			Wait Window 'Salvestan arve nr.:'+Alltrim(v_arv.Number) + '..salvestatud ' nowait
 			If  Used('v_dokprop') And v_dokprop.registr > 0
-				Wait Window 'Konteerimine arve nr.:'+Alltrim(v_arv.Number) Nowait
+				Wait Window 'Konteerimine arve nr.:'+Alltrim(v_arv.Number) nowait
 				tnId = v_arv.Id
+
 				lError = oDb.readFromModel('raamatupidamine\arv', 'generateJournal', 'guserid, tnId', 'qryArvLausend')
 
 				If !lError
@@ -514,10 +526,10 @@ Function fnc_addfromleping
 	lnKSumma = 	0
 	lnKSummaKbm = 0
 	lnKSummaKokku = 0
-
+tnId = tnLepingId
 	If !Used('v_leping2')
-		lError = oDb.readFromModel('raamatupidamine\leping', 'row', 'tnLepingId, guserid', 'v_leping1')
-		lError = oDb.readFromModel('raamatupidamine\leping', 'details', 'tnLepingId, guserid', 'v_leping2')
+		lError = oDb.readFromModel('raamatupidamine\leping', 'row', 'tnId, guserid', 'v_leping1')
+		lError = oDb.readFromModel('raamatupidamine\leping', 'details', 'tnId, guserid', 'v_leping2')
 	Endif
 
 
@@ -529,222 +541,66 @@ Function fnc_addfromleping
 	Set Procedure To Proc\frOund Additive
 	Set Procedure To Proc\viimane_paev Additive
 
-	Set Classlib To classes\Classlib Additive
-	oFormula = Createobj('classlib.formula')
+	Select v_leping2
+	lnrecno = Recno()
+	Scan For v_leping2.Status = 1
+		Select curResult
+		Locate For Id = v_leping2.nomid And teEnused = 1
+		If Found()
+			Wait Window 'Arvestan leping nr.:'+Alltrim(v_leping1.Number)+Alltrim(Str(Recno('v_leping2')))+'/'+Alltrim(Str(Reccount('v_leping2'))) Nowait
 
-	With oFormula
-		.Requery()
-		.kpv = ldArvKpv
-		Select v_leping2
-		lnrecno = Recno()
-		Scan For v_leping2.Status = 1
-			Select curResult
-			Locate For Id = v_leping2.nomid And teEnused = 1
-			If Found()
-				Wait Window 'Arvestan leping nr.:'+Alltrim(v_leping1.Number)+Alltrim(Str(Recno('v_leping2')))+'/'+Alltrim(Str(Reccount('v_leping2'))) Nowait
+			lnKogus = 0
+			lnSumma = 0
+			lnSummaKokku = 0
+			lcSelg = ''
+			lnSoodus = 0
+			lnKbm = 0
+			lnKogus = Iif(Empty(v_leping2.kogus),1,v_leping2.kogus)
+			lnHind = Iif(Empty(v_leping2.hind),1,v_leping2.hind)
+			lnAlg = 0
+			lnLopp = 0
+			l_kbm_maar = 0.20 * Iif (Empty (qryRekv.kbmkood),0,1)
+			lnSumma  = lnHind * lnKogus
 
-				lnKogus = 0
-				lnSumma = 0
-				lnSummaKokku = 0
-				lcSelg = ''
+* soodus
+			If !Isnull(v_leping2.soodus) And !Empty(v_leping2.soodus) And;
+					!Empty(v_leping2.soodusalg) And  !Empty(v_leping2.sooduslopp) And;
+					ldArvKpv >= v_leping2.soodusalg And ldArvKpv <= v_leping2.sooduslopp
+				lnSoodus = v_leping2.soodus
+				lnSumma = (lnHind - lnSoodus ) * lnKogus
+			Else
 				lnSoodus = 0
-				lnKbm = 0
-				lnKogus = v_leping2.kogus
-				lnHind = v_leping2.hind
-				.puhasta()
-				lnAlg = 0
-				lnLopp = 0
+			Endif
+			lnSummaKokku = lnSumma
 
-				If Empty(.objektid) And !Empty(v_leping1.objektid)
-					.objektid = comObjektRemote.Id
-				Endif
-				.lepingid = v_leping1.Id
-				.arvId = 0
-
-				.hind = lnHind
-				.kogus = lnKogus
-				.valuuta = 'EUR'
-				.kuurs = 1
-				.asutusId = 0
-				.kpv = v_arv.kpv
-				If !Isnull(v_leping2.foRmula) And !Empty(v_leping2.foRmula)
-
-					lcFormulaTais = Alltrim(v_leping2.foRmula)
-					lcFormulaKogus = ''
-					lcFormulaHind = ''
-					lnKogusFormula = Atc('KOGUS:', Upper(Alltrim(v_leping2.foRmula)))
-					lnHindFormula = Atc('HIND:', Upper(Alltrim(v_leping2.foRmula)))
-					If lnKogusFormula > 0 Or lnHindFormula > 0
-						If lnKogusFormula > lnHindFormula
-							lnAlg = lnHindFormula
-							lnLopp = lnKogusFormula
-							lcFormulaKogus = Alltrim(Substr(lcFormulaTais,lnLopp+6))
-							lcFormulaHind = Alltrim(Substr(lcFormulaTais,lnAlg+5,lnLopp-lnAlg - 5))
-
-						Else
-							lnAlg = lnKogusFormula
-							lnLopp = lnHindFormula
-							lcFormulaHind = Alltrim(Substr(lcFormulaTais,lnLopp+5))
-							lcFormulaKogus = Alltrim(Substr(lcFormulaTais,lnAlg+6,lnLopp-lnAlg - 6))
-						Endif
-					Else
-						lcFormula = lcFormulaTais
-					Endif
-*					With Thisform.formULA1
-					If lnAlg + lnLopp > 0
-* meil on hind ja / voi kogus osad
-* esimine loeme hinna osa
-
-						If !Empty(lcFormulaHind)
-*								SET STEP ON
-							=Kaivitaformula(oFormula,lcFormulaHind)
-							.lcHind = .returnvalue
-						Else
-							.lcHind = '1'
-						Endif
-* kogus
-						If !Empty(lcFormulaKogus)
-							=Kaivitaformula(oFormula,lcFormulaKogus)
-							.lcKogus = .returnvalue
-							If Empty(.lcKogus)
-								.lcKogus = '0'
-							Endif
-
-						Else
-							.lcKogus = '1'
-						Endif
-
-						.returnvalue  = .lcHind +'*' + .lcKogus
-					Else
-						=Kaivitaformula(oFormula,lcFormulaTais)
-					Endif
-
-*		Replace Arv With .ReturnValue  In curExpr
-					lnHind = 0
-*					SET STEP ON
-					.hind = lnHind
-					.kogus = v_leping2.kogus
-					lnHind = Iif(Empty(.hind),1,.hind)
-					lnKogus = Iif(Empty(.kogus),1,.kogus)
-					lcSelg = .selg
-
-					Do Case
-						Case !Empty(.lcHind) And Empty(.lcKogus)
-							.hind = Evaluate(.lcHind)
-							lnHind = .hind
-							.kogus = v_leping2.kogus
-							lnKogus = .kogus
-						Case !Empty(.lcKogus) And Empty(.lcHind)
-							.kogus = Evaluate(.lcKogus)
-							.hind = v_leping2.hind
-						Case !Empty(.lcKogus) And !Empty(.lcHind)
-							.hind = Evaluate(.lcHind)
-							.kogus = Evaluate(.lcKogus)
-						Otherwise
-							.hind = Evaluate(.returnvalue)
-
-							.kogus = 1
-							lnSumma = .hind *.kogus
-					Endcase
-					If !Empty(.returnvalue)
-						lnHind = .hind
-						lnKogus = .kogus
-					Endif
-
-*!*						IF RECNO('v_leping2') <> lnrecno
-*!*							SELECT v_leping2
-*!*							GO lnrecno
-*!*						ENDIF
-
-					.nomid = v_leping2.nomid
-					If !Isnull(v_leping2.soodus) And !Empty(v_leping2.soodus) And;
-							!Empty(v_leping2.soodusalg) And  !Empty(v_leping2.sooduslopp) And;
-							ldArvKpv >= v_leping2.soodusalg And ldArvKpv <= v_leping2.sooduslopp
-						.soodus = v_leping2.soodus
-					Else
-						.soodus = 0
-					Endif
-					lnSumma = lnHind * lnKogus - .soodus
-					If Empty(v_leping2.kbm)
+			If !Empty(v_leping2.kbm)
 * ei siseldab kbm
-						.Summa = lnSumma
-						.summakokku = 0
-					Else
-						.Summa = 0
-						.summakokku = lnSumma
-					Endif
-				Else
-*puudub formula
-					If !Isnull(v_leping2.soodus) And !Empty(v_leping2.soodus) And;
-							!Empty(v_leping2.soodusalg) And  !Empty(v_leping2.sooduslopp) And;
-							ldArvKpv >= v_leping2.soodusalg And ldArvKpv <= v_leping2.sooduslopp
-						.soodus = v_leping2.soodus
-					Endif
+				lnKbm = l_kbm_maar * lnSumma
+				lnSummaKokku = lnSumma + lnKbm
 
-					If !Empty(v_leping2.Summa)
-						lnSumma = Round(v_leping2.Summa ,2)
-*							lnSumma = Round(v_leping2.Summa * v_leping2.kuurs,2)
-						If Empty(v_leping2.kbm)
-* ei siseldab kbm
-							.Summa = lnSumma
-							.summakokku = 0
-						Else
-							.Summa = 0
-							.summakokku = lnSumma
-						Endif
-					Else
-						lnSumma = (v_leping2.hind - .soodus) * v_leping2.kogus
-						If Empty(v_leping2.kbm)
-* ei siseldab kbm
-							.Summa = lnSumma
-							.summakokku = 0
-						Else
-							.Summa = 0
-							.summakokku = lnSumma
-						Endif
-					Endif
-
-				Endif
-				If Empty(.nomid)
-					.nomid = v_leping2.nomid
-				Endif
-
-				.arvestakbm()
-				.arvestakbmsumma()
-
-				Select coMnomremote
-				If coMnomremote.Id <> v_leping2.nomid
-					Locate For coMnomremote.Id = v_leping2.nomid And coMnomremote.tyyp = 1
-				Endif
-
-				.hind = Round(.hind,4)
-				.kbmsumma = Round(.kbmsumma,2)
-				.Summa = Round(.Summa,2)
-				.soodus = Round(.soodus,2)
-				.summakokku = Round(.summakokku,2)
-
-				If Empty(lcSelg) And !Empty(v_leping2.muud)
-					lcSelg = coNvert_muud (Iif (Isnull(v_leping2.muud),Space(1),v_leping2.muud))
-				Endif
-
-				Insert Into v_arvread (nomid, koOd, niMetus, kogus, hind, soodus, kbm, Summa, kbmta, konto, kood1, kood2, kood3,;
-					kood5, valuuta, kuurs, Proj, muud, km);
-					values (v_leping2.nomid, coMnomremote.koOd, coMnomremote.niMetus, .kogus, .hind,.soodus, .kbmsumma, .summakokku, .Summa, ;
-					coMnomremote.konto, coMnomremote.tegev,;
-					coMnomremote.allikas, coMnomremote.rahavoog, coMnomremote.artikkel, ;
-					'EUR', 1,	 coMnomremote.Proj, lcSelg,coMnomremote.vat)
+			Else
+				lnSumma = lnSummaKokku / (1 + l_kbm_maar)
+				lnKbm = lnSummaKokku - lnSumma
 
 			Endif
-
-		Endscan
-	Endwith
+		ENDIF
+		SELECT comNomRemote
+		LOCATE FOR id = v_leping2.nomid
+		
+		SELECT comAsutusRemote
+		LOCATE FOR id = v_leping1.asutusid
+		
+		INSERT INTO v_arvread (nomid, hind, kogus, summa, soodus, kbm, kood1, kood2, kood3, kood5, konto, tp);
+			values (v_leping2.nomid, lnHind, lnKogus, lnSumma, lnSoodus, lnKbm, comNomRemote.tegev,comNomRemote.allikas, comNomRemote.rahavoog,;
+			comNomRemote.artikkel, comNomRemote.konto, comAsutusRemote.tp )
+	Endscan
 	Select v_arvread
 	Sum (v_arvread.kbmta - v_arvread.soodus) To lnKbmta
 	Sum kbm To lnKbm
 	Sum Summa To lnSumma
-	Replace v_arv.kbmta With frOund(lnKbmta),;
-		v_arv.kbm With frOund(lnKbm),;
-		v_arv.Summa With frOund(lnSumma) In v_arv
+	Replace v_arv.kbmta With lnKbmta,;
+		v_arv.kbm With lnKbm,;
+		v_arv.Summa With lnSumma In v_arv
 
 Endfunc
 

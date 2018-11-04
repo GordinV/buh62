@@ -1,11 +1,7 @@
 Lparameter tnSumma, tnRound
 Local lnSumma
-If Empty(tnSumma)
-	tnSumma = 0
-Endif
-If Empty(tnRound)
-	tnRound = coNfig.Special
-Endif
+tnRound = IIF(EMPTY(tnRound),0,tnRound)
+tnSumma = IIF(EMPTY(tnSumma),0,tnSumma)
 lnSumma = tnSumma
 Do Case
 	Case tnRound=0.1
