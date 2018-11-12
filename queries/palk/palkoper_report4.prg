@@ -1,0 +1,30 @@
+Parameter tcWhere
+
+	TEXT TO l_where TEXTMERGE NOSHOW 
+		isikid >= <<IIF(!EMPTY(fltrAruanne.asutusId),fltrAruanne.asutusId, 0)>>
+		and isikid <= <<IIF(!EMPTY(fltrAruanne.asutusId),fltrAruanne.asutusId, 9999999)>>
+	ENDTEXT
+
+
+TEXT TO l_subtotals TEXTMERGE noshow
+	sum (summa) OVER()  as summa_kokku
+ENDTEXT
+
+
+
+lError = oDb.readFromModel('aruanned\palk\palk_operatsioonid', 'palk_oper', 'fltrAruanne.kpv1,fltrAruanne.kpv2, gRekv', 'tmpReport', l_where, l_subtotals)
+If !lError
+	Messagebox('Viga',0+16, 'Palgaoperatsioonid')
+	Set Step On
+	Select 0
+	Return .F.
+Endif
+
+SELECT * ;
+from tmpReport ;
+ORDER BY isik, nimetus ;
+INTO CURSOR palkoper_report1
+
+USE IN tmpReport
+
+SELECT palkoper_report1

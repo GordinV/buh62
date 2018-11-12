@@ -6,9 +6,9 @@
  ELSE
       lcMark = ''
  ENDIF
- tcValuuta = IIF(ISNULL(tcValuuta),'EEK',tcValuuta)
+ tcValuuta = 'EUR'
  IF EMPTY(tcCent)
-	 tcCent = 'centi'
+	 tcCent = 'Cent'
  ENDIF
  
  cuR = tcValuuta
@@ -253,7 +253,7 @@
                            msUmma = dd(fsT)+' '+sd(2)+' '+ ;
                                    ed(thRd)+sd(1)+' '+dd(frS)+' '
                     OTHERWISE
-                     SET STEP ON 
+*                     SET STEP ON 
                           msUmma = dd(fsT)+' '+ed(snD)+' '+sd(2)+' '+ ;
                                    ed(thRd)+sd(1)+' '+dd(frS)+' '+ed(sxS)
                 ENDCASE
@@ -543,7 +543,7 @@
       m_Summa2 = STR(diG, 15, 2)
       m_Summa3 = RIGHT(m_Summa2, 2)
  ENDIF
- SET STEP ON 
+* SET STEP ON 
  usD = cuR
  lcceNt = tcCent
  msUmma = msUmma+' '+usD+' '+rtrim(m_Summa3)+' '+lcceNt

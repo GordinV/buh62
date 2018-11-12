@@ -6,10 +6,8 @@
  ELSE
       lcMark = ''
  ENDIF
- tcValuuta = IIF(ISNULL(tcValuuta),'EEK',tcValuuta)
- IF EMPTY(tcCent)
-	 tcCent = 'centi'
- ENDIF
+ tcValuuta = 'EUR'
+ tcCent = 'Cent'
  
  cuR = tcValuuta
  msUmma = ' '

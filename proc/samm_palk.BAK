@@ -145,7 +145,7 @@ function arVutus
 	Scan
 		l_isik_ids = l_isik_ids + Iif(Len(l_isik_ids)>0,',','') +  Alltrim(Str(recalc1.Id))
 	Endscan
-SET STEP ON 
+
 TEXT TO lcJson TEXTMERGE noshow
 				{"osakond_ids":[<<l_osakond_ids>>],
 				"isik_ids":[<<l_isik_ids>>],
@@ -157,6 +157,7 @@ TEXT TO lcJson TEXTMERGE noshow
 				}
 ENDTEXT
 * sql proc
+_cliptext = lcJson
 	task = 'palk.gen_palkoper'
 	leRror = odB.readFromModel('palk\palk_oper', 'executeTask', 'guserid,lcJson,task', 'qryResult')
 	Return leRror
