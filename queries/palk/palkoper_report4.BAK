@@ -1,11 +1,9 @@
 Parameter tcWhere
 
-l_where = ''
-IF !EMPTY(fltrAruanne.asutusId)
 	TEXT TO l_where TEXTMERGE NOSHOW 
-		isikid = <<IIF(!EMPTY(fltrAruanne.asutusId),fltrAruanne.asutusId, 0)>>
+		isikid >= <<IIF(!EMPTY(fltrAruanne.asutusId),fltrAruanne.asutusId, 0)>>
+		and isikid <= <<IIF(!EMPTY(fltrAruanne.asutusId),fltrAruanne.asutusId, 9999999)>>
 	ENDTEXT
-ENDIF
 
 
 TEXT TO l_subtotals TEXTMERGE noshow
@@ -24,7 +22,8 @@ Endif
 
 SELECT * ;
 from tmpReport ;
-ORDER BY isik, nimetus ;
+WHERE summa <> 0 ;
+ORDER BY liik, UPPER(kood), UPPER(nimetus), kpv, UPPER(isik) ;
 INTO CURSOR palkoper_report1
 
 USE IN tmpReport

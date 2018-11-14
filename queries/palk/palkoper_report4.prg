@@ -22,7 +22,8 @@ Endif
 
 SELECT * ;
 from tmpReport ;
-ORDER BY isik, nimetus ;
+WHERE summa <> 0 ;
+ORDER BY liik, kood, nimetus, kpv, isik;
 INTO CURSOR palkoper_report1
 
 USE IN tmpReport
