@@ -13,7 +13,7 @@ lnStep = 1
 If !Empty(tnPvKaartId)
 	Insert Into  curResult (Id) Values (tnPvKaartId)
 	lnStep = 3
-Endif
+ENDIF
 
 Do While lnStep > 0
 	Do Case
@@ -51,17 +51,16 @@ Procedure arvutus
 
 	If !Empty(lcParams)
 TEXT TO lcParams TEXTMERGE noshow
-		{"ids":[<<lcParams>>], "kpv":"<<curKulumiarv.kpv)>>","nomid":<<curKulumiarv.nomid>>,"doklausid":<<curKulumiarv.doklausid>>}
+		{"ids":[<<lcParams>>], "kpv":"<<DTOC(curKulumiarv.kpv,1)>>","nomid":<<curKulumiarv.nomid>>,"doklausid":<<curKulumiarv.doklausid>>}
 ENDTEXT
 		* sql proc
 		task = 'docs.sp_samm_kulum'
-		lError = odB.readFromModel('palk\palk_oper', 'executeTask', 'guserid,lcParams,task', 'qryResult')
+		lError = odB.readFromModel('libs\libraries\pv_kaart', 'executeTask', 'guserid,lcParams,task', 'qryResult')
 
-		If !lError
+		If !lError OR !USED('qryResult')
 			Messagebox('Arvestuse viga',0+16,'Kontrol')
 			Set Step On
 		Else
-			*		MESSAGEBOX('Kokku arvestatud:' + ALLTRIM(STR(qryResult.result)),0+48,'Tulemus')
 			Messagebox('Kokku arvestatud:' + Alltrim(Str(qryResult.result)),0+48,'Tulemus')
 			Use In qryResult
 		Endif
@@ -87,9 +86,10 @@ Procedure get_grupp_list
 	Select curValitud
 	If Reccount('curvalitud') > 0
 		Zap
-	Endif
+	ENDIF
+	gdKpv = curKulumiarv.kpv
 	Do Form Forms\samm With '1', Iif(config.keel = 2,'Pхhivara gruppid','Группы основных средств'),Iif(config.keel = 2,;
-		'Valitud gruppid','Выбранные группы') To nResult
+		'Valitud gruppid','Выбранные группы'), curKulumiarv.kpv To nResult
 	If nResult = 1
 		Select Distinc Id From curValitud  Into Cursor query1
 		Select query1
@@ -114,13 +114,13 @@ Procedure get_pvkaart_list
 
 	Select curResult
 	Scan For !Empty(gruppId)
-		l_grupp_ids = Iif(Len(l_grupp_ids) > 0,',','') + Alltrim(Str(l_grupp_ids))
+		l_grupp_ids = l_grupp_ids + Iif(Len(ALLTRIM(l_grupp_ids)) > 0,',','') + Alltrim(Str(curResult.gruppId))
 	Endscan
 
 
 TEXT TO lcWhere TEXTMERGE noshow
-		 soetmaks <= '<<GOMONTH(curKulumiarv.kpv,1) -1>>'
-		 and mahakantud is null
+		 soetkpv <= '<<DTOC(GOMONTH(curKulumiarv.kpv,1) -1,1)>>'
+		 and status = 1		 
 ENDTEXT
 
 	If Len(l_grupp_ids) > 0
@@ -129,8 +129,7 @@ TEXT TO lcWhere ADDITIVE TEXTMERGE noshow
 ENDTEXT
 	Endif
 
-
-	lError = odB.readFromModel('libs\libraries\pv_kaart', 'curPohivara', 'gRekv', 'qryPohivara')
+	lError = odB.readFromModel('libs\libraries\pv_kaart', 'curPohivara', 'gRekv', 'qryPohivara',lcWhere)
 
 	Select curSource
 	If Reccount('curSource') > 0
@@ -149,7 +148,7 @@ ENDTEXT
 	Endif
 
 	Do Form Forms\samm With '2', Iif(config.keel = 2,'Inv. kaardid','Инвентарные карты'),;
-		iif(config.keel = 2,'Valitud lepingud','Выбранные договора') To nResult
+		iif(config.keel = 2,'Valitud gruppid','Выбранные группы') To nResult
 
 	If nResult = 1
 		Select Distinc Id From curValitud Into Cursor query1
