@@ -23,9 +23,10 @@ Endif
 SELECT * ;
 from tmpReport ;
 WHERE summa <> 0 ;
-ORDER BY liik, UPPER(kood), UPPER(nimetus), kpv, UPPER(isik) ;
+ORDER BY palk_liik, kood, nimetus, kpv, isik;
 INTO CURSOR palkoper_report1
 
+brow
 USE IN tmpReport
 
 SELECT palkoper_report1
