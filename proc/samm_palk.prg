@@ -306,11 +306,9 @@ Procedure geT_osakonna_list
 		Endscan
 		Use In query1
 		Select curValitud
-		Zap
-	Endif
-	If nrEsult=0
-		lnStep = 0
-	Else
+		ZAP
 		lnStep = lnStep+nrEsult
+	ELSE
+		lnStep = 0	
 	Endif
 Endproc

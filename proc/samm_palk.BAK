@@ -157,7 +157,6 @@ TEXT TO lcJson TEXTMERGE noshow
 				}
 ENDTEXT
 * sql proc
-_cliptext = lcJson
 	task = 'palk.gen_palkoper'
 	leRror = odB.readFromModel('palk\palk_oper', 'executeTask', 'guserid,lcJson,task', 'qryResult')
 	Return leRror
@@ -307,11 +306,10 @@ Procedure geT_osakonna_list
 		Endscan
 		Use In query1
 		Select curValitud
-		Zap
-	Endif
-	If nrEsult=0
-		lnStep = 0
-	Else
+		ZAP
 		lnStep = lnStep+nrEsult
+	ELSE
+		MESSAGEBOX('stopped',0+16,'Samm')
+		lnStep = 0	
 	Endif
 Endproc

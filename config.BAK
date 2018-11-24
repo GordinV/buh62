@@ -1,0 +1,13 @@
+<?xml version = "1.0" encoding="Windows-1252" standalone="yes"?>
+<VFPData>
+  <connection>
+  	<name>test_server</name>	 
+  </connection>
+  <grid>
+    <sql>SELECT d.*
+                    FROM cur_luba d
+                    WHERE d.rekvId = $1
+                      AND coalesce(docs.usersRigths(d.id, 'select', $2), TRUE)</sql>
+    <alias>curReklLuba</alias>
+  </grid>
+</VFPData>

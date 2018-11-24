@@ -6,7 +6,7 @@ Public gnHandle,gnHandleAsync, gcWindow, gRekv,gUserId, oPrintform2, oFinder, gR
 	oLepingud, cKasutaja, oDb, oPohivara, oPvGruppid, oOsakonnad, oAmetid, oPalklib, oPalkOper, oTaabel1, oPeriod,;
 	oHoliday, gnKuu, gnAasta, gdKpv, oPalkJaak, oMaksuKoodid,;
 	oGruppid, oLaduOper, oVarad, oLaduJaak, oLaduArved, oLaod,;
-	gVersia, gcDatabase, glError, oEelarve, oTuludeAllikad, oTulutaitm, oKuluTaitm, gcHelp, oTeenused,;
+	gVersia, glError, oEelarve, oTuludeAllikad, oTulutaitm, oKuluTaitm, gcHelp, oTeenused,;
 	tcAllikas, tcArtikkel, tcObjekt, tcTegev, tcEelAllikas, oToograafik, eETSD, tcTunnus, gcProgNimi, omk, oTood,;
 	oPuudumised, oEtsd,tcOsakond, tnOsakondId1, tnOsakondId2,gnPaev,tnParentRekvId,;
 	oTpr, oRahavoodid, oMenu, oEditMenu, oConnect, oKorderID, gcKey, oVanemtasu, gcAmetnik, oLahetuskulud, oLapsed,;
@@ -93,9 +93,9 @@ If File (cFile1)
 	Use In curPrinter4
 Endif
 
-If File ('KEY.DBF')
-	Use Key In 0
-Endif
+*!*	If File ('KEY.DBF')
+*!*		Use Key In 0
+*!*	Endif
 
 If !Used('v_roles')
 	Create Cursor v_roles (	nimetus c(120) Default 'Raamatupidaja', asutusid Int, nomid Int, nomidkassa Int,nomidpank Int, kbmnomidkassa Int,;
@@ -104,13 +104,13 @@ If !Used('v_roles')
 Endif
 
 
-Create Cursor comkey (Id Int, omanik c(120))
-Select Id, Left(decrypt(f_key(),Mline(omanik,1)),120) As omanik From Key Into Cursor qryComkey
-Select comkey
-Append From Dbf ('qryComkey')
-Use In qryComkey
-Select comkey
-=secure('OFF')
+*!*	Create Cursor comkey (Id Int, omanik c(120))
+*!*	Select Id, Left(decrypt(f_key(),Mline(omanik,1)),120) As omanik From Key Into Cursor qryComkey
+*!*	Select comkey
+*!*	Append From Dbf ('qryComkey')
+*!*	Use In qryComkey
+*!*	Select comkey
+*!*	=secure('OFF')
 lQuit = .F.
 
 
@@ -127,10 +127,9 @@ Endif
 If lQuit = .F.
 	Set Sysmenu To
 	Set Sysmenu Automatic
-
 	Set Classlib To Classlib
 	Set Proc To classes\login
-	oLogin = Createobject('login', tcKey)
+	oLogin = Createobject('login')
 	oLogin.Show()
 
 	Set Classlib To toolseelarve Additive
@@ -138,11 +137,6 @@ If lQuit = .F.
 
 	oTools.translate()
 	On Error Do err With Program(), Lineno(1)
-
-	If !Empty(tcKey) And tcKey = '-m'
-		Do valirekv
-	Endif
-
 
 	Read Events
 Endif

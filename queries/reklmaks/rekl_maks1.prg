@@ -9,7 +9,7 @@ replace cstring WITH 'Kpv-st:'+DTOC(fltrReklDekl.kpv1)+'kpv-ni:'+DTOC(fltrReklDe
 	IIF(!EMPTY(fltrReklDekl.summa2),'Summani:'+str(fltrReklDekl.summa2,2),'') IN fltrPrint
 
 	
-
 Select curreklDekl.*, comReklmaksud.nimetus, comReklmaksud.regkood, comReklmaksud.id ;
 	from curReklDekl , comReklmaksud where comReklmaksud.ID =  oReklmaksud.lstAsutused.value INTO CURSOR printReklDekl
+
 SELECT printReklDekl

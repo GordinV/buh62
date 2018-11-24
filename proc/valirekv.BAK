@@ -1,13 +1,12 @@
 LOCAL lnRekvid
-lnRekvid = 0
-SET STEP ON 
-DO FORM valirekv TO lnRekvid
-IF !EMPTY(lnRekvid)
+
+DO FORM valirekv TO gRekv
+IF !EMPTY(gRekv)
 	SELECT comrekvremote
-	LOCATE FOR id = lnRekvId
+	LOCATE FOR id = gRekv
 	WAIT WINDOW ' Oodake, käivitan '+ LEFT(ALLTRIM(comRekvremote.nimetus),40) nowait
 * vahetan rekvid
-	oConnect.rekvAndmed(UPPER(ALLTRIM(comRekvremote.nimetus)),lnRekvid) 
+	oConnect.rekvAndmed() 
 	DO open_lib WITH 1
 	MESSAGEBOX('Ok',0,'Vali asutus')
 ENDIF

@@ -93,9 +93,9 @@ If File (cFile1)
 	Use In curPrinter4
 Endif
 
-If File ('KEY.DBF')
-	Use Key In 0
-Endif
+*!*	If File ('KEY.DBF')
+*!*		Use Key In 0
+*!*	Endif
 
 If !Used('v_roles')
 	Create Cursor v_roles (	nimetus c(120) Default 'Raamatupidaja', asutusid Int, nomid Int, nomidkassa Int,nomidpank Int, kbmnomidkassa Int,;
@@ -104,13 +104,13 @@ If !Used('v_roles')
 Endif
 
 
-Create Cursor comkey (Id Int, omanik c(120))
-Select Id, Left(decrypt(f_key(),Mline(omanik,1)),120) As omanik From Key Into Cursor qryComkey
-Select comkey
-Append From Dbf ('qryComkey')
-Use In qryComkey
-Select comkey
-=secure('OFF')
+*!*	Create Cursor comkey (Id Int, omanik c(120))
+*!*	Select Id, Left(decrypt(f_key(),Mline(omanik,1)),120) As omanik From Key Into Cursor qryComkey
+*!*	Select comkey
+*!*	Append From Dbf ('qryComkey')
+*!*	Use In qryComkey
+*!*	Select comkey
+*!*	=secure('OFF')
 lQuit = .F.
 
 
@@ -127,10 +127,9 @@ Endif
 If lQuit = .F.
 	Set Sysmenu To
 	Set Sysmenu Automatic
-
 	Set Classlib To Classlib
 	Set Proc To classes\login
-	oLogin = Createobject('login', tcKey)
+	oLogin = Createobject('login')
 	oLogin.Show()
 
 	Set Classlib To toolseelarve Additive
@@ -139,11 +138,6 @@ If lQuit = .F.
 	oTools.translate()
 	On Error Do err With Program(), Lineno(1)
 
-	If !Empty(tcKey) And tcKey = '-m'
-		Do valirekv
-	Endif
-
-
 	Read Events
 Endif
 Set Proc To
@@ -151,8 +145,6 @@ Set Proc To
 gnHandle = 0
 
 _Screen.Caption = cCaption
-checkuuendused()
-&&set help to
 On Key
 Set Sysmenu To Default
 _Screen.Picture = ''

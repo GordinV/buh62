@@ -5,8 +5,8 @@ replace cstring WITH 'Kpv-st:'+DTOC(fltrReklDekl.kpv1)+'kpv-ni:'+DTOC(fltrReklDe
 	IIF(!EMPTY(fltrReklDekl.number),'Number:'+LTRIM(RTRIM(fltrReklDekl.number)),'')+;
 	IIF(!EMPTY(fltrReklDekl.tyyp),'Tüüp:'+LTRIM(RTRIM(fltrReklDekl.tyyp)),'')+;
 	IIF(!EMPTY(fltrReklDekl.staatus),'Status:'+LTRIM(RTRIM(fltrReklDekl.staatus)),'')+;
-	IIF(!EMPTY(fltrReklDekl.summa1),'Summast:'+str(fltrReklDekl.summa1,999999.99),'')+;
-	IIF(!EMPTY(fltrReklDekl.summa2),'Summani:'+str(fltrReklDekl.summa2,999999.99),'') IN fltrPrint
+	IIF(!EMPTY(fltrReklDekl.summa1),'Summast:'+str(fltrReklDekl.summa1,2),'')+;
+	IIF(!EMPTY(fltrReklDekl.summa2),'Summani:'+str(fltrReklDekl.summa2,2),'') IN fltrPrint
 
 	
 
