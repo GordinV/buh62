@@ -1,50 +1,37 @@
-LPARAMETER tcTyyp, tcModel
-LOCAL lnId
+Lparameter tcTyyp, tcModel
+Local lnId
 lnId = 0
 
-IF !USED('comDokRemote') OR RECCOUNT('comDokRemote') = 0
-	IF EMPTY(tcModel)
-		oDb.use('comDokRemote')
-	ELSE
-		lError = oDb.readFromModel('libs\libraries\dokprops', 'selectAsLibs', 'gRekv, guserid', 'comDokRemote')
-	ENDIF
-	
-ENDIF
+If !Used('comDokRemote') Or Reccount('comDokRemote') = 0
+	lError = oDb.readFromModel('libs\libraries\dokprops', 'selectAsLibs', 'gRekv, guserid', 'comDokRemote')
+Endif
 
-SELECT coMdokremote
-LOCATE For ALLTRIM(UPPER(koOd))=ALLTRIM(UPPER(tcTyyp))
-IF  .Not. Found()
-	RETURN 0
-ENDIF
+Select coMdokremote
+Locate For Alltrim(Upper(koOd))=Alltrim(Upper(tcTyyp))
+If  .Not. Found()
+	Return 0
+Endif
 tnId = coMdokremote.Id
 
-IF EMPTY(tcModel)
-	odB.Use('curDokProp')
-ELSE
-	lcWhere = "dok = '" + ALLTRIM(tcTyyp) + "'"
-	lError = oDb.readFromModel('libs\libraries\dokprops', 'curDokprop', 'gRekv, guserid', 'curDokProp', lcWhere)
-ENDIF
+lcWhere = "dok = '" + Alltrim(tcTyyp) + "'"
+lError = oDb.readFromModel('libs\libraries\dokprops', 'curDokprop', 'gRekv, guserid', 'curDokProp', lcWhere)
 
-IF Reccount('curDokProp')>1
+If Reccount('curDokProp')>1
 	lcForm = 'validok'
-	DO Form (lcForm) To lnId With tnId
-ELSE
-	IF Reccount('curDokProp')<1
-		IF  'RAAMA' $ curKey.VERSIA
-			CREATE Cursor cMessage (prOp1 Int)
-			INSERT Into cMessage (prOp1) Values (coMdokremote.Id)
-			lcForm = 'dokprop'
-			DO Form (lcForm) To lnId With 'ADD', 0
-		ELSE
-			lnId = 0
-		ENDIF
-	ELSE
+	Do Form (lcForm) To lnId With tnId
+Else
+	If Reccount('curDokProp')<1
+		Create Cursor cMessage (prOp1 Int)
+		Insert Into cMessage (prOp1) Values (coMdokremote.Id)
+		lcForm = 'dokprop'
+		Do Form (lcForm) To lnId With 'ADD', 0
+	Else
 		lnId = cuRdokprop.Id
-	ENDIF
-ENDIF
-IF Used('curDokprop')
-	USE In cuRdokprop
-ENDIF
-RETURN lnId
-ENDFUNC
+	Endif
+Endif
+If Used('curDokprop')
+	Use In cuRdokprop
+Endif
+Return lnId
+Endfunc
 *
