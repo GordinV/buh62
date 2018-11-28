@@ -67,4 +67,5 @@
     <sql />
     <alias />
   </generateJournal>
+  <print></print>
 </VFPData>

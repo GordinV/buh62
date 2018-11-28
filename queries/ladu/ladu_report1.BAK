@@ -1,0 +1,20 @@
+Parameter cWhere
+
+IF !USED('curTegev')
+	SELECT 0
+	RETURN .f.
+ENDIF
+SELECT curTegev
+lcTag = TAG()
+*
+TEXT TO lcSql TEXTMERGE noshow
+	SELECT * from curTegev ORDER BY <<IIF(EMPTY(lcTag),'id',lcTag)>> into CURSOR tegev_report1
+ENDTEXT
+
+&lcSql
+
+IF !USED('tegev_report1')
+	SELECT 0
+	RETURN .f.
+ENDIF
+SELECT tegev_report1
