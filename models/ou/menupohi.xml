@@ -16,7 +16,8 @@
                            message::VARCHAR(120),
                            keyshortcut::VARCHAR(120),
                            $1 AS rekvid
-                    FROM ou.cur_menu m</sql>
+                    FROM ou.cur_menu m
+                    ORDER BY m.idx</sql>
     <alias>curMenu</alias>
   </grid>
   <select>

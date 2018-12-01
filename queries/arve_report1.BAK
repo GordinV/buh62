@@ -26,9 +26,9 @@ lError = oDb.readFromModel('raamatupidamine\journal', 'details', 'tnId, guserid'
 Create Cursor arve_report1 (Id Int,Number c(20), kpv d, lisa c(120),tahtaeg d Null, asutusid Int,;
 	kood c(20), uhik c(20), doklausid Int, nomid Int, hind Y, kogus Y, soodus Y, kbm Y, Summa N(14,2), kbmta N(14,2), ;
 	reamuud m Null, nomnimi c(254), arvkbmta N(14,2), arvkbm N(14,2), kokku N(14,2), ;
-	muud m Null, regkood c(20), rk c(20), journalid Int, asutus c(254), aadress m, tel c(120), faks c(120),;
-	email c(120), reamark m Null, konto c(20), valuuta c(20), kuurs Y Default 1,;
-	lausend m Null, jaak N(14,2), arvperiod c(120), km c(2))
+	muud m Null, regkood c(20) null, rk c(20), journalid Int null, asutus c(254), aadress m null, ;
+	email c(120) null, reamark m Null, konto c(20),;
+	lausend m Null, jaak N(14,2), arvperiod c(120) null, km c(2) null)
 
 
 Create Cursor arve_lausend (Id Int, lausend m)
@@ -41,11 +41,11 @@ Select qryArv1
 Scan
 	Insert Into arve_report1 (Id, Number, kpv, lisa, tahtaeg, asutusid, kood, uhik, hind , kogus , soodus , kbm , Summa, kbmta, ;
 		nomnimi ,reamark, arvkbmta, arvkbm, kokku,	regkood, rk, km,;
-		journalid, asutus, aadress, jaak) ;
+		journalid, asutus, aadress, jaak, muud) ;
 		VALUES (qryArv.Id, qryArv.Number, qryArv.kpv, qryArv.lisa, qryArv.tahtaeg, qryArv.asutusid, qryArv1.kood, qryArv1.uhik, ;
 		qryArv1.hind, qryArv1.kogus, qryArv1.soodus, qryArv1.kbm, qryArv1.Summa, qryArv1.kbmta,;
 		qryArv1.nimetus, qryArv1.muud, qryArv.kbmta, qryArv.kbm, qryArv.Summa, qryArv.kmkr, qryArv.regkood, qryArv1.km,;
-		qryArv.laus_nr, qryArv.asutus, qryArv.aadress, qryArv.jaak)
+		qryArv.laus_nr, qryArv.asutus, qryArv.aadress, qryArv.jaak, qryArv.muud)
 Endscan
 
 Insert Into arve_lausend (Id) Values (qryArv.laus_nr)
@@ -96,8 +96,6 @@ ENDIF
 IF USED('qryJournal')
 	Use In qryJournal
 ENDIF
-
-Use In qryJournal
 
 Select arve_report1
 Go Top

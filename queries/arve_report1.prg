@@ -41,11 +41,11 @@ Select qryArv1
 Scan
 	Insert Into arve_report1 (Id, Number, kpv, lisa, tahtaeg, asutusid, kood, uhik, hind , kogus , soodus , kbm , Summa, kbmta, ;
 		nomnimi ,reamark, arvkbmta, arvkbm, kokku,	regkood, rk, km,;
-		journalid, asutus, aadress, jaak) ;
+		journalid, asutus, aadress, jaak, muud) ;
 		VALUES (qryArv.Id, qryArv.Number, qryArv.kpv, qryArv.lisa, qryArv.tahtaeg, qryArv.asutusid, qryArv1.kood, qryArv1.uhik, ;
 		qryArv1.hind, qryArv1.kogus, qryArv1.soodus, qryArv1.kbm, qryArv1.Summa, qryArv1.kbmta,;
-		qryArv1.nimetus, qryArv1.muud, qryArv.kbmta, qryArv.kbm, qryArv.Summa, qryArv.kmkr, qryArv.regkood, qryArv1.km,;
-		qryArv.laus_nr, qryArv.asutus, qryArv.aadress, qryArv.jaak)
+		qryArv1.nimetus, IIF(ISNULL(qryArv1.muud),'',qryArv1.muud), qryArv.kbmta, qryArv.kbm, qryArv.Summa, qryArv.kmkr, qryArv.regkood, qryArv1.km,;
+		qryArv.laus_nr, qryArv.asutus, qryArv.aadress, qryArv.jaak, qryArv.muud)
 Endscan
 
 Insert Into arve_lausend (Id) Values (qryArv.laus_nr)
@@ -96,8 +96,6 @@ ENDIF
 IF USED('qryJournal')
 	Use In qryJournal
 ENDIF
-
-Use In qryJournal
 
 Select arve_report1
 Go Top

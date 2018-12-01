@@ -2,6 +2,6 @@
 <VFPData>
   <connection>
 <!-- <name>test_server</name> -->  		 
- <name>test_server</name>  		 
+ <name>localhost</name>  		 
   </connection>
 </VFPData>
