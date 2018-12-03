@@ -57,6 +57,14 @@ If Empty(tnOpt)
 
 Endif
 
+= OpenView('comLaduRemote',.T., 'comLaduRemote', 'ladu\ladu')
+
+Select comLaduRemote
+Index On Id Tag Id
+Index On LEFT(koOd,40) Tag koOd Additive
+Set Order To Id
+
+
 = OpenView('comObjektremote',.T., 'comObjektRemote', 'libs\libraries\objekt')
 
 Select comObjektRemote

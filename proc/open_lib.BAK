@@ -117,10 +117,6 @@ Select coMnomremote
 Index On Id Tag Id
 Index On LEFT(koOd,20) Tag koOd Additive
 Set Order To Id
-= OpenView('comrekvRemote', .T.,'comRekvRemote','ou\rekv')
-Select comrekvRemote
-Index On Id Tag Id
-Set Order To Id
 
 = OpenView('comtunnusRemote', .t.,'comtunnusRemote','libs\libraries\tunnus')
 Select comtunnusRemote
