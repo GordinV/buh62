@@ -46,7 +46,8 @@
                          coalesce((dp.details :: JSONB -&gt;&gt; 'konto'), '') :: VARCHAR(20)    AS konto,
                          coalesce((dp.details :: JSONB -&gt;&gt; 'kbmkonto'), '') :: VARCHAR(20) AS kbmkonto,
                          dp.selg :: VARCHAR(120)                                           AS dokprop,
-                         (d.history-&gt;0-&gt;&gt;'user') :: VARCHAR(120)                           AS koostaja
+                         (d.history-&gt;0-&gt;&gt;'user') :: VARCHAR(120)                           AS koostaja,
+                         ladu.nimetus as ladu
                   FROM docs.doc d
                          INNER JOIN libs.library l ON l.id = d.doc_type_id
                          INNER JOIN docs.arv a ON a.parentId = d.id
@@ -56,6 +57,8 @@
                          LEFT OUTER JOIN libs.dokprop dp ON dp.id = a.doklausid
                          LEFT OUTER JOIN docs.journal j ON j.parentid = a.journalid
                          LEFT OUTER JOIN docs.journalid jid ON jid.journalid = j.id
+                         LEFT OUTER JOIN libs.library ladu ON ladu.id = a.operid
+    
                   WHERE d.id = $1</sql>
     <sqlAsNew>SELECT $1 :: INTEGER                                                          AS id,
                               $2 :: INTEGER                                                          AS userid,
@@ -95,7 +98,8 @@
                               NULL :: TEXT                                                           AS kbmkonto,
                               NULL :: INTEGER                                                        AS journalid,
                               NULL :: INTEGER                                                        AS laus_nr,
-                              NULL :: VARCHAR(120)                                                   AS koostaja
+                              NULL :: VARCHAR(120)                                                   AS koostaja,
+                              NULL::TEXT as ladu
                        FROM ou.userid u
                        WHERE u.id = $2 :: INTEGER</sqlAsNew>
     <query />
