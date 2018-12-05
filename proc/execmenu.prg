@@ -1,19 +1,19 @@
-PARAMETERS tnId, is_popup
-LOCAL lError
-SELECT curMenuRemote
-LOCATE FOR id = tnId
+Parameters tnId, is_popup
+Local lError
+Select curMenuRemote
+Locate For Id = tnId
 
-IF FOUND() AND !EMPTY(curMenuRemote.proc)
+If Found() And !Empty(curMenuRemote.Proc)
 
-	IF is_popup 
-		HIDE POPUP (ALLTRIM(curMenuRemote.name))
-	ENDIF
-	lError =EXECSCRIPT(curMenuRemote.proc)
-	IF is_popup 
-		DEACTIVATE POPUP (ALLTRIM(curMenuRemote.name))
-		release POPUPS (ALLTRIM(curMenuRemote.name))
-	ENDIF
-ELSE
-	MESSAGEBOX('Not found')	
-ENDIF
+	If is_popup
+		Hide Popup (Alltrim(curMenuRemote.Name))
+	Endif
+	lError =Execscript(curMenuRemote.Proc)
+	If is_popup
+		Deactivate Popup (Alltrim(curMenuRemote.Name))
+		RELEASE POPUPS (Alltrim(curMenuRemote.Name))
+	Endif
+Else
+	Messagebox('Not found')
+Endif
 Return lError

@@ -72,7 +72,7 @@
                               docs.sp_get_number(u.rekvId, 'SARV', year(date()), NULL) :: VARCHAR(20) AS number,
                               0.00                                                                   AS summa,
                               NULL :: INTEGER                                                        AS rekvId,
-                              0                                                                      AS liik,
+                              1                                                                      AS liik,
                               NULL :: INTEGER                                                        AS operid,
                               now() :: DATE                                                          AS kpv,
                               NULL :: INTEGER                                                        AS asutusid,
@@ -256,7 +256,7 @@
   </saveDoc>
   <deleteDoc>
     <sql>SELECT error_code, result, error_message
-                FROM docs.sp_delete_arv($1, $2)</sql>
+                FROM docs.sp_delete_arv($1::integer, $2::integer)</sql>
     <alias>deleteDoc</alias>
   </deleteDoc>
   <requiredFields>
@@ -281,7 +281,7 @@
     <alias />
   </endProcess>
   <generateJournal>
-    <sql>SELECT error_code, result, error_message FROM docs.gen_lausend_arv($2, $1)</sql>
+    <sql>SELECT error_code, result, error_message FROM ladu.gen_lausend_sarv($2::integer, $1::integer)</sql>
     <alias>generateJournal</alias>
   </generateJournal>
   <print></print>
