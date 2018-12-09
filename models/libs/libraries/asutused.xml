@@ -38,7 +38,7 @@
     <sql>SELECT (e.element -&gt;&gt; 'aa') :: VARCHAR(20) AS aa,
                          $2 :: INTEGER                      AS userid
                   FROM libs.asutus a,
-                       json_array_elements((a.properties -&gt; 'asutus_aa') :: JSON) AS e (element)
+                       json_array_elements(case when (a.properties -&gt;&gt; 'asutus_aa') is null then '[]'::json else (a.properties -&gt; 'asutus_aa') :: JSON end) AS e (element)
                   WHERE a.id = $1</sql>
     <query />
     <multiple>true</multiple>
@@ -47,8 +47,8 @@
   <select>
     <sql>SELECT Asutus.id
                   FROM libs.asutus Asutus
-                  WHERE (rtrim(ltrim(Asutus.regkood)) = $ 1 OR empty($ 1))
-                     OR (rtrim(ltrim(Asutus.nimetus)) = $ 2 OR empty($ 2))</sql>
+                  WHERE (rtrim(ltrim(Asutus.regkood)) = $1 OR empty($1))
+                     OR (rtrim(ltrim(Asutus.nimetus)) = $2 OR empty($2))</sql>
     <query />
     <multiple>false</multiple>
     <alias>validate_asutus</alias>
