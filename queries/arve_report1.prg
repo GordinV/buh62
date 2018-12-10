@@ -23,7 +23,7 @@ tnId = qryArv.journalid
 
 lError = oDb.readFromModel('raamatupidamine\journal', 'details', 'tnId, guserid', 'qryJournal')
 
-Create Cursor arve_report1 (Id Int,Number c(20), kpv d, lisa c(120),tahtaeg d Null, asutusid Int,;
+Create Cursor arve_report1 (Id Int,Number c(20), aa c(20) null, kpv d, lisa c(120),tahtaeg d Null, asutusid Int,;
 	kood c(20), uhik c(20), doklausid Int, nomid Int, hind Y, kogus Y, soodus Y, kbm Y, Summa N(14,2), kbmta N(14,2), ;
 	reamuud m Null, nomnimi c(254), arvkbmta N(14,2), arvkbm N(14,2), kokku N(14,2), ;
 	muud m Null, regkood c(20) null, rk c(20), journalid Int null, asutus c(254), aadress m null, ;
@@ -39,10 +39,10 @@ Go Top
 
 Select qryArv1
 Scan
-	Insert Into arve_report1 (Id, Number, kpv, lisa, tahtaeg, asutusid, kood, uhik, hind , kogus , soodus , kbm , Summa, kbmta, ;
+	Insert Into arve_report1 (Id, Number, kpv, aa, lisa, tahtaeg, asutusid, kood, uhik, hind , kogus , soodus , kbm , Summa, kbmta, ;
 		nomnimi ,reamark, arvkbmta, arvkbm, kokku,	regkood, rk, km,;
 		journalid, asutus, aadress, jaak, muud) ;
-		VALUES (qryArv.Id, qryArv.Number, qryArv.kpv, qryArv.lisa, qryArv.tahtaeg, qryArv.asutusid, qryArv1.kood, qryArv1.uhik, ;
+		VALUES (qryArv.Id, qryArv.Number, qryArv.kpv, qryArv.aa, qryArv.lisa, qryArv.tahtaeg, qryArv.asutusid, qryArv1.kood, qryArv1.uhik, ;
 		qryArv1.hind, qryArv1.kogus, qryArv1.soodus, qryArv1.kbm, qryArv1.Summa, qryArv1.kbmta,;
 		qryArv1.nimetus, IIF(ISNULL(qryArv1.muud),'',qryArv1.muud), qryArv.kbmta, qryArv.kbm, qryArv.Summa, qryArv.kmkr, qryArv.regkood, qryArv1.km,;
 		qryArv.laus_nr, qryArv.asutus, qryArv.aadress, qryArv.jaak, qryArv.muud)

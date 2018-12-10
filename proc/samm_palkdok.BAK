@@ -15,8 +15,6 @@ Endif
 Create Cursor curResult (Id Int, osAkonnaid Int, paLklibid Int)
 lnStep = 1
 
-dokPropId = getdokpropId('PALK_OPER', 'libs\libraries\dokprops')
-
 Do While lnStep>0
 	If  .Not. Empty(tnIsikid)
 		Insert Into curResult (osAkonnaid) ;

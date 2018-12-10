@@ -15,54 +15,6 @@ If !Empty(tnPvKaartId)
 	lnStep = 3
 ENDIF
 
-
-
-l_test = .f.
-If (l_test)
-	gcProgNimi = 'EELARVE'
-	Create Cursor curkey (versia c(20))
-	Insert Into curkey (versia) Values ('EELARVE')
-	
-	CREATE CURSOR config (keel int)
-	INSERT INTO config (keel) VALUES (2) 
-	
-	
-	create cursor curKulumiarv (kpv d default date(), nomId int, doklausid int)
-	INSERT INTO curKulumiarv (kpv, nomid, doklausid) VALUES (DATE(2018,11,30), 16168, 794)
-
-	Set Classlib To classes\Classlib
-	gVersia = 'PG'
-	oDb = Createobject('db')
-
-	gRekv = 63
-	guserid = 70
-	tnId = 0
-	gdKpv = DATE()
-	* palk_oper, rekvid = 63
-	l_dokprop = 1716 
-
-* test_server
-	gnHandle = SQLConnect('test_server', 'temp','12345')
-*	gnHandle = SQLConnect('localPg', 'vlad','123')
-	gnHandleAsync = gnHandle
-
-	If gnHandle < 0
-		Messagebox('Connection error',0+48,'Error')
-		Return .T.
-	Endif
-	tdKpv = Date()
-	* Vlad Gordin, rekvid = 63
-	tnIsikid = 70
-
-	If !Used('qryRekv')
-		lError = oDb.readFromModel('ou\rekv', 'row', 'gRekv, guserid', 'qryRekv')
-
-	Endif
-	SET STEP ON 
-
-Endif
-
-
 Do While lnStep > 0
 	Do Case
 		Case lnStep = 1

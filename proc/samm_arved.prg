@@ -1,6 +1,35 @@
 Parameter tnLepingId, tdKpv, tnPreliminary
 Local l_test
 
+IF EMPTY(tdKpv)
+	tdKpv = DATE()
+ENDIF
+
+
+* period
+TEXT TO l_where NOSHOW textmerge
+	aasta = <<YEAR(tdkpv)>>
+	and kuu = <<MONTH(tdkpv)>>	
+ENDTEXT
+
+
+lError = oDb.readFromModel('ou\aasta', 'selectAsLibs', 'gRekv', 'tmp_period', l_where )
+If !lError OR !USED('tmp_period')
+	Messagebox('Viga',0+16, 'Period')
+	Set Step On
+	Return .t.
+ENDIF
+
+IF RECCOUNT('tmp_period') > 0 and !EMPTY(tmp_period.kinni)
+	MESSAGEBOX('Period on kinni',0+16,'Kontrol')
+	RETURN .f.
+ENDIF
+
+IF USED('tmp_period')
+	USE IN tmp_period
+ENDIF
+
+
 l_test = .f.
 If (l_test)
 	gcProgNimi = 'EELARVE'

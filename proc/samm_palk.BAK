@@ -309,7 +309,6 @@ Procedure geT_osakonna_list
 		ZAP
 		lnStep = lnStep+nrEsult
 	ELSE
-		MESSAGEBOX('stopped',0+16,'Samm')
 		lnStep = 0	
 	Endif
 Endproc

@@ -1,5 +1,30 @@
 Parameters tnPvKaartId
 
+
+* period
+TEXT TO l_where NOSHOW textmerge
+	aasta = <<YEAR(curKulumiarv.kpv)>>
+	and kuu = <<MONTH(curKulumiarv.kpv)>>	
+ENDTEXT
+
+
+lError = oDb.readFromModel('ou\aasta', 'selectAsLibs', 'gRekv', 'tmp_period', l_where )
+If !lError OR !USED('tmp_period')
+	Messagebox('Viga',0+16, 'Period')
+	Set Step On
+	Return .t.
+ENDIF
+
+IF RECCOUNT('tmp_period') > 0 and !EMPTY(tmp_period.kinni)
+	MESSAGEBOX('Period on kinni',0+16,'Kontrol')
+	RETURN .f.
+ENDIF
+
+IF USED('tmp_period')
+	USE IN tmp_period
+ENDIF
+
+
 Local  lnResult
 If !Used('curSource')
 	Create Cursor curSource (Id Int, kood c(20), nimetus c(120))

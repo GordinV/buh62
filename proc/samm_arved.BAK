@@ -1,6 +1,30 @@
 Parameter tnLepingId, tdKpv, tnPreliminary
 Local l_test
 
+* period
+TEXT TO l_where NOSHOW textmerge
+	aasta = <<YEAR(tdkpv)>>
+	and kuu = <<MONTH(tdkpv)>>	
+ENDTEXT
+
+
+lError = oDb.readFromModel('ou\aasta', 'selectAsLibs', 'gRekv', 'tmp_period', l_where )
+If !lError OR !USED('tmp_period')
+	Messagebox('Viga',0+16, 'Period')
+	Set Step On
+	Return .t.
+ENDIF
+
+IF RECCOUNT('tmp_period') > 0 and !EMPTY(tmp_period.kinni)
+	MESSAGEBOX('Period on kinni',0+16,'Kontrol')
+	RETURN .f.
+ENDIF
+
+IF USED('tmp_period')
+	USE IN tmp_period
+ENDIF
+
+
 l_test = .f.
 If (l_test)
 	gcProgNimi = 'EELARVE'
@@ -382,7 +406,6 @@ LPARAMETERS l_leping_id
 			lcJson = '{"id":' + Alltrim(Str(Id)) + ',"data": '+ oDb.getJson(lcJson) + '}'
 			lError = oDb.readFromModel('raamatupidamine\arv', 'saveDoc', 'lcJson,gUserid,gRekv', 'v_arv')
 
-_cliptext = lcJson
 			If !lError OR !USED('v_arv') OR EMPTY(v_arv.id)
 				Messagebox('Viga arve salvestamisel',0+16,'Error')
 				Return .F.
