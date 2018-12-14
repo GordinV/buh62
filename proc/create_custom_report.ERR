@@ -1,0 +1,2 @@
+MESSAGEBOX('Puudub report file',0+1,'Report muutmine'
+Error in line 20: Function name is missing ).

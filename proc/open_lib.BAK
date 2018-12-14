@@ -1,6 +1,6 @@
 Parameters tnOpt
 *On Error
-l_test = .f.
+l_test = .F.
 If (l_test)
 	gcProgNimi = 'EELARVE'
 
@@ -8,7 +8,7 @@ If (l_test)
 	gVersia = 'PG'
 	oDb = Createobject('db')
 
-	gRekv = 1 
+	gRekv = 1
 	guserid = 1
 	tnId = 0
 
@@ -27,31 +27,31 @@ If Empty(tnOpt)
 	= OpenView('comTpremote',.T., 'comTpremote', 'libs\libraries\tp')
 	Select coMTpremote
 	Index On Id Tag Id
-	Index On LEFT(koOd,20) Tag koOd
+	Index On Left(koOd,20) Tag koOd
 	Set Order To Id
 
-	= OpenView('comEelarveremote',.t., 'comEelarveRemote', 'libs\libraries\artikkel')
+	= OpenView('comEelarveremote',.T., 'comEelarveRemote', 'libs\libraries\artikkel')
 	Select comEelarveremote
 	Index On Id Tag Id
-	Index On LEFT(koOd,20) Tag koOd Additive
-	Set Order To Id
-	
-	= OpenView('comAllikadRemote',.t., 'comAllikadRemote', 'libs\libraries\allikas')
-	Select coMallikadremote
-	Index On Id Tag Id
-	Index On LEFT(koOd,20) Tag koOd
-	Set Order To Id
-	
-	= OpenView('comRahaRemote',.t., 'comRahaRemote', 'libs\libraries\rahavoog')
-	Select coMRaharemote
-	Index On Id Tag Id
-	Index On LEFT(koOd,20) Tag koOd
+	Index On Left(koOd,20) Tag koOd Additive
 	Set Order To Id
 
-	= OpenView('comtegevremote',.t., 'comTegevRemote', 'libs\libraries\tegev')
+	= OpenView('comAllikadRemote',.T., 'comAllikadRemote', 'libs\libraries\allikas')
+	Select coMallikadremote
+	Index On Id Tag Id
+	Index On Left(koOd,20) Tag koOd
+	Set Order To Id
+
+	= OpenView('comRahaRemote',.T., 'comRahaRemote', 'libs\libraries\rahavoog')
+	Select coMRaharemote
+	Index On Id Tag Id
+	Index On Left(koOd,20) Tag koOd
+	Set Order To Id
+
+	= OpenView('comtegevremote',.T., 'comTegevRemote', 'libs\libraries\tegev')
 	Select coMtegevremote
 	Index On Id Tag Id
-	Index On LEFT(koOd,20) Tag koOd
+	Index On Left(koOd,20) Tag koOd
 	Set Order To Id
 
 
@@ -61,7 +61,7 @@ Endif
 
 Select comLaduRemote
 Index On Id Tag Id
-Index On LEFT(koOd,40) Tag koOd Additive
+Index On Left(koOd,40) Tag koOd Additive
 Set Order To Id
 
 
@@ -69,64 +69,64 @@ Set Order To Id
 
 Select comObjektRemote
 Index On Id Tag Id
-Index On LEFT(koOd,40) Tag koOd Additive
+Index On Left(koOd,40) Tag koOd Additive
 Set Order To Id
 
-=OpenView('comAaRemote',.t., 'comAaRemote', 'ou\aa')
+=OpenView('comAaRemote',.T., 'comAaRemote', 'ou\aa')
 Index On Id Tag Id
 Set Order To Id
 
-= OpenView('comGruppRemote',.t.,'comGruppRemote','libs\libraries\pv_grupp')
+= OpenView('comGruppRemote',.T.,'comGruppRemote','libs\libraries\pv_grupp')
 Select comGruppRemote
 Index On Id Tag Id
-Index On LEFT(koOd,20) Tag koOd Additive
+Index On Left(koOd,20) Tag koOd Additive
 Set Order To Id
 
-= OpenView('comProjremote', .t., 'comProjRemote','libs\libraries\project')
+= OpenView('comProjremote', .T., 'comProjRemote','libs\libraries\project')
 Select comProjremote
 Index On Id Tag Id
-Index On LEFT(koOd,20) Tag koOd Additive
+Index On Left(koOd,20) Tag koOd Additive
 Set Order To Id
 
-= OpenView('comUritusremote', .t., 'comUritusRemote', 'libs\libraries\uritus')
+= OpenView('comUritusremote', .T., 'comUritusRemote', 'libs\libraries\uritus')
 Select comUritusremote
 Index On Id Tag Id
-Index On LEFT(koOd,20) Tag koOd Additive
+Index On Left(koOd,20) Tag koOd Additive
 Set Order To Id
 
 tdKehtivus = Date() - 365
-IF (OpenView('comasutusRemote', .T.,'comAsutusRemote','libs\libraries\asutused'))
+If (OpenView('comasutusRemote', .T.,'comAsutusRemote','libs\libraries\asutused'))
 	Select coMasutusremote
 	Index On Id Tag Id
-	Index On LEFT(reGkood,40) Tag reGkood Additive
+	Index On Left(reGkood,40) Tag reGkood Additive
 	Index On Left(Upper(niMetus), 40) Tag niMetus Additive
 	Set Order To Id
-ENDIF
+Endif
 
 =OpenView('comDokRemote', .T.,'comDokRemote','libs\libraries\dok')
 Select comDokremote
-Index On LEFT(koOd,20) Tag koOd
+Index On Left(koOd,20) Tag koOd
 Index On Id Tag Id
 Set Order To Id
 
-= OpenView('comkassaRemote', .t., 'comKassaRemote', 'ou\kassa')
+= OpenView('comkassaRemote', .T., 'comKassaRemote', 'ou\kassa')
 Select comkassaRemote
 Index On Id Tag Id
 Set Order To Id
 
-= OpenView('comkontodRemote',.t., 'comkontodRemote', 'libs\libraries\kontod')
+= OpenView('comkontodRemote',.T., 'comkontodRemote', 'libs\libraries\kontod')
 Select coMkontodremote
 Index On Id Tag Id
-Index On LEFT(koOd,20) Tag koOd Additive
+Index On Left(koOd,20) Tag koOd Additive
 Set Order To Id
 
 = OpenView('comnomRemote', .T.,'comnomRemote','libs\libraries\nomenclature')
 Select coMnomremote
 Index On Id Tag Id
-Index On LEFT(koOd,20) Tag koOd Additive
+Index On Left(koOd,20) Tag koOd Additive
 Set Order To Id
 
-= OpenView('comtunnusRemote', .t.,'comtunnusRemote','libs\libraries\tunnus')
+= OpenView('comtunnusRemote', .T.,'comtunnusRemote','libs\libraries\tunnus')
 Select comtunnusRemote
 Index On Id Tag Id
 Index On Left(koOd,20) Tag koOd Additive
@@ -153,18 +153,41 @@ Procedure OpenView
 	If Empty(tcCursor)
 		tcCursor = tcView
 	Endif
-	With oDb
-		If !Empty(tcModel)
-			lError = oDb.readFromModel(tcModel, 'selectAsLibs', 'gRekv, guserid', tcView)
-			IF !lError
-				SET STEP ON 
-				RETURN .f.
-			ENDIF
-			
-		ELSE
-			SET STEP ON 
+	If !Empty(tcModel)
+		lError = oDb.readFromModel(tcModel, 'selectAsLibs', 'gRekv, guserid', tcView)
+		If !lError
+			Set Step On
+			Return .F.
 		Endif
 
-	Endwith
+	Else
+		Set Step On
+	Endif
 Endproc
 *
+
+
+PROCEDURE get_cities
+IF !USED('qryCities')
+	CREATE CURSOR qryCities (nimetus c(254)) 
+	INSERT INTO qryCities (nimetus) VALUES ('Haapsalu')
+	INSERT INTO qryCities (nimetus) VALUES ('Keila')
+	INSERT INTO qryCities (nimetus) VALUES ('Kohtla-Jarve')
+	INSERT INTO qryCities (nimetus) VALUES ('Kunda')
+	INSERT INTO qryCities (nimetus) VALUES ('Maardu')
+	INSERT INTO qryCities (nimetus) VALUES ('NARVA')
+	INSERT INTO qryCities (nimetus) VALUES ('NARVA-JÕESUU')
+	INSERT INTO qryCities (nimetus) VALUES ('Paide')
+	INSERT INTO qryCities (nimetus) VALUES ('Paldiski')
+	INSERT INTO qryCities (nimetus) VALUES ('Rakvere')
+	INSERT INTO qryCities (nimetus) VALUES ('Sillamae')
+	INSERT INTO qryCities (nimetus) VALUES ('Tallinn')
+	INSERT INTO qryCities (nimetus) VALUES ('Tartu')
+	INSERT INTO qryCities (nimetus) VALUES ('Valga')
+	INSERT INTO qryCities (nimetus) VALUES ('Võru')
+	INSERT INTO qryCities (nimetus) VALUES ('Võsu')
+	INSERT INTO qryCities (nimetus) VALUES ('Väike-Marja')
+	INSERT INTO qryCities (nimetus) VALUES ('Tapa')
+
+endif
+ENDPROC

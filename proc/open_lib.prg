@@ -23,6 +23,8 @@ If (l_test)
 Endif
 
 
+
+
 If Empty(tnOpt)
 	= OpenView('comTpremote',.T., 'comTpremote', 'libs\libraries\tp')
 	Select coMTpremote
@@ -55,7 +57,9 @@ If Empty(tnOpt)
 	Set Order To Id
 
 
-Endif
+ENDIF
+
+get_cities()
 
 = OpenView('comLaduRemote',.T., 'comLaduRemote', 'ladu\ladu')
 
@@ -165,3 +169,28 @@ Procedure OpenView
 	Endif
 Endproc
 *
+
+
+PROCEDURE get_cities
+IF !USED('qryCities')
+	CREATE CURSOR qryCities (nimetus c(254)) 
+	INSERT INTO qryCities (nimetus) VALUES ('Haapsalu')
+	INSERT INTO qryCities (nimetus) VALUES ('Keila')
+	INSERT INTO qryCities (nimetus) VALUES ('Kohtla-Jarve')
+	INSERT INTO qryCities (nimetus) VALUES ('Kunda')
+	INSERT INTO qryCities (nimetus) VALUES ('Maardu')
+	INSERT INTO qryCities (nimetus) VALUES ('NARVA')
+	INSERT INTO qryCities (nimetus) VALUES ('NARVA-JÕESUU')
+	INSERT INTO qryCities (nimetus) VALUES ('Paide')
+	INSERT INTO qryCities (nimetus) VALUES ('Paldiski')
+	INSERT INTO qryCities (nimetus) VALUES ('Rakvere')
+	INSERT INTO qryCities (nimetus) VALUES ('Sillamae')
+	INSERT INTO qryCities (nimetus) VALUES ('Tallinn')
+	INSERT INTO qryCities (nimetus) VALUES ('Tartu')
+	INSERT INTO qryCities (nimetus) VALUES ('Valga')
+	INSERT INTO qryCities (nimetus) VALUES ('Võru')
+	INSERT INTO qryCities (nimetus) VALUES ('Võsu')
+	INSERT INTO qryCities (nimetus) VALUES ('Väike-Marja')
+	INSERT INTO qryCities (nimetus) VALUES ('Tapa')
+endif
+ENDPROC

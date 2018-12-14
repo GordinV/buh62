@@ -2,6 +2,10 @@ LPARAMETERS tcSona
 LOCAL lcReturnSona
 lcReturnSona = ''
 
+IF ISNULL(tcSona)
+	RETURN lcReturnSona
+endif
+
 FOR i = 0 TO LEN(tcSona) 
 	lcTaht = SUBSTR(tcSona,i,1)	
 	?lcTaht
