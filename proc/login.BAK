@@ -16,10 +16,6 @@ Define Class login As dokument
 	Key = ''
 	Message = ''
 	connection = 'test_server'
-*!*	 ADD OBJECT coMrekv AS myCombo WITH toP = 5, leFt = 100, wiDth = 400,  ;
-*!*	     naMe = "comrekv", boUndcolumn = 1, boUndto = .T., roWsourcetype = 6,  ;
-*!*	     roWsource = "comkey.omanik, id", coLumncount = 2, coLumnwidths =  ;
-*!*	     "400,0", coLumnlines = 0, vaLue = 0, style = 2
 	Add Object txTkasutaja As myTxt With Top = 5, Left = 100, Width = 200,  ;
 		naMe = "txtKasutaja"
 	Add Object txTparool As myTxt With Top = 35, Left = 100, Width = 200,  ;
@@ -28,15 +24,13 @@ Define Class login As dokument
 		100, Name = "btnOk", Picture = "pictures\btok.bmp"
 	Add Object btNcancel As myBtn With Caption = '', Top = 40, Left = 325,  ;
 		wiDth = 100, Name = "btnCancel", Picture = "pictures\btExit.bmp"
-*!*	 ADD OBJECT lbLasutus AS myLbl WITH toP = 5, leFt = 5, naMe = "lblAsutus",  ;
-*!*	     caPtion = "Database:"
 	Add Object lbLkasutaja As myLbl With Top = 5, Left = 5, Name =  ;
 		"lblKasutaja", Caption = "Kasutaja nimi:"
 	Add Object lbLparool As myLbl With Top = 35, Left = 5, Name =  ;
 		"lblParool", Caption = "Parool:"
 *
 	Procedure btNok.Click
-
+SET STEP ON 
 		Set Classlib To Logo
 		olOgo = Createobject('logo')
 		olOgo.Show()

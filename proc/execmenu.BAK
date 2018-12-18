@@ -4,14 +4,15 @@ Select curMenuRemote
 Locate For Id = tnId
 
 If Found() And !Empty(curMenuRemote.Proc)
-
-	If is_popup
-		Hide Popup (Alltrim(curMenuRemote.Name))
-	Endif
+*!*		If is_popup
+*!*			l_eval = 'Hide POPUP '+ Alltrim(curMenuRemote.Name)
+*!*			EVALUATE(l_eval)
+*!*	*		Hide POPUP(Alltrim(curMenuRemote.Name))
+*!*		Endif
 	lError =Execscript(curMenuRemote.Proc)
 	If is_popup
 		Deactivate Popup (Alltrim(curMenuRemote.Name))
-		Release Popup (Alltrim(curMenuRemote.Name))
+		Release Popups (Alltrim(curMenuRemote.Name))
 	Endif
 Else
 	Messagebox('Not found')

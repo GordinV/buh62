@@ -17,6 +17,7 @@ If  .Not. Used('curValitud')
 	Create Cursor curValitud (Id Int, koOd C (20), niMetus C (120))
 Endif
 Create Cursor curResult (Id Int, osAkondid Int)
+
 lnStep = 1
 
 If  .Not. Empty(tnIsikid)
@@ -132,33 +133,20 @@ Procedure geT_osakonna_list
 Endproc
 *
 Procedure geT_isiku_list
-	If !Used('comTootajadRemote')
-		leRror = odB.readFromModel('palk\tootaja', 'selectAsLibs', 'gRekv, guserid', 'comTootajadRemote')
 
-		If 	!leRror And Used('comTootajadRemote') And Reccount('comTootajadRemote') > 0
-			Messagebox('Töötajate nimekirja laadimine ebaõnnestus',0 + 48,'Error')
-			Return .F.
-		Endif
-
-	Endif
-
+	DO fnc_load_tootajad
 
 	Select curSource
 	If Reccount('curSource')>0
 		Zap
 	ENDIF
-	
-	Select isIkukood As koOd,;
-		Left(Rtrim(niMetus)+Space(1)+Rtrim(amEt), 120) As niMetus, lepingid As Id;
-		From comTootajadRemote ;
-		Where osAkondid <> 0 ;
-		AND osAkondid In (Select osAkondid  ;
-		FROM curResult) ;
-		Into Cursor query1
 
+	Select isikukood As koOd, niMetus, Id From qryTootajad Where OSAKONDID In (Select distinct ;
+		osAkondid From curResult) Into Cursor query1
 	Select curSource
 	Append From Dbf('query1')
 	Use In query1
+	
 	Select curValitud
 	If Reccount('curvalitud')>0
 		Zap
@@ -181,3 +169,20 @@ Procedure geT_isiku_list
 	Return
 Endproc
 *
+
+
+Function fnc_load_tootajad
+* parameters
+
+TEXT TO lcSqlWhere textmerge	noshow
+	(algab <= '<<DTOC(gdKpv,1)>>'::date or algab is null)
+	and (lopp >= '<<DTOC(gdKpv,1)>>'::date or lopp is null)
+ENDTEXT
+
+	leRror = odB.readFromModel('palk\tootaja', 'curTootajad', 'gRekv, guserid', 'qryTootajad', lcSqlWhere)
+	IF lError AND !USED('qryTootajad')
+		lError = .f.
+	ENDIF
+	SELECT qryTootajad
+	RETURN leRror
+Endfunc

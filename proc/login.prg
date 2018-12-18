@@ -30,7 +30,6 @@ Define Class login As dokument
 		"lblParool", Caption = "Parool:"
 *
 	Procedure btNok.Click
-
 		Set Classlib To Logo
 		olOgo = Createobject('logo')
 		olOgo.Show()
@@ -58,11 +57,7 @@ Define Class login As dokument
 		Clear Events
 		Release Thisform
 	Endproc
-*
-*!*	     PROCEDURE coMrekv.init
-*!*	      thIs.vaLue = coMkey.id
-*!*	     ENDPROC
-*
+
 	Procedure Init
 		On Error Do ERR With Program(), Lineno(1)
 
@@ -80,23 +75,6 @@ Define Class login As dokument
 				Clear Events
 			Endif
 		Endwith
-	Endproc
-*
-	Function encryptpass
-		Lparameter tcPass
-		lcCryptpath = Encrypt(f_Key(),tcPass)
-		Replace v_Pass.paRool With lcCryptpath In v_Pass
-		odB.cuRsorupdate('v_pass')
-		Return lcCryptpath
-	Endfunc
-*
-	Function decryptpass
-		Lparameter tcPass
-		lcDecryptpath = deCrypt(f_Key(),tcPass)
-		Return lcDecryptpath
-	Endfunc
-*
-	Procedure AvadaAruanned
 	Endproc
 *
 	Procedure viGa
