@@ -1,9 +1,5 @@
 Parameter tnIsikid, is_tasu
-LOCAL l_where, lnResult, lError, l_error
-
-lError = .T.
-l_dokprop = 0
-
+LOCAL l_where
 IF EMPTY(gdkpv)
 	gdkpv = DATE()
 ENDIF
@@ -32,6 +28,10 @@ If Used('tmp_period')
 	Use In tmp_period
 Endif
 
+
+Local lnResult, lError, l_error
+lError = .T.
+l_dokprop = 0
 
 If  .Not. Used('curSource')
 	Create Cursor curSource (Id Int, koOd C (20), niMetus C (120))

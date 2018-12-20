@@ -141,7 +141,7 @@ Procedure geT_isiku_list
 		Zap
 	ENDIF
 
-	Select isikukood As koOd, niMetus, Id From qryTootajad Where OSAKONDID In (Select distinct ;
+	Select isikukood As koOd, niMetus, lepingid as Id From qryTootajad Where OSAKONDID In (Select distinct ;
 		osAkondid From curResult) Into Cursor query1
 	Select curSource
 	Append From Dbf('query1')

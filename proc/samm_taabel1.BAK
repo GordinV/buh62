@@ -42,7 +42,9 @@ Do While lnStep>0
 TEXT TO l_json TEXTMERGE noshow
 					[<<oDb.getJson()>>]
 ENDTEXT
+_cliptext = l_json
 				lError = oDb.readFromModel('palk\palk_taabel', 'genTaabel', 'guserid,l_json', 'result')
+				brow
 				If !lError OR !USED('result') OR EMPTY(result.result) 
 					lcViga = ''
 					If Used('result')
@@ -140,24 +142,12 @@ Procedure geT_isiku_list
 	If Reccount('curSource')>0
 		Zap
 	ENDIF
-	
-	SELECT qryTootajad
-	brow
-	
-	SELECT curResult
-	brow
-	
-	Select isikukood As koOd, niMetus, Id From qryTootajad Where OSAKONDID In (Select distinct ;
+
+	Select isikukood As koOd, niMetus, lepingid as Id From qryTootajad Where OSAKONDID In (Select distinct ;
 		osAkondid From curResult) Into Cursor query1
 	Select curSource
 	Append From Dbf('query1')
 	Use In query1
-
-
-	Select curSource
-	If Reccount('curSource')>0
-		Zap
-	ENDIF
 	
 	Select curValitud
 	If Reccount('curvalitud')>0

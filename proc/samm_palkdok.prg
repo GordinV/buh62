@@ -1,5 +1,13 @@
 Parameter tnIsikid
 
+Local lnResult, leRror
+lnkassaOrder = 0
+lnKassaSumma = 0
+leRror = .T.
+
+IF EMPTY(gdkpv)
+	gdkpv = DATE()
+ENDIF
 
 * period
 TEXT TO l_where NOSHOW textmerge
@@ -24,10 +32,6 @@ IF USED('tmp_period')
 	USE IN tmp_period
 ENDIF
 
-Local lnResult, leRror
-lnkassaOrder = 0
-lnKassaSumma = 0
-leRror = .T.
 If Empty(tnIsikid)
 	tnIsikid = 0
 Endif

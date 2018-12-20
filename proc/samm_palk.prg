@@ -1,5 +1,12 @@
 Parameter tnIsikid, is_tasu
 
+Local lnResult, leRror, l_error
+leRror = .T.
+l_dokprop = 0
+
+IF EMPTY(gdkpv)
+	gdkpv = DATE()
+ENDIF
 
 * period
 TEXT TO l_where NOSHOW textmerge
@@ -24,10 +31,6 @@ IF USED('tmp_period')
 	USE IN tmp_period
 ENDIF
 
-
-Local lnResult, leRror, l_error
-leRror = .T.
-l_dokprop = 0
 
 If  .Not. Used('curSource')
 	Create Cursor curSource (Id Int, koOd C (20), niMetus C (120))

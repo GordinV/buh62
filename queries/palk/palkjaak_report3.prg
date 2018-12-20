@@ -37,7 +37,8 @@ lError = oDb.readFromModel('palk\palk_jaak', 'printPalkJaak', 'gRekv, guserid', 
 
 Insert Into palkJaak_report1 (isikid, isik, isikukood, ;
 	arv, tasu, tulumaks,  tki, muud, sots, tka, jaak, kinni, kkinni, pm);
-	SELECT isikid, isik, isikukood, SUM(arv), sum(tasu), sum(tm), sum(tki), sum(muud), sum(sm), sum(tka), sum(jaak), sum(kinni),sum(kinni + muud), sum(pm);
+	SELECT isikid, isik, isikukood, SUM(arv), sum(tasu), sum(tm), sum(tki), sum(muud), sum(sm), sum(tka), sum(jaak), ;
+		sum(kinni),sum(kinni + muud + tasu + tki + pm), sum(pm);
 	from tmpPalkOper ;
 	group by isikid, isik, isikukood ;
 	order by isikukood
