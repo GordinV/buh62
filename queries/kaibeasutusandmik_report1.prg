@@ -22,7 +22,7 @@ Endif
 SELECT rekv_id, asutus_id, konto, nimetus, alg_saldo, deebet, kreedit, lopp_saldo,;
 	asutus, regkood, tp ;
 	FROM tmpReport ;
-	ORDER BY asutus, konto, rekv_id ;
+	ORDER BY rekv_id,  konto, asutus  ;
 	INTO CURSOR KaibeAsutusAndmik_report1
 
 USE IN tmpReport

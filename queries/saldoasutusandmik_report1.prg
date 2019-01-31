@@ -18,7 +18,7 @@ Endif
 
 
 Select * From tmpReport ;
-	ORDER By asutus_id, konto, tmpReport.rekv_id;
+	ORDER By tmpReport.rekv_id, konto, asutus ;
 	INTO Cursor kaibeAsutusandmik_report1
 	
 Use In tmpReport

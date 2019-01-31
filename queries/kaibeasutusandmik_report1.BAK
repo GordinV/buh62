@@ -9,7 +9,7 @@ TEXT TO lcWhere ADDITIVE TEXTMERGE noshow
 	<<IIF(LEN(lcWhere) > 0, 'and', '')>> konto ilike '<<ALLTRIM(fltrAruanne.konto)>>%'
 ENDTEXT
 
-SET STEP ON
+
 lError = oDb.readFromModel('aruanned\raamatupidamine\kaibeasutusandmik', 'kaibeasutusandmik_report',; 
 	'ALLTRIM(fltrAruanne.konto), fltrAruanne.asutusid, fltrAruanne.kpv1, fltrAruanne.kpv2, gRekv', 'tmpReport', lcWhere)
 If !lError
