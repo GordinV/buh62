@@ -1,12 +1,22 @@
-LOCAL lnRekvid
+Local lnRekvid
 
-DO FORM valirekv TO gRekv
-IF !EMPTY(gRekv)
-	SELECT comrekvremote
-	LOCATE FOR id = gRekv
-	WAIT WINDOW ' Oodake, käivitan '+ LEFT(ALLTRIM(comRekvremote.nimetus),40) nowait
+Do Form valirekv To gRekv
+If !Empty(gRekv)
+	Select comrekvremote
+	Locate For Id = gRekv
+	Wait Window ' Oodake, käivitan '+ Left(Alltrim(comrekvremote.nimetus),40) Nowait
 * vahetan rekvid
-	oConnect.rekvAndmed() 
-	DO open_lib WITH 1
-	MESSAGEBOX('Ok',0,'Vali asutus')
-ENDIF
+	oConnect.rekvAndmed()
+	Select comrekvremote
+	Locate For Id = gRekv
+	_Screen.Caption = 'Raamatupidamine 6.2 ' + Alltrim(comrekvremote.nimetus)
+
+	Do open_lib With 1
+* refresh toolbar
+	If Type('oTools') = 'O'
+		oTools.Refresh()
+	Endif
+
+
+	Messagebox('Ok',0,'Vali asutus')
+Endif

@@ -7,11 +7,18 @@ If !Empty(gRekv)
 	Wait Window ' Oodake, käivitan '+ Left(Alltrim(comrekvremote.nimetus),40) Nowait
 * vahetan rekvid
 	oConnect.rekvAndmed()
+	oConnect.createMenu('',1)
+
 	Select comrekvremote
 	Locate For Id = gRekv
 	_Screen.Caption = 'Raamatupidamine 6.2 ' + Alltrim(comrekvremote.nimetus)
 
-
 	Do open_lib With 1
+* refresh toolbar
+	If Type('oTools') = 'O'
+		oTools.Refresh()
+	Endif
+
+
 	Messagebox('Ok',0,'Vali asutus')
 Endif
