@@ -4,13 +4,17 @@ If Vartype(cWhere) = 'C'
 Else
 	tnId = cWhere
 ENDIF
-SET STEP ON 
+
+IF USED('pvkaart_report1')
+	USE IN pvkaart_report1
+ENDIF
+
 
 If Empty (tnId)
 	Return .F.
 Endif
 If !Used('v_pv_kaart')
-	lError = oDb.readFromModel('libs\libraries\pv_kaart', 'row', 'gRekv, guserid', 'v_pv_kaart')
+	lError = oDb.readFromModel('libs\libraries\pv_kaart', 'row', 'tnId, guserid', 'v_pv_kaart')
 ENDIF
 
 Select * From v_pv_kaart Into Cursor pvkaart_report1

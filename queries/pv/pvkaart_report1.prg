@@ -5,7 +5,6 @@ Else
 	tnId = cWhere
 ENDIF
 
-
 If Empty (tnId)
 	Return .F.
 Endif
