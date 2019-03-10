@@ -1,7 +1,7 @@
 Parameter tcKey
 _Screen.WindowState = 2
-Public gnHandle,gnHandleAsync, gcWindow, gRekv,gUserId, oPrintform2, oFinder, gReturn, oAsutused, oUserid,;
-	oArved, oDokLausend, oNomenklatuur, oKontod, oAllikad, oArtikkel, oTegev,;
+Public gnHandle,gnHandleAsync, gcWindow, gRekv, gUserId, oPrintform2, oFinder, gReturn, oAsutused, oUserid,;
+	oArved, oDokLausend, oNomenklatuur, oKontod, oAllikad, oArtikkel, oTegev, oTools,;
 	oObjekt, oTunnus,oJournal, oSaldo, oAsutused, oUserid, oRekv, oLausendid, oKlsaldo, oDok, oTasud,;
 	oLepingud, cKasutaja, oDb, oPohivara, oPvGruppid, oOsakonnad, oAmetid, oPalklib, oPalkOper, oTaabel1, oPeriod,;
 	oHoliday, gnKuu, gnAasta, gdKpv, oPalkJaak, oMaksuKoodid,;
@@ -12,7 +12,7 @@ Public gnHandle,gnHandleAsync, gcWindow, gRekv,gUserId, oPrintform2, oFinder, gR
 	oTpr, oRahavoodid, oMenu, oEditMenu, oConnect, oKorderID, gcKey, oVanemtasu, gcAmetnik, oLahetuskulud, oLapsed,;
 	oEeltaotlus, oEelVariandid,oDokumendid,;
 	oReklmaksud, oReklVolgnik, oReklSaadetud, gMailParool,;
-	oProjektid, oUritused, tcProj, tcUritus, tcgrupp, oValuuta,gcCurrentValuuta, glMvt
+	oProjektid, oUritused, tcProj, tcUritus, tcgrupp, glMvt
 
 #Define TM 4
 #Define SM 5

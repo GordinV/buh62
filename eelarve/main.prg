@@ -93,10 +93,6 @@ If File (cFile1)
 	Use In curPrinter4
 Endif
 
-*!*	If File ('KEY.DBF')
-*!*		Use Key In 0
-*!*	Endif
-
 If !Used('v_roles')
 	Create Cursor v_roles (	nimetus c(120) Default 'Raamatupidaja', asutusid Int, nomid Int, nomidkassa Int,nomidpank Int, kbmnomidkassa Int,;
 		kassaid Int, aaid Int, alus c(120),kassanr c(20),arvnr c(20), ;
@@ -104,13 +100,6 @@ If !Used('v_roles')
 Endif
 
 
-*!*	Create Cursor comkey (Id Int, omanik c(120))
-*!*	Select Id, Left(decrypt(f_key(),Mline(omanik,1)),120) As omanik From Key Into Cursor qryComkey
-*!*	Select comkey
-*!*	Append From Dbf ('qryComkey')
-*!*	Use In qryComkey
-*!*	Select comkey
-*!*	=secure('OFF')
 lQuit = .F.
 
 
