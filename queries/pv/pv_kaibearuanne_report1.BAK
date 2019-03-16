@@ -22,9 +22,7 @@ TEXT TO lcWhere TEXTMERGE noshow
 	and vastisik ilike '%<<ALLTRIM(l_vast_isik)>>%'
 ENDTEXT
 
-SET STEP ON 
-
-lError = oDb.readFromModel('aruanned\pv\pv_kaibearuanne', 'pv_kaibe_aruanne_report', 'fltrAruanne.kpv1,fltrAruanne.kpv2, gRekv', 'kaibearuanne_report1',lcWhere)
+lError = oDb.readFromModel('aruanned\pv\pv_kaibearuanne', 'pv_kaibe_aruanne_report', 'fltrAruanne.kpv1,fltrAruanne.kpv2, gRekv', 'tmp_report',lcWhere)
 If !lError
 	Messagebox('Viga',0+16, 'PV käibearuanne')
 	Set Step On
@@ -32,12 +30,8 @@ If !lError
 	RETURN .f.
 Endif
 
-*!*	SELECT kood, nimetus, konto, grupp, soetmaks, soet_kpv as soetkpv, kulum, alg_kulum as algkulum,kulum + alg_kulum as kulumkokku,; 
-*!*		jaak, mahakantud, parandus ;
-*!*	from tmpReport ;
-*!*	ORDER BY grupp, kood;
-*!*	INTO CURSOR varadearuanne_report1
+SELECT * from tmp_report ORDER BY konto, kood INTO CURSOR kaibearuanne_report1
 
-*!*	USE IN tmpReport
+USE IN tmpReport
 
 SELECT kaibearuanne_report1
