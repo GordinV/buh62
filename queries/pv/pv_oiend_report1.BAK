@@ -1,0 +1,46 @@
+Parameter cWhere
+l_vast_isik = ''
+l_grupp = ''
+l_recno = 0
+
+IF !EMPTY(fltrAruanne.asutusid)
+	SELECT comAsutusRemote
+	LOCATE FOR id = fltrAruanne.asutusid
+	l_vast_isik = comAsutusRemote.nimetus
+ENDIF
+
+IF !EMPTY(fltrAruanne.grupp)
+	SELECT comGruppAruanne
+	LOCATE FOR id = fltrAruanne.grupp
+	l_grupp = comGruppAruanne.nimetus
+
+ENDIF
+SET STEP ON 
+
+TEXT TO lcWhere TEXTMERGE noshow
+	coalesce(konto,'') ilike '<<ALLTRIM(fltrAruanne.konto)>>%'
+	and coalesce(grupp,'') ilike '%<<ALLTRIM(l_grupp)>>%'
+	and coalesce(vastisik,'') ilike '%<<ALLTRIM(l_vast_isik)>>%'
+ENDTEXT
+
+lError = oDb.readFromModel('aruanned\pv\oiend', 'pv_oiend_report', 'fltrAruanne.kpv1,fltrAruanne.kpv2, gRekv', 'tmp_report',lcWhere)
+If !lError
+	Messagebox('Viga',0+16, 'PV õiend')
+	Set Step On
+	SELECT 0
+	RETURN .f.
+Endif
+
+SELECT jrnr, kood, nimetus, aadress, pindala, kulumi_maar, eluiga, esimise_kpv, alg_soetmaks, alg_kulum, (lopp_soetmaks - lopp_kulum) as jaak,  ;
+	turu_vaartsus, IIF(ISNULL(turu_vaartsus),0,turu_vaartsus) - (lopp_soetmaks - lopp_kulum) as vahe ;
+from tmp_report ORDER BY jrnr INTO CURSOR oiend_report1
+
+USE IN tmp_report
+
+SELECT oiend_report1
+
+
+FUNCTION get_jrnr()
+LPARAMETERS l_param
+RETURN l_param + 1
+ENDFUNC
