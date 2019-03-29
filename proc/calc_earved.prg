@@ -148,29 +148,18 @@ TEXT TO lcFileString ADDITIVE NOSHOW
 
 		</InvoiceItemGroup>
 	</InvoiceItem>
-	<AdditionalInformation>
-		<InformationName>Lisa</InformationName>
-		<InformationContent><<Alltrim(convert_to_utf(qryeArved.lisa))>></InformationContent>
 
 ENDTEXT
 
-
-		If Type('qryeArved.muud') <> 'U' And !Empty(qryeArved.muud)
+		
+* <<lcTKpv>>
 TEXT TO lcFileString ADDITIVE NOSHOW
-			<InformationName>Muud</InformationName>
-			<InformationContent><<convert_to_utf(ALLTRIM(qryeArved.muud))>></InformationContent>
-ENDTEXT
-
-		Endif
-
-TEXT TO lcFileString ADDITIVE NOSHOW
-		</AdditionalInformation>
 		<PaymentInfo>
 			<Currency>EUR</Currency>
-			<PaymentRefId><<ALLTRIM(qryeArved.viitenr)>></PaymentRefId>
+			<PaymentRefId><<ALLTRIM(IIF(ISNULL(qryeArved.viitenr),'',qryeArved.viitenr))>></PaymentRefId>
 			<PaymentDescription>Arve <<convert_to_utf(qryeArved.Number)>></PaymentDescription>
 			<Payable>YES</Payable>
-			<PayDueDate><<lcTKpv>></PayDueDate>
+			<PayDueDate></PayDueDate>
 			<PaymentTotalSum><<Alltrim(Str(qryeArved.Summa,14,2))>></PaymentTotalSum>
 			<PayerName><<Alltrim(convert_to_utf(qryeArved.ostja)) >></PayerName>
 			<PaymentId><<ALLTRIM(convert_to_utf(qryeArved.number))>></PaymentId>
@@ -234,7 +223,7 @@ ENDTEXT
 TEXT TO lcString ADDITIVE NOSHOW
 
 			<ItemEntry>
-				<Description><<Alltrim(convert_to_utf(qryeArvedDet.Description))>></Description>
+				<Description><<Alltrim(convert_to_utf(qryeArved.lisa))>></Description>
 				<ItemDetailInfo>
 					<ItemUnit><<Alltrim(qryeArvedDet.ItemUnit)>></ItemUnit>
 					<ItemAmount><<Alltrim(Str(qryeArvedDet.ItemAmount,14,4))>></ItemAmount>

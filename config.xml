@@ -1,7 +1,7 @@
 <?xml version = "1.0" encoding="Windows-1252" standalone="yes"?>
 <VFPData>
   <connection>
- <name>test_server</name>		 
-<!--<name>localhost</name>-->		 
+<name>test_server</name>		 
+<!-- <name>localhost</name>	-->	 
   </connection>
 </VFPData>

@@ -1,7 +1,7 @@
 Lparameters tnMKId
 Local lError
 
-l_test = .t.
+l_test = .f.
 If l_test
 	gRekv = 119
 	gUserid = 70

@@ -65,7 +65,7 @@ Function iso
 	ELSE
 	
 		lcRekvNimetus = Alltrim(qryRekv.nimetus)
-		lcRekvAadress = Alltrim(qryRekv.aadress)
+		lcRekvAadress = LEFT(Alltrim(qryRekv.aadress),70)
 	Endif
 
 TEXT TO lcString NOSHOW
@@ -182,7 +182,7 @@ TEXT TO lcString ADDITIVE TEXTMERGE noshow
 					<Nm><<Alltrim(lcRekvNimetus)>></Nm>
 					<PstlAdr>
 						<Ctry>EE</Ctry>
-						<AdrLine><<Alltrim(lcRekvAadress)>></AdrLine>
+						<AdrLine><<LEFT(Alltrim(lcRekvAadress),70)>></AdrLine>
 					</PstlAdr>
 				</Dbtr>
 				<DbtrAcct>
@@ -210,7 +210,7 @@ TEXT TO lcString ADDITIVE TEXTMERGE NOSHOW
 						<Amt><InstdAmt Ccy="EUR"><<Alltrim(Str(tmp_mk1.Summa,14,2))>></InstdAmt></Amt>
 						<Cdtr>
 							<Nm><<convert_to_utf(Alltrim(tmp_mk1.asutus))>></Nm>
-							<PstlAdr><Ctry>EE</Ctry><AdrLine><<convert_to_utf(LEFT(Alltrim(tmp_mk1.aadress),70))>></AdrLine></PstlAdr>
+							<PstlAdr><Ctry>EE</Ctry><AdrLine><<LEFT(convert_to_utf(Alltrim(tmp_mk1.aadress)),70)>></AdrLine></PstlAdr>
 						</Cdtr>
 						<CdtrAcct><Id><IBAN><<Alltrim(tmp_mk1.aa)>></IBAN></Id></CdtrAcct>
 						<RmtInf>
