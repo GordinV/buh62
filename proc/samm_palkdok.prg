@@ -15,7 +15,6 @@ TEXT TO l_where NOSHOW textmerge
 	and kuu = <<MONTH(gdkpv)>>	
 ENDTEXT
 
-
 lError = oDb.readFromModel('ou\aasta', 'selectAsLibs', 'gRekv', 'tmp_period', l_where )
 If !lError OR !USED('tmp_period')
 	Messagebox('Viga',0+16, 'Period')
@@ -89,7 +88,6 @@ Procedure arVutus
 
 	Select Distinct Id From curResult Where  Not Empty(curResult.Id)  ;
 		INTO Cursor qryIsikud
-	Select recalc1
 * isik_ids
 	Select qryIsikud
 	l_isik_ids = ''
@@ -126,7 +124,7 @@ TEXT TO lcJson TEXTMERGE noshow
 ENDTEXT
 * sql proc
 	task = 'palk.gen_palk_dok'
-	_cliptext = lcJson
+
 	leRror = odB.readFromModel('palk\palk_oper', 'executeTask', 'guserid,lcJson,task', 'qryResult')
 	lnStep = 0
 	If leRror And qryResult.result > 0
