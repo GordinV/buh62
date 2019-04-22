@@ -29,7 +29,7 @@ If !lError
 	RETURN .f.
 Endif
 
-SELECT id, kood, nimetus, konto, grupp, soetmaks, soetkpv as soetkpv, kulum,; 
+SELECT id, kood, nimetus, konto, grupp, soetmaks, soetkpv as soetkpv, kulum, eluiga,; 
 	(soetmaks - kulum ) as jaak, mahakantud, vastisik, rentnik ;
 from tmpReport ;
 ORDER BY grupp, konto, kood;

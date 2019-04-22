@@ -12,8 +12,16 @@ Set order to Konto
 
 SELECT * from comKontodRemote WHERE kood LIKE ALLTRIM(fltrAruanne.konto) + '%' ORDER BY kood INTO CURSOR qryKontod
 
-lcWhere = IIF(EMPTY(fltrAruanne.kond),' rekv_id = ' + STR(gRekv), '')
+TEXT TO lcWhere TEXTMERGE noshow	
+	tunnus ilike '%<<ALLTRIM(fltrAruanne.tunnus)>>%'
+ENDTEXT
 
+IF EMPTY(fltrAruanne.kond)
+	TEXT TO lcWhere ADDITIVE TEXTMERGE noshow
+		and rekv_id  = <<gRekv>>
+	ENDTEXT
+	
+ENDIF
 
 SELECT qryKontod
 SCAN
