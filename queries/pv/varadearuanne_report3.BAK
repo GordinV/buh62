@@ -3,14 +3,14 @@ Local lnDeebet, lnKreedit
 
 * PV inventuuriaruanne 
 
-
+ 
 TEXT TO lcWhere TEXTMERGE noshow
 	konto ilike '<<ALLTRIM(fltrAruanne.konto)>>%'
 ENDTEXT
 
 IF !EMPTY(fltrAruanne.grupp)
 	TEXT TO lcWhere ADDITIVE TEXTMERGE noshow
-		and grupp_id = <<fltrAruanne.grupp>>
+		and gruppid = <<fltrAruanne.grupp>>
 	ENDTEXT
 ENDIF
 
@@ -29,7 +29,7 @@ If !lError
 	RETURN .f.
 Endif
 
-SELECT id, kood, nimetus, konto, grupp, soetmaks, soetkpv as soetkpv, kulum,; 
+SELECT id, kood, nimetus, konto, grupp, soetmaks, soetkpv as soetkpv, kulum, eluiga,; 
 	(soetmaks - kulum ) as jaak, mahakantud, vastisik, rentnik ;
 from tmpReport ;
 ORDER BY grupp, konto, kood;

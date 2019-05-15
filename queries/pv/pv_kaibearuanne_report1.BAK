@@ -15,7 +15,7 @@ IF !EMPTY(fltrAruanne.grupp)
 
 ENDIF
 
-
+SET STEP ON 
 TEXT TO lcWhere TEXTMERGE noshow
 	konto ilike '<<ALLTRIM(fltrAruanne.konto)>>%'
 	and grupp ilike '%<<ALLTRIM(l_grupp)>>%'
@@ -32,6 +32,6 @@ Endif
 
 SELECT * from tmp_report ORDER BY konto, kood INTO CURSOR kaibearuanne_report1
 
-USE IN tmpReport
+USE IN tmp_report
 
 SELECT kaibearuanne_report1
