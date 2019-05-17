@@ -13,6 +13,8 @@ If !Empty(tnId)
 		IIF(a.liik = 0,Iif(!Isnull(qryRekv.muud),qryRekv.muud,qryRekv.nimetus), Alltrim(a.asutus) + ' ' + Alltrim(a.omvorm))  As muuja,;
 		IIF(a.liik = 1 ,Iif(!Isnull(qryRekv.muud),qryRekv.muud,qryRekv.nimetus),Alltrim(a.asutus) + ' ' + Alltrim(a.omvorm)) As ostja,;
 		IIF(a.liik = 1, qryRekv.regkood,Alltrim(asutus.regkood)) As ostja_regkood,;
+		IIF(a.liik = 1, qryRekv.aadress,asutus.aadress) As ostja_aadress,;
+		IIF(a.liik = 1, qryRekv.email,Alltrim(asutus.email)) As ostja_email,;
 		IIF(a.liik = 0, qryRekv.regkood,Alltrim(asutus.regkood)) As muuja_regkood,;
 		IIF(a.liik = 0, qryRekv.aadress, Alltrim(asutus.aadress)) As muuja_aadress,;
 		IIF(a.liik = 0 , qryRekv.email , Alltrim(asutus.email)) As muuja_email,;
@@ -30,6 +32,8 @@ Else
 			IIF(a.liik = 1 ,Iif(!Isnull(qryRekv.muud),qryRekv.muud,qryRekv.nimetus),Alltrim(a.asutus) + ' ' + Alltrim(a.omvorm)) As ostja,;
 			IIF(a.liik = 0, qryRekv.regkood,Alltrim(a.regkood)) As muuja_regkood,;
 			IIF(a.liik = 1, qryRekv.regkood,Alltrim(a.regkood)) As ostja_regkood,;
+			IIF(a.liik = 1, qryRekv.aadress,asutus.aadress) As ostja_aadress,;
+			IIF(a.liik = 1, qryRekv.email,Alltrim(asutus.email)) As ostja_email,;
 			IIF(a.liik = 0, qryRekv.aadress, Alltrim(asutus.aadress)) As muuja_aadress,;
 			IIF(a.liik = 0 , qryRekv.email , Alltrim(asutus.email)) As muuja_email,;
 			IIF(a.liik = 0, qryRekv.tel, Alltrim(asutus.tel)) As muuja_tel,;
@@ -106,6 +110,9 @@ ENDTEXT
 		la_muuja_Address = getAddress(qryeArved.muuja_aadress)
 		lc_muuja_City = getAddress(qryeArved.muuja_aadress, 3)
 		lc_muuja_Post = getAddress(qryeArved.muuja_aadress, 1)
+		la_ostja_Address = getAddress(qryeArved.ostja_aadress)
+		lc_ostja_City = getAddress(qryeArved.ostja_aadress, 3)
+		lc_ostja_Post = getAddress(qryeArved.ostja_aadress, 1)
 
 
 TEXT TO lcFileString ADDITIVE NOSHOW
@@ -116,7 +123,7 @@ TEXT TO lcFileString ADDITIVE NOSHOW
 <Name><<Alltrim(convert_to_utf(qryeArved.muuja))>></Name>
 <RegNumber><<Alltrim(qryeArved.muuja_regkood)>></RegNumber>
 <ContactData>
-<PhoneNumber><<qryeArved.muuja_tel>></PhoneNumber>
+<PhoneNumber><<ALLTRIM(qryeArved.muuja_tel)>></PhoneNumber>
 <LegalAddress>
 <PostalAddress1><<Alltrim(convert_to_utf(lc_muuja_Post))>></PostalAddress1>
 <City><<ALLTRIM(convert_to_utf(lc_muuja_City))>></City>
@@ -127,10 +134,9 @@ TEXT TO lcFileString ADDITIVE NOSHOW
 <Name><<Alltrim(convert_to_utf(qryeArved.ostja))>></Name>
 <RegNumber><<Alltrim(qryeArved.ostja_regkood)>></RegNumber>
 <ContactData>
-<E-mailAddress><<Alltrim(convert_to_utf(qryeArved.email))>></E-mailAddress>
+<E-mailAddress><<Alltrim(convert_to_utf(qryeArved.ostja_email))>></E-mailAddress>
 <LegalAddress>
-<PostalAddress1><<Alltrim(convert_to_utf(lcPost))>></PostalAddress1>
-<City><<ALLTRIM(convert_to_utf(lcCity))>></City>
+<PostalAddress1><<Alltrim(convert_to_utf(qryeArved.ostja_aadress))>></PostalAddress1>
 </LegalAddress>
 </ContactData>
 </BuyerParty>
@@ -141,26 +147,29 @@ TEXT TO lcFileString ADDITIVE NOSHOW
 <DocumentName>Arve</DocumentName>
 <InvoiceNumber><<Alltrim(convert_to_utf(qryeArved.Number))>></InvoiceNumber>
 <InvoiceDate><<lcKpv>></InvoiceDate>
+<DueDate><<lcTKpv>></DueDate>
 <InvoiceDeliverer>
 <ContactName><<ALLTRIM(v_account.ametnik)>></ContactName>
-<E-mailAddress><<ALLTRIM(v_account.email)>></E-mailAddress>
 </InvoiceDeliverer>
 </InvoiceInformation>
 <InvoiceSumGroup>
 <InvoiceSum><<Alltrim(Str(qryeArved.Summa,14,2))>></InvoiceSum>
 <VAT>
 ENDTEXT
+*!*	<E-mailAddress><<ALLTRIM(v_account.email)>></E-mailAddress>
+
+
 		tnId = qryeArved.Id
 		lError = oDb.readFromModel('raamatupidamine\arv', 'details', 'tnId, guserid', 'tmpeArveDet')
 		Select tmpeArveDet
 
-		Select km As vatRate,;
+		Select IIF(EMPTY(km) OR km = '-', '0',km) As vatRate,;
 			sum(kbm) As vatSum,  Sum(Summa) As Summa ;
 			from tmpeArveDet ;
 			group By km;
 			INTO Cursor qryeArvedVat
 
-		Select km As vatRate, ;
+		Select IIF(EMPTY(km) OR km = '-', '0',km) As vatRate, ;
 			kbm As vat_summa,;
 			alltrim(nimetus) + ' ' + Alltrim(Iif(Isnull(muud),'',muud)) As Description, uhik As ItemUnit,;
 			kogus As ItemAmount, hind As ItemPrice, (Summa - kbm) As ItemSum, kbm As vatSum, Summa As ItemTotal;
@@ -177,15 +186,12 @@ TEXT TO lcFileString ADDITIVE NOSHOW
 
 ENDTEXT
 
-l_tahtaeg = ALLTRIM(STR(YEAR(qryeArved.tahtaeg))) + '-' + ALLTRIM(STR(MONTH(qryeArved.tahtaeg))) + '-' + ALLTRIM(STR(DAY(qryeArved.tahtaeg)))
-
 TEXT TO lcFileString ADDITIVE NOSHOW
 <PaymentInfo>
 <Currency>EUR</Currency>
 <PaymentRefId></PaymentRefId>
 <PaymentDescription>Arve <<convert_to_utf(qryeArved.Number)>></PaymentDescription>
 <Payable>YES</Payable>
-<PayDueDate><<l_tahtaeg>></PayDueDate> 
 <PaymentTotalSum><<Alltrim(Str(qryeArved.Summa,14,2))>></PaymentTotalSum>
 <PayerName><<Alltrim(convert_to_utf(qryeArved.ostja)) >></PayerName>
 <PaymentId><<ALLTRIM(convert_to_utf(qryeArved.number))>></PaymentId>
