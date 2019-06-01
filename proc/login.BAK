@@ -15,7 +15,7 @@ Define Class login As dokument
 	AlwaysOnTop = .T.
 	Key = ''
 	Message = ''
-	connection = 'test_server'
+	Connection = 'test_server'
 	Add Object txTkasutaja As myTxt With Top = 5, Left = 100, Width = 200,  ;
 		naMe = "txtKasutaja"
 	Add Object txTparool As myTxt With Top = 35, Left = 100, Width = 200,  ;
@@ -30,14 +30,13 @@ Define Class login As dokument
 		"lblParool", Caption = "Parool:"
 *
 	Procedure btNok.Click
-SET STEP ON 
 		Set Classlib To Logo
 		olOgo = Createobject('logo')
 		olOgo.Show()
 		With Thisform
 			.Visible = .F.
 			ocOnnect = Newobject('connect', 'connect')
-			leRror = ocOnnect.odB(thisform.connection, ALLTRIM(.txTkasutaja.Value), ;
+			leRror = ocOnnect.odB(Thisform.Connection, Alltrim(.txTkasutaja.Value), ;
 				RTRIM(Ltrim(.txTparool.Value)),Thisform.Key,.T.)
 
 			If leRror=.T.
@@ -45,8 +44,8 @@ SET STEP ON
 				On Key Label CTRL+S Do ONKEY With ('CTRL+S')
 				On Key Label CTRL+P Do ONKEY With ('CTRL+P')
 				_Screen.Visible = .T.
-			ELSE
-				MESSAGEBOX('Vale parool või kasutaja nimi',0+16,'Login')
+			Else
+				Messagebox('Vale parool või kasutaja nimi',0+16,'Login')
 				Clear Events
 			Endif
 			Release olOgo
@@ -58,20 +57,24 @@ SET STEP ON
 		Clear Events
 		Release Thisform
 	Endproc
-*
-*!*	     PROCEDURE coMrekv.init
-*!*	      thIs.vaLue = coMkey.id
-*!*	     ENDPROC
-*
+
 	Procedure Init
 		On Error Do ERR With Program(), Lineno(1)
 
 * read and open config
-	DO read_config
-	IF USED('v_config') AND RECCOUNT('v_config') > 0
-		this.connection = ALLTRIM(v_config.name)
-	ENDIF
-	
+		l_config = read_config()
+*!*		IF USED('v_config') AND RECCOUNT('v_config') > 0
+*!*			this.connection = ALLTRIM(v_config.name)
+*!*		ENDIF
+		If !Empty(l_config)
+			This.Connection = Alltrim(v_config.Name)
+			Select v_config
+			Brow
+		Else
+
+		Endif
+
+
 	Endproc
 *
 	Procedure Unload
@@ -80,23 +83,6 @@ SET STEP ON
 				Clear Events
 			Endif
 		Endwith
-	Endproc
-*
-	Function encryptpass
-		Lparameter tcPass
-		lcCryptpath = Encrypt(f_Key(),tcPass)
-		Replace v_Pass.paRool With lcCryptpath In v_Pass
-		odB.cuRsorupdate('v_pass')
-		Return lcCryptpath
-	Endfunc
-*
-	Function decryptpass
-		Lparameter tcPass
-		lcDecryptpath = deCrypt(f_Key(),tcPass)
-		Return lcDecryptpath
-	Endfunc
-*
-	Procedure AvadaAruanned
 	Endproc
 *
 	Procedure viGa

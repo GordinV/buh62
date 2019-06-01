@@ -37,7 +37,7 @@ Else
 			IIF(a.liik = 0, qryRekv.aadress, Alltrim(asutus.aadress)) As muuja_aadress,;
 			IIF(a.liik = 0 , qryRekv.email , Alltrim(asutus.email)) As muuja_email,;
 			IIF(a.liik = 0, qryRekv.tel, Alltrim(asutus.tel)) As muuja_tel,;
-			a.markused as muud, a.aa as arve ;
+			a.markused as muud, a.aa as arve;
 		From curArved a;
 			inner Join comAsutusRemote asutus On asutus.Id = curArved.asutusId;
 		Where !Empty(valitud);
@@ -151,6 +151,7 @@ TEXT TO lcFileString ADDITIVE NOSHOW
 <InvoiceDeliverer>
 <ContactName><<ALLTRIM(v_account.ametnik)>></ContactName>
 </InvoiceDeliverer>
+<InvoiceContentText><<ALLTRIM(convert_to_utf(ALLTRIM(qryeArved.muud)))>></InvoiceContentText>
 </InvoiceInformation>
 <InvoiceSumGroup>
 <InvoiceSum><<Alltrim(Str(qryeArved.Summa,14,2))>></InvoiceSum>
@@ -189,7 +190,7 @@ ENDTEXT
 TEXT TO lcFileString ADDITIVE NOSHOW
 <PaymentInfo>
 <Currency>EUR</Currency>
-<PaymentRefId></PaymentRefId>
+<PaymentRefId><<ALLTRIM(qryeArved.viitenr)>></PaymentRefId>
 <PaymentDescription>Arve <<convert_to_utf(qryeArved.Number)>></PaymentDescription>
 <Payable>YES</Payable>
 <PaymentTotalSum><<Alltrim(Str(qryeArved.Summa,14,2))>></PaymentTotalSum>
@@ -201,17 +202,6 @@ TEXT TO lcFileString ADDITIVE NOSHOW
 </Invoice>
 
 ENDTEXT
-
-IF !ISNULL(qryeArved.muud) AND !EMPTY(qryeArved.muud)
-TEXT TO lcFileString ADDITIVE NOSHOW
-<AdditionalInformation id  ="  Note">  
-<InformationName> Märkus </InformationName><InformationContent><<ALLTRIM(qryeArved.muud)>></InformationContent>
-</AdditionalInformation>
-	
-ENDTEXT
-
-ENDIF
-
 
 	Endscan
 	Select qryeArved

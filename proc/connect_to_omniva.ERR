@@ -1,0 +1,2 @@
+WAIT window "Catch:",oErr.ErrorNo
+Error in line 154: Command contains unrecognized phrase/keyword.

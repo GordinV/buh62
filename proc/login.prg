@@ -15,7 +15,7 @@ Define Class login As dokument
 	AlwaysOnTop = .T.
 	Key = ''
 	Message = ''
-	connection = 'test_server'
+	Connection = 'test_server'
 	Add Object txTkasutaja As myTxt With Top = 5, Left = 100, Width = 200,  ;
 		naMe = "txtKasutaja"
 	Add Object txTparool As myTxt With Top = 35, Left = 100, Width = 200,  ;
@@ -36,7 +36,7 @@ Define Class login As dokument
 		With Thisform
 			.Visible = .F.
 			ocOnnect = Newobject('connect', 'connect')
-			leRror = ocOnnect.odB(thisform.connection, ALLTRIM(.txTkasutaja.Value), ;
+			leRror = ocOnnect.odB(Thisform.Connection, Alltrim(.txTkasutaja.Value), ;
 				RTRIM(Ltrim(.txTparool.Value)),Thisform.Key,.T.)
 
 			If leRror=.T.
@@ -44,8 +44,8 @@ Define Class login As dokument
 				On Key Label CTRL+S Do ONKEY With ('CTRL+S')
 				On Key Label CTRL+P Do ONKEY With ('CTRL+P')
 				_Screen.Visible = .T.
-			ELSE
-				MESSAGEBOX('Vale parool või kasutaja nimi',0+16,'Login')
+			Else
+				Messagebox('Vale parool või kasutaja nimi',0+16,'Login')
 				Clear Events
 			Endif
 			Release olOgo
@@ -62,11 +62,14 @@ Define Class login As dokument
 		On Error Do ERR With Program(), Lineno(1)
 
 * read and open config
-	DO read_config
-	IF USED('v_config') AND RECCOUNT('v_config') > 0
-		this.connection = ALLTRIM(v_config.name)
-	ENDIF
-	
+		l_config = read_config()
+		If !Empty(l_config)
+			This.Connection = Alltrim(v_config.Name)
+		Else
+
+		Endif
+
+
 	Endproc
 *
 	Procedure Unload

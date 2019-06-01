@@ -1,21 +1,25 @@
 Parameter tcWhere
 
-*SET STEP ON
+TEXT TO lcWhere TEXTMERGE noshow
+	coalesce(konto,'') like '<<ALLTRIM(fltrAruanne.konto)>>%'
+	and coalesce(tegev,'') like '<<ALLTRIM(fltrAruanne.tegev)>>%'
+	and coalesce(allikas,'') like '<<ALLTRIM(fltrAruanne.allikas)>>%'
+	and coalesce(rahavoo,'') like '<<ALLTRIM(fltrAruanne.rahavoog)>>%'
+	and coalesce(tp,'') like '<<ALLTRIM(fltrAruanne.tp)>>%'
+	and coalesce(asutus,'') like '<<IIF(!EMPTY(fltrAruanne.asutusId),ALLTRIM(comRekvAruanne.nimetus),'')>>%'
+ENDTEXT
 
-lcString = "select aasta, kuu, konto, tp, tegev, allikas, rahavoo, db, kr, saldoandmik.nimetus, rekv.nimetus as asutus "+;
-	" from saldoandmik inner join rekv on saldoandmik.rekvid = rekv.id where "+;
-			" konto like '"+alltrim(fltrAruanne.konto)+'%'+"'"+;
-			" and aasta = "+STR(YEAR(fltrAruanne.kpv2),4) +" and kuu = "+STR(MONTH(fltrAruanne.kpv2),2)+;
-			" and tp like '"+alltrim(fltrAruanne.tp)+'%'+"'"+;
-			" and tegev like '"+alltrim(fltrAruanne.tegev)+'%'+"'"+;
-			" and allikas like '"+alltrim(fltrAruanne.allikas)+'%'+"'"+;
-			" and rahavoo like '"+alltrim(fltrAruanne.rahavoog)+'%'+"'"+;
-			IIF( fltrAruanne.asutusId > 0," and rekvId = "+STR(fltrAruanne.asutusId),"")+; 
-			" order by konto, tp, tegev, allikas, rahavoo  "
-			
-		lError = oDb.execsql(lcString, 'saldoaruanne_report1')
+l_aasta = year(fltrAruanne.kpv2)
+l_kuu = month(fltrAruanne.kpv2)
+l_kond = fltrAruanne.kond
 
-		If !Empty (lError) And Used('saldoaruanne_report1')
-			Select saldoaruanne_report1
-			Return
-		Endif
+lError = oDb.readFromModel('aruanned\eelarve\paring', 'paring_report', 'gRekv,l_aasta,l_kuu, l_kond', 'saldoaruanne_report1', lcWhere)
+
+If !lError
+	Messagebox('Viga',0+16, 'Päring')
+	Set Step On
+	Select 0
+	Return .F.
+Endif
+SELECT saldoaruanne_report1
+RETURN .t.

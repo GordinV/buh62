@@ -1,7 +1,14 @@
 <?xml version = "1.0" encoding="Windows-1252" standalone="yes"?>
 <VFPData>
   <connection>
-<name>test_server</name>		 
-<!-- <name>localhost</name>	-->	 
+	<name>test_server</name>			 
+	<description>test_server 1</description>			 
+	<type>odbc</type>			 
+  </connection>
+  <connection>
+	<name>test_server2</name>			 
+	<description>test_server2</description>			 
+	<type>connection</type>	
+	<conn_str>DRIVER=PostgreSQL Unicode;DATABASE=test;server=213.184.47.198;PORT=5436;</conn_str>  
   </connection>
 </VFPData>

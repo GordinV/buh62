@@ -28,13 +28,14 @@
                            lausnr,
                            docs_ids,
                            coalesce(a.arve,qry_aa.arve)::varchar(20)  AS aa,
-                           a.viitenr::varchar(120)
+                           a.viitenr::varchar(120) as viitenr
                     FROM cur_arved a,
                          (SELECT arve
                           FROM ou.aa aa
                           WHERE aa.parentid = $1
                             AND NOT empty(default_::INTEGER)
                             AND NOT empty(kassa::INTEGER)
+                            and kassa = 1
                           LIMIT 1) qry_aa
                     WHERE a.rekvId = $1::INTEGER
                       AND docs.usersRigths(a.id, 'select', $2::INTEGER)</sql>
@@ -98,6 +99,7 @@
                                           WHERE aa.parentid = u.rekvid
                                             AND NOT empty(default_::INTEGER)
                                             AND NOT empty(kassa::INTEGER)
+                                            and kassa = 1
                                           LIMIT 1) qry_aa
                   WHERE d.id = $1</sql>
     <sqlAsNew>SELECT $1 :: INTEGER                                                         AS id,
@@ -114,6 +116,7 @@
                                WHERE aa.parentid = u.rekvid
                                  AND NOT empty(default_::INTEGER)
                                  AND NOT empty(kassa::INTEGER)
+                                 and kassa = 1
                                LIMIT 1)::VARCHAR(20)                                                 AS aa,
 
                               docs.sp_get_number(u.rekvId, 'ARV', year(date()), NULL) :: VARCHAR(20) AS number,
@@ -308,6 +311,21 @@
     <query />
     <multuple>false</multuple>
     <alias>validate_arve_number</alias>
+  </select>
+  <select>
+    <sql>SELECT docs.sp_update_doc_bpm_data($1::integer, $2::integer, $3::JSONB)::integer as tulemus</sql>
+    <query />
+    <multuple>false</multuple>
+    <alias>update_bpm</alias>
+  </select>
+  <select>
+    <sql>SELECT *
+                 FROM json_to_recordset((SELECT (bpm -&gt;&gt; 'omniva')::JSON
+                                         FROM docs.doc
+                                         WHERE id = $1)) AS x(kpv VARCHAR(40), isik VARCHAR(254), rolli VARCHAR(20))</sql>
+    <query />
+    <multuple>false</multuple>
+    <alias>get_omniva_bpm</alias>
   </select>
   <selectAsLibs>
     <sql>SELECT *
