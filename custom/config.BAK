@@ -5,4 +5,17 @@
 	<description>test_server 1</description>			 
 	<type>odbc</type>			 
   </connection>
+  <connection>
+	<name>test_server2</name>			 
+	<description>test_server2</description>			 
+	<type>connection</type>	
+	<conn_str>DRIVER=PostgreSQL Unicode;DATABASE=test;server=213.184.47.198;PORT=5436;</conn_str>  
+  </connection>
+  <connection>
+	<name>test_server2</name>			 
+	<description>test_server3</description>		=test;server=213.184.47.198;PORT=5436;</conn_str>  
+	<description>test_server 1</description>			 
+	<type>odbc</type>			 
+  </connection>
+  
 </VFPData>

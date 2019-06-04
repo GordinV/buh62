@@ -15,6 +15,7 @@ IF !EMPTY(fltrAruanne.arvestus)
 	WAIT WINDOW 'Arvestan ...tehtud' nowait
 ENDIF
 
+	SET STEP on
 
 TEXT TO lcWhere TEXTMERGE noshow
 	coalesce(konto,'') like '<<ALLTRIM(fltrAruanne.konto)>>%'
@@ -37,6 +38,8 @@ If !lError
 	Select 0
 	Return .F.
 Endif
+SELECT tmpReport
+BROWSE
 
 Select * ;
 	from tmpReport ;

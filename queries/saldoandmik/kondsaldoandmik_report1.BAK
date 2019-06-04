@@ -22,6 +22,7 @@ TEXT TO lcWhere TEXTMERGE noshow
 	and coalesce(allikas,'') like '<<ALLTRIM(fltrAruanne.allikas)>>%'
 	and coalesce(rahavoog,'') like '<<ALLTRIM(fltrAruanne.rahavoog)>>%'
 	and coalesce(tp,'') like '<<ALLTRIM(fltrAruanne.tp)>>%'
+	and not EMPTY(deebet + kreedit) 
 ENDTEXT
 
 l_subTotals  = ' sum (deebet) OVER()  as dbKokku, sum (kreedit) OVER()  as krKokku '
@@ -36,6 +37,8 @@ If !lError
 	Select 0
 	Return .F.
 Endif
+SELECT tmpReport
+BROWSE
 
 Select * ;
 	from tmpReport ;
