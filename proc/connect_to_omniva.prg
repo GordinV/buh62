@@ -2,7 +2,7 @@
 
 Parameters td_since
 If Empty(td_since)
-	td_since = Date(2019,05,29)
+	td_since = Date(2019,06,04)
 Endif
 
 * will open cursors
@@ -43,16 +43,9 @@ With loXMLHTTP
 
 Endwith
 
-*!*	If Used('v_xml_arv') And Reccount('v_xml_arv') > 0
-*!*		import_invoice()
-*!*		Return
-*!*	Endif
-
-
 
 Return l_found_xml
 Endfunc
-
 
 
 Function getBuyInvoiceExportRequest
@@ -126,12 +119,10 @@ Function parce_invoice
 		Create Cursor v_xml_arv (Id Int Autoinc, Number c(120), kpv d, tahtpaev d, Summa N(14,2), kbm N(14,2), kbmta N(14,2), asutus c(120), regkood c(20),;
 			lisa c(254))
 	Endif
-
 	If !Used('v_xml_arv_detail')
 		Create Cursor v_xml_arv_detail (Id Int, nimetus c(254), Summa N(14,2), kbm N(14,2), kbm_maar c(20),;
-			summa_kokku N(14,2), konto c(20), artikkel c(20), tegev c(20), allikas c(20))
+			summa_kokku N(14,2), konto c(20), artikkel c(20), tegev c(20), allikas c(20), kogus N(12,4))
 	Endif
-
 	If !Used('v_xml_arv_confirmators')
 		Create Cursor v_xml_arv_confirmators (Id Int, isik c(254), kpv c(120), Roll c(120))
 	Endif
@@ -155,47 +146,91 @@ Function parce_invoice
 	Try
 		Replace v_xml_arv.Number With Iif(Type('v_xml_invoice_data.invoiceNumber') = 'N', Alltrim(Str(v_xml_invoice_data.invoiceNumber)),;
 			IIF(Type('v_xml_invoice_data.invoiceNumber') <> 'C','0',v_xml_invoice_data.invoiceNumber)),;
-			v_xml_arv.lisa With Left(Alltrim(v_xml_invoice_data.InvoiceContentText),254),;
 			v_xml_arv.kpv With v_xml_invoice_data.invoiceDate,;
 			v_xml_arv.tahtpaev With v_xml_invoice_data.DueDate In v_xml_arv
 	Catch To oErr
 		Wait Window "Catch:" + oErr.ErrorNo
 		Select v_xml_invoice_data
-		BROWSE
-		SET STEP ON 
+		Browse
+		Set Step On
 	Finally
 	Endtry
 	Use In v_xml_invoice_data
 
 * InvoiceItem
 * count items
-	l_xml_invoice_read_count = Occurs('</InvoiceItem>',l_xml_invoice)
+*	l_xml_invoice_read_count = Occurs('</InvoiceItem>',l_xml_invoice)
+	l_xml_invoice_read_count = Occurs('</ItemEntry>',l_xml_invoice)
 
 	For l_invoice_rea = 1 To l_xml_invoice_read_count
-		l_invoice_rea_start_line = Atc('<InvoiceItem',l_xml_invoice, l_invoice_rea)
-		l_invoice_rea_finish_line = Atc('</InvoiceItem>',l_xml_invoice, l_invoice_rea)
+		l_invoice_rea_start_line = Atc('<ItemEntry',l_xml_invoice, l_invoice_rea)
+		l_invoice_rea_finish_line = Atc('</ItemEntry>',l_xml_invoice, l_invoice_rea)
 		If Empty(l_invoice_rea_start_line)
 			Exit
 		Endif
-		l_parced_row_xml = Substrc(l_xml_invoice, l_invoice_rea_start_line, (l_invoice_rea_finish_line + Len('</InvoiceItem>')) - l_invoice_rea_start_line)
-
+		l_parced_row_xml = Substrc(l_xml_invoice, l_invoice_rea_start_line, (l_invoice_rea_finish_line + Len('</ItemEntry>')) - l_invoice_rea_start_line)
 
 * parcing description
-		l_invoice_start_line = Atc('<InvoiceItemGroup',l_parced_row_xml)
-		l_invoice_last_line = Rat('</InvoiceItemGroup>',l_parced_row_xml)
-		l_parced_xml = Substrc(l_parced_row_xml, l_invoice_start_line, (l_invoice_last_line + Len('</InvoiceItemGroup>')) - l_invoice_start_line)
+		l_invoice_start_line = Atc('<ItemEntry',l_parced_row_xml)
+		l_invoice_last_line = Rat('</ItemEntry>',l_parced_row_xml)
+		l_parced_xml = '<vfp>' + Substrc(l_parced_row_xml, l_invoice_start_line, (l_invoice_last_line + Len('</ItemEntry>')) - l_invoice_start_line) + '</vfp>'
 
 		Xmltocursor(l_parced_xml,'v_xml_invoice_detail',0)
 		Select v_xml_invoice_detail
 
 *	Select v_xml_arv_detail
-		Insert Into v_xml_arv_detail (Id, nimetus, Summa, summa_kokku, kbm) ;
-			VALUES (v_xml_arv.Id, v_xml_invoice_detail.Description, v_xml_invoice_detail.itemsum, ;
-			v_xml_invoice_detail.itemTotal, v_xml_invoice_detail.itemTotal - v_xml_invoice_detail.itemsum)
+		l_itemsum = 0
+		If Type('v_xml_invoice_detail.itemsum') = 'C' Or Type('v_xml_invoice_detail.itemsum') = 'N'
+			l_itemsum = Iif(Type('v_xml_invoice_detail.itemsum') = 'C',Val(v_xml_invoice_detail.itemsum),v_xml_invoice_detail.itemsum)
+		Endif
+
+		l_itemtotal = 0
+		If 	Type('v_xml_invoice_detail.itemtotal') = 'C' Or Type('v_xml_invoice_detail.itemtotal') = 'N'
+			l_itemtotal = Iif(Type('v_xml_invoice_detail.itemtotal') = 'C',Val(v_xml_invoice_detail.itemtotal),v_xml_invoice_detail.itemtotal)
+		Endif
+*!*			IF v_xml_invoice_detail.Description $ 'kaup2'
+*!*				SET STEP ON
+*!*			ENDIF
+
+		l_itemAmount = 1
+		If 	Type('v_xml_invoice_detail.itemamount') = 'C' Or Type('v_xml_invoice_detail.itemamount') = 'N'
+			l_itemAmount = Iif(Type('v_xml_invoice_detail.itemamount') = 'C',Val(v_xml_invoice_detail.itemamount),v_xml_invoice_detail.itemamount)
+		Endif
+
+		Insert Into v_xml_arv_detail (Id, nimetus, Summa, summa_kokku, kbm, kogus) ;
+			VALUES (v_xml_arv.Id, v_xml_invoice_detail.Description, l_itemsum, ;
+			l_itemtotal, l_itemtotal - l_itemsum, l_itemAmount)
 		Use In v_xml_invoice_detail
 
-* kontod
+		l_invoice_start_line = Atc('<VAT>',l_parced_row_xml)
+		l_invoice_last_line = Rat('</VAT>',l_parced_row_xml)
+		l_parced_xml = '<vfp>' + Substrc(l_parced_row_xml, l_invoice_start_line, (l_invoice_last_line + Len('</VAT>')) - l_invoice_start_line) + '</vfp>'
 
+		If Len(l_parced_xml) > 0
+
+			CREATE CURSOR v_xml_vat (vatrate c(20), SumBeforeVAT n(12,2),vatsum n(12,2))
+			Xmltocursor(l_parced_xml,'v_xml_vat',8192)
+
+			Select v_xml_vat
+			Go Top
+			If Type('v_xml_vat.vatrate') <> 'U' AND Type('v_xml_vat.vatrate') <> 'L'
+*!*					If Empty(v_xml_vat.vatrate)
+*!*						l_vatrate = '0'
+*!*						l_vatsum = 0
+*!*					Else
+*!*						l_vatrate = Iif(Type('v_xml_vat.vatrate') = 'C',v_xml_vat.vatrate, Alltrim(Str(v_xml_vat.vatrate)))
+*!*						l_vatsum = Iif(Type('v_xml_vat.SumBeforeVAT') = 'C', Val(v_xml_vat.SumBeforeVAT),v_xml_vat.SumBeforeVAT)
+*!*					Endif
+
+
+				Replace v_xml_arv_detail.kbm_maar With v_xml_vat.vatrate,;
+					summa With v_xml_vat.SumBeforeVAT,;
+					kbm With v_xml_vat.vatsum  In v_xml_arv_detail
+			Endif
+		Endif
+
+
+* kontod
 		l_invoice_start_line = Atc('<Accounting',l_parced_row_xml)
 		l_invoice_last_line = Rat('</Accounting>',l_parced_row_xml)
 		l_parced_xml = Substrc(l_parced_row_xml, l_invoice_start_line, (l_invoice_last_line + Len('</Accounting>')) - l_invoice_start_line)
@@ -206,46 +241,52 @@ Function parce_invoice
 
 			Select v_xml_invoice_accounting
 			Go Top
-			Replace v_xml_arv_detail.konto With Alltrim(Str(v_xml_invoice_accounting.GeneralLedger)) In v_xml_arv_detail
+			If Type('v_xml_invoice_accounting.GeneralLedger') <> 'U'
+				Replace v_xml_arv_detail.konto With Alltrim(Str(v_xml_invoice_accounting.GeneralLedger)) In v_xml_arv_detail
+			Endif
+
 
 * looking for kood in libs
 			Scan
+				If Type('v_xml_invoice_accounting.CostObjective') <> 'U'
+					l_kood = Iif(Type('v_xml_invoice_accounting.CostObjective') = 'N',Str(v_xml_invoice_accounting.CostObjective),v_xml_invoice_accounting.CostObjective)
 * kas artikkel
-				Select comArtikkelRemote
-				Locate For Alltrim(kood) = Alltrim(v_xml_invoice_accounting.CostObjective)
-				If Found()
-					Replace v_xml_arv_detail.artikkel With Alltrim(v_xml_invoice_accounting.CostObjective) In v_xml_arv_detail
-					Continue
-				Endif
+					Select comEelarveremote
+					Locate For Alltrim(kood) = Alltrim(l_kood)
+					If Found()
+						Replace v_xml_arv_detail.artikkel With l_kood In v_xml_arv_detail
+						Continue
+					Endif
 
 * kas tegev
-				Select comTegevRemote
-				Locate For Alltrim(kood) = Alltrim(v_xml_invoice_accounting.CostObjective)
-				If Found()
-					Replace v_xml_arv_detail.tegev With Alltrim(v_xml_invoice_accounting.CostObjective) In v_xml_arv_detail
-					Continue
-				Endif
+					Select comTegevRemote
+					Locate For Alltrim(kood) = Alltrim(l_kood)
+					If Found()
+						Replace v_xml_arv_detail.tegev With l_kood In v_xml_arv_detail
+						Continue
+					Endif
 
 * kas allikas
-				Select comAllikasRemote
-				Locate For Alltrim(kood) = Alltrim(v_xml_invoice_accounting.CostObjective)
-				If Found()
-					Replace v_xml_arv_detail.allikas With Alltrim(v_xml_invoice_accounting.CostObjective) In v_xml_arv_detail
-					Continue
+					Select comAllikadRemote
+					Locate For Alltrim(kood) = Alltrim(l_kood)
+					If Found()
+						Replace v_xml_arv_detail.allikas With Alltrim(l_kood) In v_xml_arv_detail
+						Continue
+					Endif
 				Endif
 
 			Endscan
 
 * subtotals
+
 			Select Sum(Summa) As Summa, Sum(summa_kokku) As summa_kokku, Sum(kbm) As kbm ;
 				FROM v_xml_arv_detail ;
 				WHERE Id = v_xml_arv.Id ;
 				INTO Cursor tmp_subtotals
 
-			Update 	v_xml_arv Set  kbmta = tmp_subtotals.summa_kokku - tmp_subtotals.Summa, ;
-				kbm = tmp_subtotals.kbm, ;
-				summa = tmp_subtotals.Summa ;
-				WHERE Id = v_xml_arv.Id
+			Replace	v_xml_arv.kbmta With tmp_subtotals.Summa, ;
+				v_xml_arv.kbm With tmp_subtotals.kbm, ;
+				v_xml_arv.Summa With tmp_subtotals.summa_kokku In v_xml_arv
 
 			Use In tmp_subtotals
 
@@ -321,15 +362,24 @@ Function parce_invoice
 		Endfor
 	Endif
 
+
+	If l_confirmation_count = 0
+* arve is not confirmed, delete it
+		Select v_xml_arv_detail
+		Delete For Id = v_xml_arv.Id
+
+		Select v_xml_arv
+		Delete Next 1
+	Endif
+
+
 	Return .T.
 Endfunc
 
 
 Function check_cursors
 
-	If !Used('m_memo')
-		Create Cursor m_memo (url c(120), Header c(120), Request m, response m, Timestamp T Default Datetime())
-	Endif
+	Create Cursor m_memo (url c(120), Header c(120), Request m, response m, Timestamp T Default Datetime())
 
 	If !Used('qryRekv')
 		Create Cursor qryRekv (earved c(254), regkood c(20))
@@ -342,9 +392,9 @@ Function check_cursors
 		Insert Into config (earved) Values ('https://finance.omniva.eu/finance/erp/')
 	Endif
 
-	If !Used('comArtikkelRemote')
-		Create Cursor comArtikkelRemote (kood c(20))
-		Insert Into comArtikkelRemote  (kood) Values ('5514')
+	If !Used('comEelarveremote')
+		Create Cursor comEelarveremote (kood c(20))
+		Insert Into comEelarveremote  (kood) Values ('5514')
 	Endif
 
 	If !Used('comTegevRemote')
@@ -352,14 +402,15 @@ Function check_cursors
 		Insert Into comTegevRemote  (kood) Values ('01112')
 	Endif
 
-	If !Used('comAllikasRemote')
-		Create Cursor comAllikasRemote (kood c(20))
-		Insert Into comAllikasRemote  (kood) Values ('LE-P')
+	If !Used('comAllikadRemote')
+		Create Cursor comAllikadRemote (kood c(20))
+		Insert Into comAllikadRemote  (kood) Values ('LE-P')
 	Endif
 
 	If !Used('comAsutusRemote')
 		Create Cursor comAsutusRemote (Id Int, regkood c(20), nimetus c(254), tp c(20))
 		Insert Into comAsutusRemote  (Id, regkood, nimetus,tp) Values (1, '11047855','DATEL VIRU OÜ','800599')
+		Insert Into comAsutusRemote  (Id, regkood, nimetus,tp) Values (2, '10972649','test','800599')
 	Endif
 
 	If !Used('comNomRemote')
@@ -368,93 +419,3 @@ Function check_cursors
 	Endif
 
 Endfunc
-
-*!*	FUNCTION getNomIdByNimetus
-*!*	PARAMETERS tcNimetus
-*!*	LOCAL l_id
-
-*!*	SELECT comNomRemote
-*!*	LOCATE FOR ALLTRIM(UPPER(nimetus)) = ALLTRIM(UPPER(tcNimetus))
-*!*	IF found()
-*!*		l_id = comNomRemote.id
-*!*	ELSE
-*!*		* save noms
-*!*		INSERT INTO comNomRemote (id, kood, nimetus) VALUES (2,'',tcNimetus)
-*!*		l_id = comNomRemote.id
-*!*	ENDIF
-*!*	RETURN l_id
-
-*!*	endfunc
-
-*!*	(ALLTRIM(UPPER(v_xml_arv_detail.nimetus)))
-
-
-
-*!*	Function import_invoice
-*!*		If Type('Odb') = 'U'
-*!*			Set Classlib To classes\Classlib
-*!*			oDb = Createobject('db')
-*!*			oDb.login = 'temp'
-*!*			oDb.Pass = '12345'
-*!*			gnHandle = SQLConnect('test_server','temp','12345')
-*!*			gRekv = 63
-*!*			gUserId = 70
-*!*		Endif
-
-*!*	* load model
-
-*!*		tnId = -1
-*!*		l_error = oDb.readFromModel('raamatupidamine\arv', 'row', 'tnId, guserid', 'v_arv')
-*!*		If !l_error Or !Used('v_arv')
-*!*			Set Step On
-*!*			Return .F.
-*!*		Endif
-
-*!*		l_error = oDb.readFromModel('raamatupidamine\arv', 'details', 'tnId, guserid', 'v_arvread')
-*!*		If !l_error Or !Used('v_arvread')
-*!*			Set Step On
-*!*			Return .F.
-*!*		Endif
-*!*		Select v_xml_arv
-*!*		Scan
-*!*			Wait Window 'Importeerin arve nr. ' + Alltrim(v_xml_arv.Number) Timeout 1
-
-*!*	* asutusId
-*!*			Select comAsutusRemote
-*!*			Locate For Alltrim(regkood) = Alltrim(v_xml_arv.regkood)
-
-*!*			If !Found()
-*!*				Messagebox('Asutus:' + Alltrim(v_xml_arv.asutus) + ',' + Alltrim(v_xml_arv.regkood) + ' ei leidnud',0+64,'e-Arve import')
-*!*			Else
-*!*				Select v_arv
-*!*				Insert Into v_arv (rekvid, userid, Number, liik, kpv, asutusid, Summa, kbmta, kbm, tahtaeg, lisa) ;
-*!*					VALUES (gRekv, gUserId, v_xml_arv.Number, 1, v_xml_arv.kpv, comAsutusRemote.Id, v_xml_arv.Summa, ;
-*!*					v_xml_arv.Summa-v_xml_arv.kbm, v_xml_arv.kbm, v_xml_arv.tahtpaev, v_xml_arv.lisa)
-*!*					
-*!*					
-*!*				* details
-*!*				SELECT 	v_xml_arv_detail
-*!*				SCAN FOR id = v_xml_arv.id
-*!*					* seach for noms
-*!*					l_nom_id = getNomIdByNimetus(ALLTRIM(UPPER(v_xml_arv_detail.nimetus)))
-*!*					
-*!*					INSERT INTO v_arvread (nomid, kogus, hind, summa, kbmta, kbm, nimetus, konto, tp, kood1, kood2, kood5) ;
-*!*						VALUES (l_nom_id, 1, v_xml_arv_detail.summa, v_xml_arv_detail.summa, v_xml_arv_detail.summa,0,v_xml_arv_detail.nimetus,;
-*!*						 v_xml_arv_detail.konto,;
-*!*						comAsutusRemote.tp, v_xml_arv_detail.tegev, v_xml_arv_detail.allikas, v_xml_arv_detail.artikkel)
-*!*				ENDSCAN
-*!*							
-
-*!*			Endif
-
-
-
-*!*	*NOWAIT
-*!*		Endscan
-
-*!*		=SQLDISCONNECT(gnHandle)
-
-*!*		Select v_arv
-*!*		Brow
-
-*!*	Endfunc

@@ -1,2 +1,0 @@
-(ALLTRIM(UPPER(v_xml_arv_detail.nimetus)))
-Error in line 458: Unrecognized command verb.

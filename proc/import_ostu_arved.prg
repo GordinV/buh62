@@ -51,7 +51,7 @@ Else
 
 	Insert Into v_arv (rekvid, Userid, doklausId, Number, liik, kpv, asutusid, Summa, kbmta, kbm, tahtaeg, lisa) ;
 		VALUES (gRekv, gUserId, t_dokprop_id, v_xml_arv.Number, 1, v_xml_arv.kpv, comAsutusRemote.Id, v_xml_arv.Summa, ;
-		v_xml_arv.Summa-v_xml_arv.kbm, v_xml_arv.kbm, v_xml_arv.tahtpaev, v_xml_arv.lisa)
+		v_xml_arv.kbmta, v_xml_arv.kbm, v_xml_arv.tahtpaev, v_xml_arv.lisa)
 
 
 * details
@@ -60,8 +60,10 @@ Else
 * seach for noms
 		l_nom_id = getNomIdByNimetus(Alltrim(Upper('OMNIVA')))
 
-		Insert Into v_arvread (nomid, kogus, hind, Summa, kbmta, kbm, nimetus, konto, tp, kood1, kood2, kood5, MUUD) ;
-			VALUES (l_nom_id, 1, v_xml_arv_detail.Summa, v_xml_arv_detail.Summa, v_xml_arv_detail.Summa,0,v_xml_arv_detail.nimetus,;
+		Insert Into v_arvread (nomid, kogus, hind, Summa, kbmta, km, kbm, nimetus, konto, tp, kood1, kood2, kood5, MUUD) ;
+			VALUES (l_nom_id, v_xml_arv_detail.kogus, v_xml_arv_detail.Summa / v_xml_arv_detail.kogus, ;
+			v_xml_arv_detail.summa_kokku, v_xml_arv_detail.Summa,v_xml_arv_detail.kbm_maar, v_xml_arv_detail.kbm,;
+			v_xml_arv_detail.nimetus,;
 			v_xml_arv_detail.konto,;
 			comAsutusRemote.tp, v_xml_arv_detail.tegev, v_xml_arv_detail.allikas, v_xml_arv_detail.artikkel, ;
 			v_xml_arv_detail.nimetus)
@@ -111,7 +113,6 @@ Function save_arve
 	Select v_arv
 	lcJson = '{"id":' + Alltrim(Str(v_arv.Id)) + ',"data": '+ oDb.getJson(lcJson) +  '}'
 	lError = oDb.readFromModel(l_model, 'saveDoc', 'lcJson,gUserid,gRekv', 'v_arv_id')
-	_Cliptext = lcJson
 	Return lError
 
 Endfunc

@@ -1,7 +1,8 @@
-PARAMETERS t_dokprop_id
+Parameters t_dokprop_id
 
-LOCAL l_arv_id
+Local l_arv_id, l_onnestus
 v_arv_id = 0
+l_onnestus = .F.
 
 If !Used('v_xml_arv')
 	Messagebox('Arved ei leidnud',0+64,'Import ostuarved')
@@ -47,10 +48,10 @@ If !Found()
 	Messagebox('Asutus:' + Alltrim(v_xml_arv.asutus) + ',' + Alltrim(v_xml_arv.regkood) + ' ei leidnud',0+64,'e-Arve import')
 Else
 	Select v_arv
-	
+
 	Insert Into v_arv (rekvid, Userid, doklausId, Number, liik, kpv, asutusid, Summa, kbmta, kbm, tahtaeg, lisa) ;
 		VALUES (gRekv, gUserId, t_dokprop_id, v_xml_arv.Number, 1, v_xml_arv.kpv, comAsutusRemote.Id, v_xml_arv.Summa, ;
-		v_xml_arv.Summa-v_xml_arv.kbm, v_xml_arv.kbm, v_xml_arv.tahtpaev, v_xml_arv.lisa)
+		v_xml_arv.kbmta, v_xml_arv.kbm, v_xml_arv.tahtpaev, v_xml_arv.lisa)
 
 
 * details
@@ -59,30 +60,42 @@ Else
 * seach for noms
 		l_nom_id = getNomIdByNimetus(Alltrim(Upper('OMNIVA')))
 
-		Insert Into v_arvread (nomid, kogus, hind, Summa, kbmta, kbm, nimetus, konto, tp, kood1, kood2, kood5, MUUD) ;
-			VALUES (l_nom_id, 1, v_xml_arv_detail.Summa, v_xml_arv_detail.Summa, v_xml_arv_detail.Summa,0,v_xml_arv_detail.nimetus,;
+		Insert Into v_arvread (nomid, kogus, hind, Summa, kbmta, km, kbm, nimetus, konto, tp, kood1, kood2, kood5, MUUD) ;
+			VALUES (l_nom_id, v_xml_arv_detail.kogus, v_xml_arv_detail.Summa / v_xml_arv_detail.kogus, ;
+			v_xml_arv_detail.summa_kokku, v_xml_arv_detail.Summa,v_xml_arv_detail.kbm_maar, v_xml_arv_detail.kbm,;
+			v_xml_arv_detail.nimetus,;
 			v_xml_arv_detail.konto,;
 			comAsutusRemote.tp, v_xml_arv_detail.tegev, v_xml_arv_detail.allikas, v_xml_arv_detail.artikkel, ;
 			v_xml_arv_detail.nimetus)
 	Endscan
 
+	Select v_arvread
+	If Reccount('v_arvread') > 0 And Reccount('v_arv') > 0
+		l_onnestus = .T.
+	Endif
+
 
 Endif
 
 * saving
-l_error = save_arve()
+If l_onnestus
+	l_error = save_arve()
+
+	If Used('v_arv_id')
+		l_arv_id = v_arv_id.Id
+		Use In v_arv_id
+	Endif
+ELSE
+	l_arv_id = 0
+Endif
 
 
-IF USED('v_arv_id')
-	l_arv_id = v_arv_id.id
-	USE IN v_arv_id
-ENDIF
 
-USE IN v_arv
+Use In v_arv
 
-USE IN v_arvread
+Use In v_arvread
 
-RETURN l_arv_id
+Return l_arv_id
 Endfunc
 
 
@@ -100,7 +113,7 @@ Function save_arve
 	Select v_arv
 	lcJson = '{"id":' + Alltrim(Str(v_arv.Id)) + ',"data": '+ oDb.getJson(lcJson) +  '}'
 	lError = oDb.readFromModel(l_model, 'saveDoc', 'lcJson,gUserid,gRekv', 'v_arv_id')
-	_cliptext = lcJson
+	_Cliptext = lcJson
 	Return lError
 
 Endfunc
@@ -112,7 +125,7 @@ Function getNomIdByNimetus
 	Local l_id
 
 	Select comNomRemote
-	Locate For Alltrim(Upper(kood)) = tcNimetus AND dok = 'ARV'
+	Locate For Alltrim(Upper(kood)) = tcNimetus And dok = 'ARV'
 	If Found()
 		l_id = comNomRemote.Id
 	Else
