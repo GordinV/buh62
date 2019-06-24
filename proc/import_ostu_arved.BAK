@@ -7,7 +7,13 @@ l_onnestus = .F.
 If !Used('v_xml_arv')
 	Messagebox('Arved ei leidnud',0+64,'Import ostuarved')
 	Return 0
-Endif
+ENDIF
+
+l_nom_id = getNomIdByNimetus('OMNIVA')
+IF EMPTY(l_nom_id)
+	MESSAGEBOX('Omniva kood ei leidnud',0+16,'Import ostuarved')
+ENDIF
+
 
 l_model = 'raamatupidamine\arv'
 
@@ -40,6 +46,10 @@ Endif
 Select v_xml_arv
 Wait Window 'Importeerin arve nr. ' + Alltrim(v_xml_arv.Number) Timeout 1
 
+If !Empty(v_xml_arv.korr_konto)
+	t_dokprop_id = getdokpropId('ARV', 'libs\libraries\dokprops', v_xml_arv.korr_konto)
+Endif
+
 * asutusId
 Select comAsutusRemote
 Locate For Alltrim(regkood) = Alltrim(v_xml_arv.regkood)
@@ -49,19 +59,19 @@ If !Found()
 Else
 	Select v_arv
 
-	Insert Into v_arv (rekvid, Userid, doklausId, Number, liik, kpv, asutusid, Summa, kbmta, kbm, tahtaeg, lisa) ;
+	Insert Into v_arv (rekvid, Userid, doklausId, Number, liik, kpv, asutusid, Summa, kbmta, kbm, tahtaeg, lisa, viitenr, aa) ;
 		VALUES (gRekv, gUserId, t_dokprop_id, v_xml_arv.Number, 1, v_xml_arv.kpv, comAsutusRemote.Id, v_xml_arv.Summa, ;
-		v_xml_arv.kbmta, v_xml_arv.kbm, v_xml_arv.tahtpaev, v_xml_arv.lisa)
+		v_xml_arv.kbmta, v_xml_arv.kbm, v_xml_arv.tahtpaev, v_xml_arv.lisa, v_xml_arv.viitenr, v_xml_arv.aa)
 
 
 * details
 	Select 	v_xml_arv_detail
 	Scan For Id = v_xml_arv.Id
 * seach for noms
-		l_nom_id = getNomIdByNimetus(Alltrim(Upper('OMNIVA')))
 
 		Insert Into v_arvread (nomid, kogus, hind, Summa, kbmta, km, kbm, nimetus, konto, tp, kood1, kood2, kood5, MUUD) ;
-			VALUES (l_nom_id, v_xml_arv_detail.kogus, v_xml_arv_detail.Summa / v_xml_arv_detail.kogus, ;
+			VALUES (l_nom_id, IIF(EMPTY(v_xml_arv_detail.kogus),1,v_xml_arv_detail.kogus),; 
+			v_xml_arv_detail.Summa / IIF(EMPTY(v_xml_arv_detail.kogus),1,v_xml_arv_detail.kogus), ;
 			v_xml_arv_detail.summa_kokku, v_xml_arv_detail.Summa,v_xml_arv_detail.kbm_maar, v_xml_arv_detail.kbm,;
 			v_xml_arv_detail.nimetus,;
 			v_xml_arv_detail.konto,;
@@ -74,7 +84,6 @@ Else
 		l_onnestus = .T.
 	Endif
 
-
 Endif
 
 * saving
@@ -85,7 +94,7 @@ If l_onnestus
 		l_arv_id = v_arv_id.Id
 		Use In v_arv_id
 	Endif
-ELSE
+Else
 	l_arv_id = 0
 Endif
 
@@ -113,7 +122,6 @@ Function save_arve
 	Select v_arv
 	lcJson = '{"id":' + Alltrim(Str(v_arv.Id)) + ',"data": '+ oDb.getJson(lcJson) +  '}'
 	lError = oDb.readFromModel(l_model, 'saveDoc', 'lcJson,gUserid,gRekv', 'v_arv_id')
-	_Cliptext = lcJson
 	Return lError
 
 Endfunc

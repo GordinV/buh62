@@ -2,7 +2,7 @@
 
 Parameters td_since
 If Empty(td_since)
-	td_since = Date(2019,06,04)
+	td_since = Date(2019,06,18)
 Endif
 
 * will open cursors
@@ -65,17 +65,20 @@ xmlns:erp="http://e-arvetekeskus.eu/erp">
 <soapenv:Header/>
 <soapenv:Body>
 <erp:BuyInvoiceExportRequest since="<<l_cince>>" authPhrase="<<ALLTRIM(qryRekv.earved)>>">
-<erp:state>RECEIVED</erp:state>
 <erp:state>VERIFIED</erp:state>
-<erp:state>FORPAY</erp:state>
-<erp:state>BEING_VERIFIED</erp:state>
-<erp:state>DECLINED</erp:state>
-<erp:state>PAID</erp:state>
-<erp:state>RETURNED_TO_SENDER</erp:state>
 </erp:BuyInvoiceExportRequest>
 </soapenv:Body>
 </soapenv:Envelope>
 ENDTEXT
+*!*	<erp:state>RECEIVED</erp:state>
+*!*	<erp:state>VERIFIED</erp:state>
+*!*	<erp:state>FORPAY</erp:state>
+*!*	<erp:state>BEING_VERIFIED</erp:state>
+*!*	<erp:state>DECLINED</erp:state>
+*!*	<erp:state>PAID</erp:state>
+*!*	<erp:state>RETURNED_TO_SENDER</erp:state>
+
+
 	Return c_xml
 
 Endfunc
@@ -117,7 +120,7 @@ Function parce_invoice
 
 	If !Used('v_xml_arv')
 		Create Cursor v_xml_arv (Id Int Autoinc, Number c(120), kpv d, tahtpaev d, Summa N(14,2), kbm N(14,2), kbmta N(14,2), asutus c(120), regkood c(20),;
-			lisa c(254))
+			lisa c(254), viitenr c(20), korr_konto c(20), arve c(20))
 	Endif
 	If !Used('v_xml_arv_detail')
 		Create Cursor v_xml_arv_detail (Id Int, nimetus c(254), Summa N(14,2), kbm N(14,2), kbm_maar c(20),;
@@ -139,14 +142,16 @@ Function parce_invoice
 	l_parced_xml = '<vfp>' + Stuff(l_parced_xml, Atc('<Extension',l_parced_xml),;
 		(Rat('</Extension>',l_parced_xml) - Atc('<Extension',l_parced_xml)) + Len('</Extension>'),'') + '</vfp>'
 
-	Xmltocursor(l_parced_xml,'v_xml_invoice_data',0)
-
+	CREATE CURSOR v_xml_invoice_data (invoiceNumber c(20), invoiceDate d, paymentreferencenumber c(20), DueDate d, ContractNumber c(254), accountNUmber c(20))
+	Xmltocursor(l_parced_xml,'v_xml_invoice_data',8192)
+	
 	Select v_xml_arv
 	Append Blank
 	Try
-		Replace v_xml_arv.Number With Iif(Type('v_xml_invoice_data.invoiceNumber') = 'N', Alltrim(Str(v_xml_invoice_data.invoiceNumber)),;
-			IIF(Type('v_xml_invoice_data.invoiceNumber') <> 'C','0',v_xml_invoice_data.invoiceNumber)),;
+		Replace v_xml_arv.Number With v_xml_invoice_data.invoiceNumber,;
 			v_xml_arv.kpv With v_xml_invoice_data.invoiceDate,;
+			v_xml_arv.viitenr with v_xml_invoice_data.paymentreferencenumber,;
+			v_xml_arv.lisa WITH v_xml_invoice_data.ContractNumber,;
 			v_xml_arv.tahtpaev With v_xml_invoice_data.DueDate In v_xml_arv
 	Catch To oErr
 		Wait Window "Catch:" + oErr.ErrorNo
@@ -156,6 +161,22 @@ Function parce_invoice
 	Finally
 	Endtry
 	Use In v_xml_invoice_data
+	
+	* arve nr.
+	
+	l_parced_xml = substr(l_xml_invoice, Atc('<SellerParty',l_xml_invoice),;
+	(Rat('</SellerParty>',l_xml_invoice) - Atc('<SellerParty',l_xml_invoice) + Len('</SellerParty>'))) 
+		
+	
+	l_parced_xml = '<vfp>'+substr(l_parced_xml, Atc('<AccountInfo',l_parced_xml),;
+	(Rat('</AccountInfo>',l_parced_xml) - Atc('<AccountInfo',l_parced_xml) + Len('</AccountInfo>'))) + '</vfp>' 
+		
+	CREATE CURSOR v_xml_invoice_bank_data (AccountNumber c(20), IBAN c(20), BankName c(20))
+	Xmltocursor(l_parced_xml,'v_xml_invoice_bank_data',8192)
+
+	replace v_xml_arv.arve WITH v_xml_invoice_bank_data.AccountNumber IN v_xml_arv
+
+	
 
 * InvoiceItem
 * count items
@@ -175,7 +196,11 @@ Function parce_invoice
 		l_invoice_last_line = Rat('</ItemEntry>',l_parced_row_xml)
 		l_parced_xml = '<vfp>' + Substrc(l_parced_row_xml, l_invoice_start_line, (l_invoice_last_line + Len('</ItemEntry>')) - l_invoice_start_line) + '</vfp>'
 
-		Xmltocursor(l_parced_xml,'v_xml_invoice_detail',0)
+		
+		CREATE CURSOR 	v_xml_invoice_detail (itemsum n(12,2),itemtotal n(12,2), itemamount n(12,4), ;
+			Description c(254) )
+			
+		Xmltocursor(l_parced_xml,'v_xml_invoice_detail',8192)
 		Select v_xml_invoice_detail
 
 *	Select v_xml_arv_detail
@@ -229,6 +254,28 @@ Function parce_invoice
 			Endif
 		Endif
 
+* korr konto
+*!*	<ItemReserve extensionId="eakInvoiceItemId">
+*!*	            <InformationContent>97044028</InformationContent>
+*!*	          </ItemReserve>
+*!*	          <ItemReserve extensionId="eakOppositeAccount">
+*!*	            <InformationContent>201000</InformationContent>
+*!*	</ItemReserve>
+		l_invoice_start_line = Atc('<ItemReserve extensionId="eakOppositeAccount">',l_parced_row_xml)
+		l_invoice_last_line = Rat('</ItemReserve>',l_parced_row_xml)
+		l_parced_xml = Substrc(l_parced_row_xml, l_invoice_start_line, (l_invoice_last_line + Len('</ItemReserve>')) - l_invoice_start_line) 
+		l_invoice_last_line = atc('<ItemReserve extensionId="eakVatCode">',l_parced_xml) - 1
+		IF l_invoice_last_line > 0 
+			l_parced_xml = '<vfp>' + Substrc(l_parced_xml, 1,l_invoice_last_line - 1) + '</vfp>'
+		ENDIF
+		
+		If Len(l_parced_xml) > 0
+			CREATE CURSOR v_xml_korrkonto (InformationContent c(20))
+			Xmltocursor(l_parced_xml,'v_xml_korrkonto',8192)
+			replace v_xml_arv.korr_konto WITH v_xml_korrkonto.InformationContent IN v_xml_arv
+			USE IN v_xml_korrkonto
+		ENDIF
+		
 
 * kontod
 		l_invoice_start_line = Atc('<Accounting',l_parced_row_xml)
@@ -361,17 +408,6 @@ Function parce_invoice
 
 		Endfor
 	Endif
-
-
-	If l_confirmation_count = 0
-* arve is not confirmed, delete it
-		Select v_xml_arv_detail
-		Delete For Id = v_xml_arv.Id
-
-		Select v_xml_arv
-		Delete Next 1
-	Endif
-
 
 	Return .T.
 Endfunc

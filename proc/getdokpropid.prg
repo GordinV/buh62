@@ -1,4 +1,4 @@
-Lparameter tcTyyp, tcModel
+Lparameter tcTyyp, tcModel, tcKorrKonto
 Local lnId
 lnId = 0
 If !Used('comDokRemote') Or Reccount('comDokRemote') = 0
@@ -15,7 +15,19 @@ lcWhere = "dok = '" + Alltrim(tcTyyp) + "'"
 lError = oDb.readFromModel('libs\libraries\dokprops', 'curDokprop', 'gRekv, guserid', 'curDokProp', lcWhere)
 
 If Reccount('curDokProp') > 1
-	Do Form validok To lnId With coMdokremote.Id
+	IF !EMPTY(tcKorrKonto)
+		* otsime korrkonto
+		SELECT curDokProp
+		LOCATE FOR ALLTRIM(konto) = ALLTRIM(tcKorrKonto)
+		IF FOUND()
+			lnId = cuRdokprop.Id
+		ENDIF
+		
+	ENDIF
+	IF EMPTY(lnId)
+		Do Form validok To lnId With coMdokremote.Id
+	ENDIF
+	
 Else
 	If Reccount('curDokProp')<1
 		Create Cursor cMessage (prOp1 Int)

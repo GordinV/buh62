@@ -11,13 +11,10 @@ If  .Not. Found()
 	Return 0
 Endif
 
-tnId = coMdokremote.Id
-
 lcWhere = "dok = '" + Alltrim(tcTyyp) + "'"
 lError = oDb.readFromModel('libs\libraries\dokprops', 'curDokprop', 'gRekv, guserid', 'curDokProp', lcWhere)
 
 If Reccount('curDokProp') > 1
-	WAIT WINDOW STR(coMdokremote.Id)
 	Do Form validok To lnId With coMdokremote.Id
 Else
 	If Reccount('curDokProp')<1
