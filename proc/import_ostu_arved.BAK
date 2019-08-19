@@ -61,7 +61,7 @@ Else
 
 	Insert Into v_arv (rekvid, Userid, doklausId, Number, liik, kpv, asutusid, Summa, kbmta, kbm, tahtaeg, lisa, viitenr, aa) ;
 		VALUES (gRekv, gUserId, t_dokprop_id, v_xml_arv.Number, 1, v_xml_arv.kpv, comAsutusRemote.Id, v_xml_arv.Summa, ;
-		v_xml_arv.kbmta, v_xml_arv.kbm, v_xml_arv.tahtpaev, v_xml_arv.lisa, v_xml_arv.viitenr, v_xml_arv.aa)
+		v_xml_arv.kbmta, v_xml_arv.kbm, v_xml_arv.tahtpaev, v_xml_arv.lisa, v_xml_arv.viitenr, v_xml_arv.arve)
 
 
 * details

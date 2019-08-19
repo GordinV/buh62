@@ -2,6 +2,9 @@ Local lnRekvid
 
 Do Form valirekv To gRekv
 If !Empty(gRekv)
+
+	=close_opened_cursors()
+
 	Select comrekvremote
 	Locate For Id = gRekv
 	Wait Window ' Oodake, käivitan '+ Left(Alltrim(comrekvremote.nimetus),40) Nowait
@@ -22,3 +25,11 @@ If !Empty(gRekv)
 
 	Messagebox('Ok',0,'Vali asutus')
 Endif
+
+
+FUNCTION close_opened_cursors
+	IF USED('comOsakondRemote')
+		USE IN comOsakondRemote
+	ENDIF
+
+ENDFUNC

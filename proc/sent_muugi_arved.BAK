@@ -1,0 +1,184 @@
+Parameters tnId
+Local loXMLHTTP As "MSXML2.XMLHTTP"
+Local cUrl, l_tulemus
+Local cMessage
+
+*cUrl = 'https://finance.omniva.eu/finance/erp/'
+cUrl = Alltrim(config.earved)
+
+*l_secret = '106549:elbevswsackajyafdoupavfwewuiafbeeiqatgvyqcqdqxairz'
+l_secret = ALLTRIM(qryRekv.earved)
+
+* will open cursors
+*=check_cursors()
+Create Cursor m_memo (url c(120), Header c(120), Request m, response m, Timestamp T Default Datetime())
+
+cMessage = get_xml()
+
+loXMLHTTP = Createobject("MSXML2.XMLHTTP")
+
+With loXMLHTTP
+
+	.Open("POST", cUrl ,.F.)
+	.setRequestHeader('Content-Type', 'text/xml;charset=UTF-8')
+	.setRequestHeader('user-agent', 'sampleTest')
+	.setRequestHeader('soapAction', '')
+
+	Wait Window 'Oodan omniva... ' Nowait
+	.Send(cMessage)
+	Wait Window 'Oodan omniva... ok' Nowait
+
+	Insert Into m_memo (url, Header, Request, response) Values (cUrl, 'text/xml;charset=UTF-8', cMessage, .responsetext)
+	Wait Window 'Loen vastus...' Nowait
+	
+	IF ATC('Ok', loXMLHTTP.responsetext) > 0
+		l_tulemus = .t.
+	ENDIF
+	
+	
+
+Endwith
+
+IF EMPTY(l_tulemus)
+	l_answer = MESSAGEBOX('Tekkis viga, kas näida päring?',4+32+256,'E-arved')
+	IF l_answer = 6
+		_cliptext = cMessage
+		Select m_memo
+		MODIFY MEMO m_memo.response 
+		RETURN .f.
+*		Brow	
+	ENDIF
+ELSE
+	MESSAGEBOX('Arve saadetud!',0+48,'E-arved')
+ENDIF
+
+Return .t.
+Endfunc
+
+
+Function get_xml
+	Local l_xml, l_xml_arve
+
+WAIT WINDOW 'get_xml' + STR(tnId)
+
+TEXT TO l_xml TEXTMERGE noshow
+
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:erp="http://e-arvetekeskus.eu/erp">
+<soapenv:Header/>
+<soapenv:Body>
+<erp:EInvoiceRequest authPhrase="<<l_secret>>">
+ENDTEXT
+
+l_xml_arve = calc_earved(tnId)
+* remove row <?xml version="1.0" encoding="UTF-8"?>
+_cliptext = l_xml_arve
+WAIT WINDOW 'Got xml'
+
+l_xml_arve =  STUFFC(l_xml_arve, ATC(l_xml_arve, '<?xml version="1.0" encoding="UTF-8"?>'), LEN('<?xml version="1.0" encoding="UTF-8"?>'), '')
+
+
+l_xml = l_xml + l_xml_arve
+
+TEXT TO l_xml TEXTMERGE NOSHOW additive
+
+</erp:EInvoiceRequest>
+</soapenv:Body>
+</soapenv:Envelope>
+ENDTEXT
+
+_cliptext = l_xml
+
+WAIT WINDOW 'Final xml'
+
+	Return l_xml
+ENDFUNC
+
+
+
+*!*	TEXT TO l_xml_arve TEXTMERGE noshow
+*!*	<E_Invoice>
+*!*	<Header>
+*!*	<Date>2019-06-25</Date>
+*!*	<FileId>1</FileId>
+*!*	<AppId>EARVE</AppId>
+*!*	<Version>1.1</Version>
+*!*	</Header>
+*!*	<Invoice invoiceId="150proov" regNumber="10972649">
+*!*	<InvoiceParties>
+*!*	<SellerParty>
+*!*	<Name>Narva Linnavalitsuse Rahandusamet</Name>
+*!*	<RegNumber>75008427</RegNumber>
+*!*	<ContactData>
+*!*	<PhoneNumber>3599190</PhoneNumber>
+*!*	<LegalAddress>
+*!*	<PostalAddress1>Peetri 5</PostalAddress1>
+*!*	<City>Narva</City>
+*!*	</LegalAddress>
+*!*	</ContactData>
+*!*	</SellerParty>
+*!*	<BuyerParty>
+*!*	<Name>Travel Balt OU</Name>
+*!*	<RegNumber>10972649</RegNumber>
+*!*	<ContactData>
+*!*	<E-mailAddress>inger@inger.ee</E-mailAddress>
+*!*	</ContactData>
+*!*	</BuyerParty>
+*!*	</InvoiceParties>
+*!*	<InvoiceInformation>
+*!*	<Type type="DEB"/>
+*!*	<ContractNumber>teenus</ContractNumber>
+*!*	<DocumentName>Arve</DocumentName>
+*!*	<InvoiceNumber>150proov</InvoiceNumber>
+*!*	<InvoiceDate>2019-06-17</InvoiceDate>
+*!*	<DueDate>2019-07-01</DueDate>
+*!*	<InvoiceDeliverer>
+*!*	<ContactName>Vlad Gordin</ContactName>
+*!*	</InvoiceDeliverer>
+*!*	</InvoiceInformation>
+*!*	<InvoiceSumGroup>
+*!*	<InvoiceSum>10.00</InvoiceSum>
+*!*	<VAT><SumBeforeVAT>10.00</SumBeforeVAT>
+*!*	<VATRate>20</VATRate>
+*!*	<VATSum>0.00</VATSum>
+*!*	<Currency>EUR</Currency>
+*!*	<SumAfterVAT>10.00</SumAfterVAT></VAT>
+*!*	<TotalSum>10.00</TotalSum>
+*!*	<Currency>EUR</Currency>
+*!*	</InvoiceSumGroup>
+*!*	<InvoiceItem>
+*!*	<InvoiceItemGroup>
+*!*	<ItemEntry>
+*!*	<Description>Koolituskulud teenuse eest</Description>
+*!*	<ItemDetailInfo>
+*!*	<ItemUnit></ItemUnit>
+*!*	<ItemAmount>1.0000</ItemAmount>
+*!*	<ItemPrice>10.00</ItemPrice>
+*!*	</ItemDetailInfo>
+*!*	<ItemSum>10.00</ItemSum>
+*!*	<VAT>
+*!*	<SumBeforeVAT>10.00</SumBeforeVAT>
+*!*	<VATRate>20</VATRate>
+*!*	<VATSum>0.00</VATSum>
+*!*	<Currency>EUR</Currency>
+*!*	</VAT>
+*!*	<ItemTotal>10.00</ItemTotal>
+*!*	</ItemEntry></InvoiceItemGroup>
+*!*	</InvoiceItem>
+*!*	<PaymentInfo>
+*!*	<Currency>EUR</Currency>
+*!*	<PaymentRefId>12345678</PaymentRefId>
+*!*	<PaymentDescription>Arve 150proov            </PaymentDescription>
+*!*	<Payable>YES</Payable>
+*!*	<PaymentTotalSum>10.00</PaymentTotalSum>
+*!*	<PayerName>Travel Balt OU</PayerName>
+*!*	<PaymentId>150proov</PaymentId>
+*!*	<PayToAccount>EE051010562011276005</PayToAccount>
+*!*	<PayToName>Narva Linnavalitsuse Rahandusamet</PayToName>
+*!*	</PaymentInfo>
+*!*	</Invoice>
+*!*	<Footer>
+*!*	<TotalNumberInvoices>1</TotalNumberInvoices>
+*!*	<TotalAmount>10.00</TotalAmount>
+*!*	</Footer>
+*!*	</E_Invoice>
+*!*	ENDTEXT

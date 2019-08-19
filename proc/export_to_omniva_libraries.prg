@@ -45,7 +45,7 @@ TEXT TO c_xml TEXTMERGE noshow
 <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:erp="http://e-arvetekeskus.eu/erp">
 <soapenv:Header/>
 <soapenv:Body>
-<erp:DimensionRegistryRequest format="AXAPTA" replace="YES" authPhrase="<<ALLTRIM(qryRekv.earved)>>>
+<erp:DimensionRegistryRequest format="AXAPTA" replace="NO" parseConnections="YES" authPhrase="<<ALLTRIM(qryRekv.earved)>>">
 
 ENDTEXT
 
@@ -58,7 +58,6 @@ ENDTEXT
 
 SELECT comTunnusRemote
 SCAN
-
 TEXT TO c_xml ADDITIVE TEXTMERGE noshow
 
 <Tunnus>

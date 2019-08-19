@@ -69,14 +69,16 @@ Else
 	Scan For Id = v_xml_arv.Id
 * seach for noms
 
-		Insert Into v_arvread (nomid, kogus, hind, Summa, kbmta, km, kbm, nimetus, konto, tp, kood1, kood2, kood5, MUUD) ;
+		Insert Into v_arvread (nomid, kogus, hind, Summa, kbmta, km, kbm, nimetus, konto, tp, kood1, kood2, kood5, MUUD,; 
+			tunnus, proj, kood4, kood3) ;
 			VALUES (l_nom_id, IIF(EMPTY(v_xml_arv_detail.kogus),1,v_xml_arv_detail.kogus),; 
 			v_xml_arv_detail.Summa / IIF(EMPTY(v_xml_arv_detail.kogus),1,v_xml_arv_detail.kogus), ;
 			v_xml_arv_detail.summa_kokku, v_xml_arv_detail.Summa,v_xml_arv_detail.kbm_maar, v_xml_arv_detail.kbm,;
 			v_xml_arv_detail.nimetus,;
 			v_xml_arv_detail.konto,;
 			comAsutusRemote.tp, v_xml_arv_detail.tegev, v_xml_arv_detail.allikas, v_xml_arv_detail.artikkel, ;
-			v_xml_arv_detail.nimetus)
+			v_xml_arv_detail.nimetus,;
+			v_xml_arv_detail.tunnus, v_xml_arv_detail.proj, v_xml_arv_detail.uuritus, v_xml_arv_detail.rahavoog)
 	Endscan
 
 	Select v_arvread
