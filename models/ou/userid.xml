@@ -89,8 +89,8 @@
     <alias></alias>
   </executeSql>
   <executeCommand>
-    <sql></sql>
-    <alias></alias>
+    <sql>UPDATE ou.userid SET parool = $2 WHERE upper(kasutaja) = upper($1);</sql>
+    <alias>executeTask</alias>
   </executeCommand>
   <register>
     <sql></sql>
