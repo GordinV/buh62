@@ -5,7 +5,6 @@ Local cMessage
 
 *cUrl = 'https://finance.omniva.eu/finance/erp/'
 cUrl = Alltrim(config.earved)
-
 *l_secret = '106549:elbevswsackajyafdoupavfwewuiafbeeiqatgvyqcqdqxairz'
 l_secret = ALLTRIM(qryRekv.earved)
 
@@ -25,7 +24,11 @@ With loXMLHTTP
 	.setRequestHeader('soapAction', '')
 
 	Wait Window 'Oodan omniva... ' Nowait
-	.Send(cMessage)
+		.Send(cMessage)
+		Select m_memo
+		MODIFY MEMO m_memo.response 
+	
+	
 	Wait Window 'Oodan omniva... ok' Nowait
 
 	Insert Into m_memo (url, Header, Request, response) Values (cUrl, 'text/xml;charset=UTF-8', cMessage, .responsetext)

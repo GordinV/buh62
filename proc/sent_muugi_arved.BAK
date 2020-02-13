@@ -5,7 +5,6 @@ Local cMessage
 
 *cUrl = 'https://finance.omniva.eu/finance/erp/'
 cUrl = Alltrim(config.earved)
-
 *l_secret = '106549:elbevswsackajyafdoupavfwewuiafbeeiqatgvyqcqdqxairz'
 l_secret = ALLTRIM(qryRekv.earved)
 
@@ -14,6 +13,7 @@ l_secret = ALLTRIM(qryRekv.earved)
 Create Cursor m_memo (url c(120), Header c(120), Request m, response m, Timestamp T Default Datetime())
 
 cMessage = get_xml()
+_cliptext = cMessage
 
 loXMLHTTP = Createobject("MSXML2.XMLHTTP")
 
@@ -25,7 +25,11 @@ With loXMLHTTP
 	.setRequestHeader('soapAction', '')
 
 	Wait Window 'Oodan omniva... ' Nowait
-	.Send(cMessage)
+*	.Send(cMessage)
+		Select m_memo
+		MODIFY MEMO m_memo.response 
+	
+	
 	Wait Window 'Oodan omniva... ok' Nowait
 
 	Insert Into m_memo (url, Header, Request, response) Values (cUrl, 'text/xml;charset=UTF-8', cMessage, .responsetext)
@@ -59,7 +63,6 @@ Endfunc
 Function get_xml
 	Local l_xml, l_xml_arve
 
-WAIT WINDOW 'get_xml' + STR(tnId)
 
 TEXT TO l_xml TEXTMERGE noshow
 
@@ -71,8 +74,6 @@ ENDTEXT
 
 l_xml_arve = calc_earved(tnId)
 * remove row <?xml version="1.0" encoding="UTF-8"?>
-_cliptext = l_xml_arve
-WAIT WINDOW 'Got xml'
 
 l_xml_arve =  STUFFC(l_xml_arve, ATC(l_xml_arve, '<?xml version="1.0" encoding="UTF-8"?>'), LEN('<?xml version="1.0" encoding="UTF-8"?>'), '')
 
@@ -85,10 +86,6 @@ TEXT TO l_xml TEXTMERGE NOSHOW additive
 </soapenv:Body>
 </soapenv:Envelope>
 ENDTEXT
-
-_cliptext = l_xml
-
-WAIT WINDOW 'Final xml'
 
 	Return l_xml
 ENDFUNC

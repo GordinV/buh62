@@ -4,9 +4,13 @@ if !used('curPalkOper')
 	return .f.
 ENDIF
 
+* ametiuhengu aruanne
+SELECT curPalkOper
+brow
+
 SELECT comAsutusRemote.regkood as isikukood, curPalkOper.nimetus, sum(curPalkOper.summa) as summa, curPalkOper.isik ;
 	FROM curPalkOper INNER JOIN comAsutusRemote ON  comAsutusRemote.id = curPalkOper.isikId;
-	WHERE tun1 > 0;
+	WHERE !EMPTY(curPalkOper.is_ametiuhingu_liikme) ;
 	GROUP BY curPalkOper.nimetus, curPalkOper.isik, comAsutusRemote.regkood;
 	order BY curPalkOper.nimetus, curPalkOper.isik, comAsutusRemote.regkood;
 	INTO CURSOR palkoper_report1

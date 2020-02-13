@@ -8,10 +8,10 @@ ltest = .f.
 
 If (ltest)
 
-	tdKpv1 = Date(2018,10,01)
-	tdKpv2 = Date(2018,10,31)
+	tdKpv1 = Date(2019,09,01)
+	tdKpv2 = Date(2019,10,30)
 	l_parent = 0
-	gRekv = 63
+	gRekv = 125
 	guserid = 2477
 	tnId = 0
 	gdKpv = Date()
@@ -43,7 +43,7 @@ If (ltest)
 		lError = oDb.readFromModel('ou\rekv', 'row', 'gRekv, guserid', 'qryRekv')
 
 	Endif
-	Set Step On
+*	Set Step On
 
 Else
 	tdKpv1 = fltrAruanne.kpv1
@@ -108,7 +108,8 @@ Scan
 
 	Endif
 
-	l_sm = curTSD.sm
+	l_sm = curTSD.sm 
+	
 	Select Sum(tmpReport.sm) As sm, Max(minsots)As minsots, Max(minpalk) As minpalk, Sum(tmpReport.Summa) As Summa, ;
 		sum((tmpReport.Summa - tmpReport.puhkused - tmpReport.haigused) * tmpReport.sm_arv) As sm_alus_summa, Max(lopp) As lopp ;
 		From tmpReport ;
@@ -117,9 +118,12 @@ Scan
 
 
 	l_1090 = 0
+	
 	If !Isnull(curTSD.arv_min_sots) And l_used_1090 = .F.
+	
 		l_1090 = curTSD.min_sots_alus
-		l_sm = curTSD.sm + curTSD.arv_min_sots
+		* kui sm vaiksem kui sots maks min palgast, siis kasutame min.sots
+		l_sm = IIF(curTSD.sm < curTSD.arv_min_sots, curTSD.arv_min_sots,  curTSD.sm)
 		l_used_1090 = .T.
 	Endif
 
@@ -161,7 +165,7 @@ Scan
 		v1170 ,v1200, v1210, v1220, v1230, v1240, v1250 ) ;
 		values (curTSD.isikukood, curTSD.isik, curTSD.tululiik, (curTSD.Summa) , l_v1040, '',;
 		(curTSD.Summa) * curTSD.sm_arv, 0,0, l_1090,;
-		l_sm, curTSD.pm,(curTSD.Summa) * curTSD.tk_arv,curTSD.tki, curTSD.tka, ;
+		(l_sm ), curTSD.pm,(curTSD.Summa) * curTSD.tk_arv,curTSD.tki, curTSD.tka, ;
 		'610', l_mvt, l_mvt,0,0,0, ;
 		l_tm, tmpMaksud.Summa, tmpMaksud.sm, tmpMaksud.pm, tmpMaksud.tki, tmpMaksud.tka, l_tm)
 
