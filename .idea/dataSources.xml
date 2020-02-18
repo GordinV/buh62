@@ -7,5 +7,11 @@
       <jdbc-driver>org.postgresql.Driver</jdbc-driver>
       <jdbc-url>jdbc:postgresql://213.184.47.198:5436/narvalv</jdbc-url>
     </data-source>
+    <data-source source="LOCAL" name="db@localhost" uuid="5e594526-e16c-4810-91b2-7d84fd317b33">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://localhost:5432/db</jdbc-url>
+    </data-source>
   </component>
 </project>

@@ -9,11 +9,12 @@
 	<name>test_server2</name>			 
 	<description>test_server2</description>			 
 	<type>connection</type>	
-	<conn_str>DRIVER=PostgreSQL Unicode;DATABASE=test;server=213.184.47.198;PORT=5436;</conn_str>  
+	<conn_str>DRIVER=PostgreSQL Unicode;DATABASE=test;server=213.184.47.198;PORT=5436;MaxVarcharSize=254;</conn_str>  
   </connection>
   <connection>
-	<name>test_server2</name>			 
-	<description>test_server3</description>		
-	<type>odbc</type>			 
-  </connection>  
+	<name>test_local</name>			 
+	<description>local_server</description>			 
+	<type>connection</type>	
+	<conn_str>DRIVER=PostgreSQL Unicode;DATABASE=db;server=127.0.0.1;PORT=5432;MaxVarcharSize=254;</conn_str>  
+  </connection>
 </VFPData>
