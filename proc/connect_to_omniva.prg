@@ -2,7 +2,7 @@
 
 Parameters td_since
 If Empty(td_since)
-	td_since = Date(2019,10,11)
+	td_since = Date(2020,02,01)
 Endif
 
 * will open cursors
@@ -522,7 +522,7 @@ Function check_cursors
 
 	If !Used('qryRekv')
 		Create Cursor qryRekv (earved c(254), regkood c(20))
-		Insert Into qryRekv  (earved, regkood) Values ('111051:pdbmvsdixjpokvumobcnfbihtharsdjtosbnwkbirgaxvlbmtn','75009148')
+		Insert Into qryRekv  (earved, regkood) Values ('91448:yooyednyciyqiqwfamwjtunzzjrvrkzkivfxymvgrabbdekbrs','75008386')
 	Endif
 
 

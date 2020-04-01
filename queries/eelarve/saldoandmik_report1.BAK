@@ -2,9 +2,11 @@
 
 TEXT TO lcWhere TEXTMERGE noshow
 	(EMPTY(<<fltrAruanne.asutusid>>) or rekv_id = <<fltrAruanne.asutusid>>)
+	and konto like '<<ALLTRIM(fltrAruanne.kood4)>>%'
 	and coalesce(artikkel,'') like '<<ALLTRIM(fltrAruanne.kood5)>>%'
 	and coalesce(tegev,'') like '<<ALLTRIM(fltrAruanne.kood1)>>%'
 	and coalesce(allikas,'') like '<<ALLTRIM(fltrAruanne.kood2)>>%'
+	and (deebet <> 0 or kreedit <> 0)
 ENDTEXT
 
 If Empty(fltrAruanne.kond)
@@ -21,14 +23,18 @@ If !lError
 	Set Step On
 	Select 0
 	Return .F.
-Endif
+ENDIF
+
+SELECT tmpReport
+brow
 
 Select konto, tp, tegev, allikas, artikkel, rahavoog, ;
-	IIF(EMPTY(tyyp) OR tyyp = 1 OR tyyp = 3, deebet - kreedit, 000000000.00) as deebet, ;
-	IIF(tyyp = 2 OR tyyp = 4, kreedit - deebet, 000000000.00 ) as kreedit ;
+	sum(deebet) as deebet, sum(kreedit) as kreedit;
 	from tmpReport ;
+	WHERE (deebet <> 0 OR kreedit <> 0 );
+	GROUP By konto, tp, tegev, allikas, artikkel, rahavoog ;
 	ORDER By konto, tp, tegev, allikas, artikkel, rahavoog ;
 	INTO Cursor saldoaruanne_report1
-
+brow
 Use In tmpReport
 Select saldoaruanne_report1

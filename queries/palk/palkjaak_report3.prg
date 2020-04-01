@@ -31,6 +31,7 @@ TEXT TO lcSqlWhere TEXTMERGE noshow
 		and aasta >= <<fltrPalkJaak.aasta1>>
 		and aasta <= <<fltrPalkJaak.aasta2>>
 		and rekvid = <<gRekv>>
+		and status <= <<IIF(EMPTY(fltrPalkJaak.status),2,1)>>
 ENDTEXT
 
 lError = oDb.readFromModel('palk\palk_jaak', 'printPalkJaak', 'gRekv, guserid', 'tmpPalkOper', lcSqlWhere)

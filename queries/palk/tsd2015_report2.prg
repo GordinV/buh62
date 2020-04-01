@@ -67,11 +67,11 @@ Create Cursor tsd_report (isikukood c(20), nimi c(254), v1020 c(20), v1030 N(14,
 
 
 
-*!*	TEXT TO lcWhere TEXTMERGE noshow
-*!*		rekv_id = <<gRekv>>
-*!*		and konto ilike '<<ALLTRIM(fltrAruanne.konto)>>%'
-*!*	ENDTEXT
-lError = oDb.readFromModel('aruanned\palk\tsd_lisa1', 'tsd_lisa1', 'tdKpv1,tdKpv2, gRekv,tnKond', 'tmpReport')
+	TEXT TO lcWhere TEXTMERGE noshow
+		isikukood is not null
+ENDTEXT
+
+lError = oDb.readFromModel('aruanned\palk\tsd_lisa1', 'tsd_lisa1', 'tdKpv1,tdKpv2, gRekv,tnKond', 'tmpReport',lcWhere)
 If !lError
 	Messagebox('Viga',0+16, 'TSD')
 	Set Step On

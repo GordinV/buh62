@@ -4,7 +4,7 @@ Parameter tcWhere
 Local lcString, l_parent, l_sm
 l_sm = 0
 
-ltest = .t.
+ltest = .f.
 
 If (ltest)
 

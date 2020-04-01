@@ -82,8 +82,6 @@ If (l_test)
 		lError = oDb.readFromModel('ou\rekv', 'row', 'gRekv, guserid', 'qryRekv')
 
 	Endif
-	SET STEP ON 
-
 Endif
 
 IF EMPTY(l_dokprop) 
@@ -179,14 +177,13 @@ TEXT TO lcJson TEXTMERGE noshow
 				"isik_ids":[<<l_isik_ids>>],
 				"lib_ids":[<<l_lib_ids>>],
 				"kpv":<<DTOC(gdKpv,1)>>,
-				"kas_kustuta":<<IIF(!EMPTY(tmpArvestaMinSots.kustuta),'true','false')>>,
+				"kas_kustuta":<<IIF(!EMPTY(tmpArvestaMinSots.kustuta) and !is_tasu ,'true','false')>>,
 				"kas_arvesta_minsots":<<IIF(!EMPTY(tmpArvestaMinSots.arvesta),'true','false')>>,
 				"dokprop":<<ALLTRIM(STR(l_dokprop))>>
 				}
 ENDTEXT
 * sql proc
 	task = 'palk.gen_palkoper'
-*	_cliptext = lcJson
 	leRror = odB.readFromModel('palk\palk_oper', 'executeTask', 'guserid,lcJson,task', 'qryResult')
 	Return leRror
 ENDFUNC
