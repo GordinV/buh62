@@ -2,7 +2,7 @@
 
 Parameters td_since
 If Empty(td_since)
-	td_since = Date(2020,02,01)
+	td_since = Date(2020,04,01)
 Endif
 
 * will open cursors
@@ -172,7 +172,6 @@ Function parce_invoice
 	Local l_parced_xml, l_invoice_start_line, l_invoice_last_line
 	Create Cursor v_log (XML m)
 
-
 * <InvoiceInformation>
 	l_invoice_start_line = Atc('<InvoiceInformation>',l_xml_invoice)
 	l_invoice_last_line = Rat('</InvoiceInformation>',l_xml_invoice )
@@ -180,7 +179,10 @@ Function parce_invoice
 	Insert Into v_xml (XML) Values (l_parced_xml)
 
 * remove <Type type="DEB"/>
-	l_parced_xml = Stuff(l_parced_xml, Atc('<Type type="DEB"/>',l_parced_xml), Len('<Type type="DEB"/>'),'')
+	IF ATC('<Type type="DEB"/>',l_parced_xml) > 0 
+		l_parced_xml = Stuff(l_parced_xml, Atc('<Type type="DEB"/>',l_parced_xml), Len('<Type type="DEB"/>'),'')
+	ENDIF
+
 	Insert Into v_xml (XML) Values (l_parced_xml)
 
 * remove <Extension>
@@ -522,7 +524,7 @@ Function check_cursors
 
 	If !Used('qryRekv')
 		Create Cursor qryRekv (earved c(254), regkood c(20))
-		Insert Into qryRekv  (earved, regkood) Values ('91448:yooyednyciyqiqwfamwjtunzzjrvrkzkivfxymvgrabbdekbrs','75008386')
+		Insert Into qryRekv  (earved, regkood) Values ('91449:yxjxubnzxvczcafuczzsarzcesehjinbrpsealjexfehqvhfgy','75008485')
 	Endif
 
 

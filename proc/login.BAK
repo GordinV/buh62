@@ -33,6 +33,7 @@ Define Class login As dokument
 		Set Classlib To Logo
 		olOgo = Createobject('logo')
 		olOgo.Show()
+		SET STEP ON 
 		With Thisform
 			.Visible = .F.
 			ocOnnect = Newobject('connect', 'connect')
@@ -63,13 +64,8 @@ Define Class login As dokument
 
 * read and open config
 		l_config = read_config()
-*!*		IF USED('v_config') AND RECCOUNT('v_config') > 0
-*!*			this.connection = ALLTRIM(v_config.name)
-*!*		ENDIF
 		If !Empty(l_config)
 			This.Connection = Alltrim(v_config.Name)
-			Select v_config
-			Brow
 		Else
 
 		Endif

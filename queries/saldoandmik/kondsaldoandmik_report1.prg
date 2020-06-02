@@ -39,7 +39,6 @@ If !lError
 	Return .F.
 Endif
 SELECT tmpReport
-BROWSE
 
 Select * ;
 	from tmpReport ;

@@ -2,26 +2,6 @@ Lparameters tnMKId
 Local lError
 
 l_test = .f.
-If l_test
-	gRekv = 119
-	gUserid = 70
-	tnMKId = 552687
-	Set Classlib To classes\Classlib
-	oDb = Createobject('db')
-	oDb.login = 'temp'
-	oDb.Pass = '12345'
-	gnHandle = SQLConnect('test_server','temp','12345')
-	Create Cursor qryRekv (regkood c(20), Id Int, parentid Int)
-	Insert Into qryRekv (Id, regkood, parentid) Values (119, '987654321', 63)
-*	lError = oDb.readFromModel('raamatupidamine\smk', 'curMK', 'gRekv, guserid', 'curMK', 'id = 552687','')
-*	Update curMk Set valitud = 1
-	tnId = 552687
-	SET STEP ON 
-	lError = oDb.readFromModel('raamatupidamine\smk', 'row', 'tnId, guserid', 'v_mk')
-	lError = oDb.readFromModel('raamatupidamine\smk', 'details', 'tnId, guserid', 'v_mk1')
-
-Endif
-
 
 lnId = 1
 cFail = 'c:\temp\buh60\EDOK\mk_iso.xml'
@@ -69,8 +49,8 @@ Function iso
 	Endif
 
 TEXT TO lcString NOSHOW
-	<?xml version="1.0" encoding="UTF-8"?>
-	<Document xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.03" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:iso:std:iso:20022:tech:xsd:pain.001.001.03 pain.001.001.03.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<Document xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.03" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:iso:std:iso:20022:tech:xsd:pain.001.001.03 pain.001.001.03.xsd">
 
 ENDTEXT
 
@@ -144,57 +124,58 @@ ENDTEXT
 			lcPankIban = 'HABAEE2X'
 	Endcase
 
-	lcIsoKpv = Str(Year(Date()),4) + '-'+;
-		IIF(Month(Date())<10,'0','') + Alltrim(Str(Month(Date()),2))+'-'+;
-		IIF(Day(Date())<10,'0','')+Alltrim(Str(Day(Date()),2))
+	l_koostamise_kpv = Str(Year(DATE()),4) + '-'+;
+		IIF(Month(DATE())<10,'0','') + Alltrim(Str(Month(DATE()),2))+'-'+;
+		IIF(Day(DATE())<10,'0','')+Alltrim(Str(Day(DATE()),2))
+
 
 	Select tmp_mk
 TEXT TO lcString ADDITIVE TEXTMERGE NOSHOW
 
-		<CstmrCdtTrfInitn>
-			<GrpHdr>
-				<MsgId><<ALLTRIM(STR(tmp_mk.Id))>></MsgId>
-				<CreDtTm><<lcIsoKpv>>T08:00:00</CreDtTm>
-				<NbOfTxs><<Alltrim(Str(Reccount('tmp_mk1')))>></NbOfTxs>
-				<CtrlSum><<Alltrim(Str(lnSummaKokku,14,2))>></CtrlSum>
-				<InitgPty><Nm><<Alltrim(lcRekvNimetus)>></Nm></InitgPty>
-			</GrpHdr>
+<CstmrCdtTrfInitn>
+<GrpHdr>
+<MsgId><<ALLTRIM(STR(tmp_mk.Id))>></MsgId>
+<CreDtTm><<l_koostamise_kpv>>T08:00:00</CreDtTm>
+<NbOfTxs><<Alltrim(Str(Reccount('tmp_mk1')))>></NbOfTxs>
+<CtrlSum><<Alltrim(Str(lnSummaKokku,14,2))>></CtrlSum>
+<InitgPty><Nm><<Alltrim(lcRekvNimetus)>></Nm></InitgPty>
+</GrpHdr>
 
 ENDTEXT
 
 	Scan For !Empty(rekvId)
 		Wait Window 'Eksport: ' + Alltrim(tmp_mk.Number) Nowait
-		lcIsoKpv = Str(Year(tmp_mk.kpv),4) + '-'+;
-			IIF(Month(tmp_mk.kpv)<10,'0','') + Alltrim(Str(Month(tmp_mk.kpv),2))+'-'+;
-			IIF(Day(tmp_mk.kpv)<10,'0','')+Alltrim(Str(Day(tmp_mk.kpv),2))
+		lcIsoKpv = Str(Year(tmp_mk.maksepaev),4) + '-'+;
+			IIF(Month(tmp_mk.maksepaev)<10,'0','') + Alltrim(Str(Month(tmp_mk.maksepaev),2))+'-'+;
+			IIF(Day(tmp_mk.maksepaev)<10,'0','')+Alltrim(Str(Day(tmp_mk.maksepaev),2))
 
 TEXT TO lcString ADDITIVE TEXTMERGE noshow
 
-			<PmtInf>
-				<PmtInfId><<ALLTRIM(tmp_mk.number)>></PmtInfId>
-				<PmtMtd>TRF</PmtMtd>
-				<BtchBookg>true</BtchBookg>
-				<NbOfTxs><<Alltrim(Str(Reccount('tmp_mk1')))>></NbOfTxs>
-				<CtrlSum><<Alltrim(Str(lnSummaKokku,14,2))>></CtrlSum>
-				<PmtTpInf><SvcLvl><Cd>SEPA</Cd></SvcLvl></PmtTpInf>
-				<ReqdExctnDt><<lcIsoKpv>></ReqdExctnDt>
-				<Dbtr>
-					<Nm><<Alltrim(lcRekvNimetus)>></Nm>
-					<PstlAdr>
-						<Ctry>EE</Ctry>
-						<AdrLine><<LEFT(Alltrim(lcRekvAadress),70)>></AdrLine>
-					</PstlAdr>
-				</Dbtr>
-				<DbtrAcct>
-					<Id><IBAN><<Alltrim(IIF(ISNULL(tmp_mk.omaArve),'',tmp_mk.omaArve))>></IBAN></Id>
-					<Ccy>EUR</Ccy>
-				</DbtrAcct>
-				<DbtrAgt>
-					<FinInstnId>
-						<BIC><<lcPankIban>></BIC>
-					</FinInstnId>
-				</DbtrAgt>
-				<ChrgBr>SLEV</ChrgBr>
+<PmtInf>
+<PmtInfId><<ALLTRIM(tmp_mk.number)>></PmtInfId>
+<PmtMtd>TRF</PmtMtd>
+<BtchBookg>false</BtchBookg>
+<NbOfTxs><<Alltrim(Str(Reccount('tmp_mk1')))>></NbOfTxs>
+<CtrlSum><<Alltrim(Str(lnSummaKokku,14,2))>></CtrlSum>
+<PmtTpInf><SvcLvl><Cd>SEPA</Cd></SvcLvl></PmtTpInf>
+<ReqdExctnDt><<lcIsoKpv>></ReqdExctnDt>
+<Dbtr>
+<Nm><<Alltrim(lcRekvNimetus)>></Nm>
+<PstlAdr>
+<Ctry>EE</Ctry>
+<AdrLine><<LEFT(Alltrim(lcRekvAadress),70)>></AdrLine>
+</PstlAdr>
+</Dbtr>
+<DbtrAcct>
+<Id><IBAN><<Alltrim(IIF(ISNULL(tmp_mk.omaArve),'',tmp_mk.omaArve))>></IBAN></Id>
+<Ccy>EUR</Ccy>
+</DbtrAcct>
+<DbtrAgt>
+<FinInstnId>
+<BIC><<lcPankIban>></BIC>
+</FinInstnId>
+</DbtrAgt>
+<ChrgBr>SLEV</ChrgBr>
 
 ENDTEXT
 
@@ -203,34 +184,36 @@ ENDTEXT
 
 TEXT TO lcString ADDITIVE TEXTMERGE NOSHOW
 
-					<CdtTrfTxInf>
-						<PmtId>
-							<InstrId><<ALLTRIM(tmp_mk.number)>></InstrId>
-					</PmtId>
-						<Amt><InstdAmt Ccy="EUR"><<Alltrim(Str(tmp_mk1.Summa,14,2))>></InstdAmt></Amt>
-						<Cdtr>
-							<Nm><<convert_to_utf(Alltrim(tmp_mk1.asutus))>></Nm>
-							<PstlAdr><Ctry>EE</Ctry><AdrLine><<LEFT(convert_to_utf(Alltrim(tmp_mk1.aadress)),70)>></AdrLine></PstlAdr>
-						</Cdtr>
-						<CdtrAcct><Id><IBAN><<Alltrim(tmp_mk1.aa)>></IBAN></Id></CdtrAcct>
-						<RmtInf>
-							<<IIF(!Empty(tmp_mk.selg),'<Ustrd>'+convert_to_utf(Alltrim(tmp_mk.selg))+'</Ustrd>','')>>
-							<<IIF(!Empty(tmp_mk.viitenr),'<Strd><CdtrRefInf><Tp><CdOrPrtry><Cd>SCOR</Cd></CdOrPrtry></Tp><Ref>'+Alltrim(tmp_mk.viitenr)+'</Ref></CdtrRefInf></Strd>','')>>
-						</RmtInf>
-					</CdtTrfTxInf>
+<CdtTrfTxInf>
+<PmtId>
+<InstrId><<ALLTRIM(tmp_mk.number)>></InstrId>
+<EndToEndId><<ALLTRIM(STR(tmp_mk1.lausnr))>></EndToEndId>
+</PmtId>
+<Amt><InstdAmt Ccy="EUR"><<Alltrim(Str(tmp_mk1.Summa,14,2))>></InstdAmt></Amt>
+<Cdtr>
+<Nm><<convert_to_utf(Alltrim(tmp_mk1.asutus))>></Nm>
+<PstlAdr><Ctry>EE</Ctry><AdrLine><<LEFT(convert_to_utf(Alltrim(tmp_mk1.aadress)),70)>></AdrLine></PstlAdr>
+</Cdtr>
+<CdtrAcct><Id><IBAN><<Alltrim(tmp_mk1.aa)>></IBAN></Id></CdtrAcct>
+<RmtInf>
+<<IIF(!Empty(tmp_mk.selg),'<Ustrd>'+convert_to_utf(Alltrim(tmp_mk.selg))+'</Ustrd>','')>>
+<<IIF(!Empty(tmp_mk.viitenr),'<Strd><CdtrRefInf><Tp><CdOrPrtry><Cd>SCOR</Cd></CdOrPrtry></Tp><Ref>'+Alltrim(tmp_mk.viitenr)+'</Ref></CdtrRefInf></Strd>','')>>
+</RmtInf>
+</CdtTrfTxInf>
 
 ENDTEXT
 		Endscan
 TEXT TO lcString ADDITIVE TEXTMERGE NOSHOW
-			</PmtInf>
+</PmtInf>
+
 ENDTEXT
 
 		lnId = lnId + 1
 	Endscan
 TEXT TO lcString ADDITIVE TEXTMERGE NOSHOW
 
-			</CstmrCdtTrfInitn>
-		</Document>
+</CstmrCdtTrfInitn>
+</Document>
 ENDTEXT
 
 	Create Cursor tmpMk (iso m)
