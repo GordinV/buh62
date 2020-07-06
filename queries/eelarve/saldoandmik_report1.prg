@@ -3,21 +3,16 @@
 TEXT TO lcWhere TEXTMERGE noshow
 	(EMPTY(<<fltrAruanne.asutusid>>) or rekv_id = <<fltrAruanne.asutusid>>)
 	and konto like '<<ALLTRIM(fltrAruanne.kood4)>>%'
-	and coalesce(artikkel,'') like '<<ALLTRIM(fltrAruanne.kood5)>>%'
 	and coalesce(tegev,'') like '<<ALLTRIM(fltrAruanne.kood1)>>%'
 	and coalesce(allikas,'') like '<<ALLTRIM(fltrAruanne.kood2)>>%'
 	and (deebet <> 0 or kreedit <> 0)
 ENDTEXT
 
-If Empty(fltrAruanne.kond)
-	TEXT TO lcWhere ADDITIVE TEXTMERGE noshow
-			and rekv_id = <<gRekv>>
-	ENDTEXT
-ENDIF
 l_kpv1 = fltrAruanne.kpv1
 l_kpv2 = fltrAruanne.kpv2
+l_kond = IIF(EMPTY(fltrAruanne.kond), null, 1)
 
-lError = oDb.readFromModel('aruanned\eelarve\saldoandmik', 'saldoandmik_report', 'l_kpv1,l_kpv2, gRekv', 'tmpReport', lcWhere)
+lError = oDb.readFromModel('aruanned\eelarve\saldoandmik', 'saldoandmik_report', 'l_kpv2, gRekv, l_kond', 'tmpReport', lcWhere)
 If !lError
 	Messagebox('Viga',0+16, 'Eelarve kulud')
 	Set Step On
@@ -27,12 +22,12 @@ ENDIF
 
 SELECT tmpReport
 
-Select konto, tp, tegev, allikas, artikkel, rahavoog, ;
+Select konto, tp, tegev, allikas, rahavoog, ;
 	sum(deebet) as deebet, sum(kreedit) as kreedit;
 	from tmpReport ;
 	WHERE (deebet <> 0 OR kreedit <> 0 );
-	GROUP By konto, tp, tegev, allikas, artikkel, rahavoog ;
-	ORDER By konto, tp, tegev, allikas, artikkel, rahavoog ;
+	GROUP By konto, tp, tegev, allikas, rahavoog ;
+	ORDER By konto, tp, tegev, allikas, rahavoog ;
 	INTO Cursor saldoaruanne_report1
 
 Use In tmpReport

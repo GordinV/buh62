@@ -36,8 +36,8 @@ Endif
 WAIT WINDOW 'Andmed, analüüs...' nowait
 
 CREATE CURSOR eelarve_report_query (idx c(20), sub_idx integer, idx1 integer DEFAULT 5, is_esita c(1) null, rekvid i, tegev c(20), artikkel c(20), nimetus c(254) null,;
-	eelarve n(14,2) , eelarve_kassa n(14,2), eelarve_taps n(14,2) , eelarve_kassa_taps n(14,2),;
-	tegelik n(14,2), kassa n(14,2), saldoandmik n(14,2))
+	eelarve n(14,2) null , eelarve_kassa n(14,2) null, eelarve_taps n(14,2) null, eelarve_kassa_taps n(14,2) null,;
+	tegelik n(14,2) null, kassa n(14,2) null, saldoandmik n(14,2) null)
 
 * 3000+3030+3044+3045+3047
 
@@ -77,7 +77,7 @@ SELECT 'S' as is_esita, ;
 	sum(eelarve_taps) as eelarve_taps, sum(eelarve_kassa_taps) as eelarve_kassa_taps, ;
 	sum(tegelik) as tegelik, sum(kassa) as kassa, sum(saldoandmik) as saldoandmik ;
 	FROM qryReport ;
-	where (artikkel  in ('382','3818') OR LEFT(artikkel,3) in ('388'));
+	where (artikkel  in ('3818') OR LEFT(artikkel,3) in ('388','382'));
 	INTO CURSOR tmp1
 
 select eelarve_report_query 
@@ -213,16 +213,16 @@ append FROM DBF('finants_tegenus')
 
 SELECT 'S' as is_esita, ;
 	'2.4.8' as idx, 2 as sub_idx, gRekv as rekvid, space(20) as tegev, '' as artikkel, UPPER('NÕUETE JA KOHUSTUSTE SALDODE MUUTUS (tekkepõhise e/a korral) (+/-)') as nimetus, ;
-	(q.eelarve) - ((tmp_tulud_kokku.eelarve + tmp_kulud_kokku.eelarve) + investeerimis_tegevus.eelarve) + finants_tegenus.eelarve as eelarve, ;
-	(q.eelarve_kassa) - ((tmp_tulud_kokku.eelarve_kassa + tmp_kulud_kokku.eelarve_kassa) + investeerimis_tegevus.eelarve_kassa) + finants_tegenus.eelarve_kassa as eelarve_kassa, ;
-	(q.eelarve_taps) - ((tmp_tulud_kokku.eelarve_taps + tmp_kulud_kokku.eelarve_taps) + investeerimis_tegevus.eelarve_taps) + ;
+	(qryReport.eelarve) - ((tmp_tulud_kokku.eelarve + tmp_kulud_kokku.eelarve) + investeerimis_tegevus.eelarve) + finants_tegenus.eelarve as eelarve, ;
+	(qryReport.eelarve_kassa) - ((tmp_tulud_kokku.eelarve_kassa + tmp_kulud_kokku.eelarve_kassa) + investeerimis_tegevus.eelarve_kassa) + finants_tegenus.eelarve_kassa as eelarve_kassa, ;
+	(qryReport.eelarve_taps) - ((tmp_tulud_kokku.eelarve_taps + tmp_kulud_kokku.eelarve_taps) + investeerimis_tegevus.eelarve_taps) + ;
 	finants_tegenus.eelarve_taps as eelarve_taps, ;
-	(q.eelarve_kassa_taps) - ((tmp_tulud_kokku.eelarve_kassa_taps + tmp_kulud_kokku.eelarve_kassa_taps) + ;
+	(qryReport.eelarve_kassa_taps) - ((tmp_tulud_kokku.eelarve_kassa_taps + tmp_kulud_kokku.eelarve_kassa_taps) + ;
 	investeerimis_tegevus.eelarve_kassa_taps) + finants_tegenus.eelarve_kassa_taps as eelarve_kassa_taps, ;		
-	(q.tegelik) - ((tmp_tulud_kokku.tegelik + tmp_kulud_kokku.tegelik) + investeerimis_tegevus.tegelik) + finants_tegenus.tegelik as tegelik, ;
-	(q.kassa) - ((tmp_tulud_kokku.kassa + tmp_kulud_kokku.kassa) + investeerimis_tegevus.kassa) + finants_tegenus.kassa  as kassa, ;
-	(q.saldoandmik) - ((tmp_tulud_kokku.saldoandmik + tmp_kulud_kokku.saldoandmik) + investeerimis_tegevus.saldoandmik) + finants_tegenus.saldoandmik  as saldoandmik ;
-	FROM qryReport q;
+	(qryReport.tegelik) - ((tmp_tulud_kokku.tegelik + tmp_kulud_kokku.tegelik) + investeerimis_tegevus.tegelik) + finants_tegenus.tegelik as tegelik, ;
+	null  as kassa, ;
+	(qryReport.saldoandmik) - ((tmp_tulud_kokku.saldoandmik + tmp_kulud_kokku.saldoandmik) + investeerimis_tegevus.saldoandmik) + finants_tegenus.saldoandmik  as saldoandmik ;
+	FROM qryReport;
 	where alltrim(artikkel) = ('100') ;
 	INTO CURSOR tmp1
 

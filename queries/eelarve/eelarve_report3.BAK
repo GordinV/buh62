@@ -15,7 +15,6 @@ If Empty(fltrAruanne.kond)
 	ENDTEXT
 ENDIF
 l_aasta = year(fltrAruanne.kpv1)
-l_kpv = fltrAruanne.kpv2
 is_parandus = !EMPTY(fltrAruanne.tunn)
 
 

@@ -9,7 +9,7 @@
 	<name>test_server2</name>			 
 	<description>test_server2</description>			 
 	<type>connection</type>	
-	<conn_str>DRIVER=PostgreSQL Unicode;DATABASE=test;server=213.184.47.198;PORT=5436;MaxVarcharSize=254;</conn_str>  
+	<conn_str>DRIVER=PostgreSQL Unicode;DATABASE=test2;server=213.184.47.198;PORT=5436;MaxVarcharSize=254;</conn_str>  
   </connection>
   <connection>
 	<name>test_local</name>			 

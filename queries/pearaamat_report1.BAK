@@ -13,11 +13,13 @@ If !lError
 	Return .F.
 Endif
 
-	SELECT (alg_saldo) As alg_saldo, (deebet) As deebet, (kreedit) As kreedit, (lopp_saldo) As lopp_saldo,;
+SET STEP ON 
+
+Select (alg_saldo) As alg_saldo, (deebet) As deebet, (kreedit) As kreedit, (lopp_saldo) As lopp_saldo,;
 	LEFT(konto,Iif(Left(konto, 6) = '100100', 6,Len(Alltrim(konto)) - Round(Len(Alltrim(konto))/2,0))) As pohikonto,;
 	konto, korr_konto ;
 	FROM tmpReport ;
-	INTO CURSOR qryReport 
+	INTO Cursor qryReport
 
 Select Sum(alg_saldo) As alg_saldo, Sum(deebet) As deebet, Sum(kreedit) As kreedit, Sum(lopp_saldo) As lopp_saldo,;
 	pohikonto, 	konto, korr_konto ;
