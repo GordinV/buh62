@@ -33,7 +33,6 @@ TEXT TO l_sql_where NOSHOW textmerge
 	 and deebet ilike ?cDeebet and kreedit ilike ?cKreedit
 	 and lisa_d ilike ?tcTPD and lisa_k ilike ?tcTPK
 	 and coalesce(asutus,'') ilike ?cAsutus
-	 and dok ilike ?cDok
 	 and kpv >= ?dKpv1
 	 and kpv <= ?dKpv2
 	 and summa >= ?nSumma1 and summa <= ?nSumma2
@@ -43,34 +42,8 @@ TEXT TO l_sql_where NOSHOW textmerge
 	 and proj ilike ?tcProj
 	 and kood4 ilike ?tcUritus
 	 and objekt ilike ?tcObjekt
+	 order by rekvid, kpv
 ENDTEXT
 lError = oDb.readFromModel('raamatupidamine\journal', 'curJournal', 'gRekv, guserid', 'journal_report1', l_sql_where)
 
-
-Select joUrnal_report1
-Index On Id Tag Id
-Index On kpV Tag kpV Additive
-Index On Number Tag Number Additive
-Index On deebet Tag deebet Additive
-Index On kreedit Tag kreedit Additive
-Index On kood1 Tag kood1 Additive
-Index On kood2 Tag kood2 Additive
-Index On kood3 Tag kood3 Additive
-Index On koOd4 Tag koOd4 Additive
-Index On kood5 Tag kood5 Additive
-Index On liSa_d Tag liSa_d Additive
-Index On liSa_k Tag liSa_k Additive
-Index On Summa Tag Summa Additive
-Index On Left(Upper(selg), 40) Tag selg Additive
-Index On Left(Upper(dok), 40) Tag dok Additive
-Index On Left(Upper(asutus), 40) Tag asutus Additive
-Index On tunnus Tag tunnus Additive
-If Used('curJournal')
-	Select cuRjournal
-	lcTag = Tag()
-Else
-	lcTag = 'KPV'
-Endif
-Select joUrnal_report1
-Set Order To (lcTag)
 RETURN .t.

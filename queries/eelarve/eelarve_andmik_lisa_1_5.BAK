@@ -22,7 +22,6 @@ If Empty(fltrAruanne.kond)
 ENDIF
 
 WAIT WINDOW 'Päring...' nowait
-SET STEP ON 
 lError = oDb.readFromModel('aruanned\eelarve\eelarve_andmik_lisa_1_5', 'eelarve_andmik_lisa_1_5_report', 'fltrAruanne.kpv2, gRekv, fltrAruanne.kond', 'qryReport', lcWhere)
 If !lError
 	Messagebox('Viga',0+16, 'Eelarve täitmine')
@@ -35,7 +34,7 @@ Endif
 
 WAIT WINDOW 'Andmed, analüüs...' nowait
 
-CREATE CURSOR eelarve_report_query (idx c(20), sub_idx integer, idx1 integer DEFAULT 5, is_esita c(1) null, rekvid i, tegev c(20), artikkel c(20), nimetus c(254) null,;
+CREATE CURSOR eelarve_report_query (idx c(20), sub_idx integer DEFAULT 0, idx1 integer DEFAULT 5, is_esita c(1) null, rekvid i, tegev c(20), artikkel c(20), nimetus c(254) null,;
 	eelarve n(14,2) null , eelarve_kassa n(14,2) null, eelarve_taps n(14,2) null, eelarve_kassa_taps n(14,2) null,;
 	tegelik n(14,2) null, kassa n(14,2) null, saldoandmik n(14,2) null)
 
@@ -220,7 +219,7 @@ SELECT 'S' as is_esita, ;
 	(qryReport.eelarve_kassa_taps) - ((tmp_tulud_kokku.eelarve_kassa_taps + tmp_kulud_kokku.eelarve_kassa_taps) + ;
 	investeerimis_tegevus.eelarve_kassa_taps) + finants_tegenus.eelarve_kassa_taps as eelarve_kassa_taps, ;		
 	(qryReport.tegelik) - ((tmp_tulud_kokku.tegelik + tmp_kulud_kokku.tegelik) + investeerimis_tegevus.tegelik) + finants_tegenus.tegelik as tegelik, ;
-	null  as kassa, ;
+	0  as kassa, ;
 	(qryReport.saldoandmik) - ((tmp_tulud_kokku.saldoandmik + tmp_kulud_kokku.saldoandmik) + investeerimis_tegevus.saldoandmik) + finants_tegenus.saldoandmik  as saldoandmik ;
 	FROM qryReport;
 	where alltrim(artikkel) = ('100') ;
@@ -610,7 +609,7 @@ VALUES ('8.1', 0, 'N', gRekv , space(20), '', UPPER('MUUD NÄITAJAD ') , ;
 
 INSERT into eelarve_report_query (idx , sub_idx, is_esita , rekvid, tegev, artikkel, nimetus ,;
 	eelarve , eelarve_kassa, eelarve_taps , eelarve_kassa_taps, tegelik , kassa, saldoandmik ) ;
-VALUES ('8.1', 1, 'N', gRekv , space(20), '', UPPER('Aasta alguse seisuga') , ;
+VALUES ('8.10', 1, 'N', gRekv , space(20), '', UPPER('Aasta alguse seisuga') , ;
 	0,; 
 	0,; 
 	0, ;
@@ -638,6 +637,59 @@ USE IN qryReport
 *!*		order by idx, tegev, artikkel ;
 *!*		INTO CURSOR eelarve_report1 
 
+
+
+* kontrol
+CREATE CURSOR kontrol_report (rea_1 c(254), rea_2 c(254), rea_3 c(254), rea_4 c(254), rea_5 c(254), summa_11 n(14,2), summa_12 n(14,2), summa_21 n(14,2), summa_22 n(14,2),;
+ summa_31 n(14,2), summa_32 n(14,2), summa_41 n(14,2), summa_42 n(14,2),  summa_51 c(20), summa_52 c(20))
+
+SELECT kontrol_report 
+APPEND blank
+
+* Kontroll: likviidsed varad
+*l_result_kassa =  get_kontrol ('8.10-5-1','','','kassa') + get_kontrol ('','100','','kassa') - get_kontrol ('','1001','','kassa')
+*l_result_saldo =  get_kontrol ('8.10-5-1','','','saldoandmik') + get_kontrol ('','100','','saldoandmik') - get_kontrol ('','1001','','saldoandmik')
+
+l_result_kassa =  get_kontrol ('','1000','','kassa') + get_kontrol ('','100','','kassa') - get_kontrol ('','1001','','kassa')
+l_result_saldo =  get_kontrol ('','1000','','saldoandmik') + get_kontrol ('','100','','saldoandmik') - get_kontrol ('','1001','','saldoandmik')
+
+
+replace rea_1 WITH 'likviidsed varad', summa_11 WITH l_result_kassa, summa_12 WITH l_result_saldo  IN kontrol_report 
+
+
+* majandusliku sisu ja tegevusalade võrdlus 
+SET STEP ON 
+l_result_kassa =  get_kontrol ('','50','','kassa') + get_kontrol ('','15','','kassa') + get_kontrol ('','4502','','kassa') + ;
+	get_kontrol ('','1501','','kassa') + get_kontrol ('','1511','','kassa') + get_kontrol ('','1531','','kassa')+  get_kontrol ('','650','','kassa') +;
+	get_kontrol ('3.1-5-0','','','kassa')
+	
+l_result_saldo =  get_kontrol ('','50','','saldoandmik') + get_kontrol ('','15','','saldoandmik') + get_kontrol ('','4502','','saldoandmik') + ;
+	get_kontrol ('','1501','','saldoandmik') + get_kontrol ('','1511','','saldoandmik') + get_kontrol ('','1531','','saldoandmik')+  get_kontrol ('','650','','saldoandmik') +;
+	get_kontrol ('3.1-5-0','','','saldoandmik')
+
+replace rea_2 WITH ' majandusliku sisu ja tegevusalade võrdlus', summa_21 WITH l_result_kassa, summa_22 WITH l_result_saldo  IN kontrol_report 
+
+* võlakohustused
+l_result_kassa =  get_kontrol ('2.4.6-5-2','','','kassa') + get_kontrol ('','2580','','kassa') - get_kontrol ('','2581','','kassa')
+l_result_saldo =  get_kontrol ('2.4.6-5-2','','','saldoandmik') + get_kontrol ('','2580','','saldoandmik') - get_kontrol ('','2581','','saldoandmik')
+
+replace rea_3 WITH ' võlakohustused', summa_31 WITH l_result_kassa, summa_32 WITH l_result_saldo  IN kontrol_report 
+
+* Tasakaalu kontroll
+
+l_result_kassa =  get_kontrol ('2.4.6-5-1','','','kassa') +  get_kontrol ('2.4.6-5-2','','','kassa') - get_kontrol ('','100','','kassa') + get_kontrol ('2.4.8-5-2','','','kassa') 
+l_result_saldo =  get_kontrol ('2.4.6-5-1','','','saldoandmik') +  get_kontrol ('2.4.6-5-2','','','saldoandmik') - get_kontrol ('','100','','saldoandmik') + get_kontrol ('2.4.8-5-2','','','saldoandmik') 
+
+replace rea_4 WITH ' Tasakaalu kontroll', summa_41 WITH l_result_kassa, summa_42 WITH l_result_saldo  IN kontrol_report 
+
+
+* Art. 100 ja vaba jäägi võrdlus (read 162 ja 52)
+l_result_kassa =  IIF(get_kontrol ('','1000','','kassa') <  (-1 * get_kontrol ('','100','','kassa')), 'FALSE', 'OK') 
+l_result_saldo =  IIF(get_kontrol ('','1000','','saldoandmik') <  (-1 * get_kontrol ('','100','','saldoandmik')), 'FALSE', 'OK')
+
+replace rea_5 WITH 'Art. 100 ja vaba jäägi võrdlus ', summa_51 WITH l_result_kassa, summa_52 WITH l_result_saldo  IN kontrol_report 
+
+
 SELECT * from eelarve_report_query ORDER BY idx, tegev, artikkel,  sub_idx  INTO CURSOR eelarve_report1
 
 USE IN eelarve_report_query
@@ -645,3 +697,31 @@ USE IN eelarve_report_query
 CLEAR
 
 SELECT eelarve_report1
+
+
+FUNCTION get_kontrol 
+LPARAMETERS l_idx, l_art, l_tegev, l_column
+l_return = 0
+
+SELECT sum(kassa) as kassa, sum(saldoandmik) as saldoandmik ;
+FROM eelarve_report_query ;
+WHERE (ALLTRIM(idx)+'-'+STR(idx1,1)+'-'+STR(sub_idx,1) = IIF(!EMPTY(l_idx), l_idx, ALLTRIM(idx)+'-'+STR(idx1,1)+'-'+STR(sub_idx,1)) AND ;
+ALLTRIM(artikkel) = IIF(!EMPTY(l_art),l_art, artikkel) AND ;
+ALLTRIM(tegev) = IIF(!EMPTY(l_tegev),l_tegev, tegev)) ;
+INTO CURSOR tmp_formula
+
+IF RECCOUNT('tmp_formula') = 0 
+	RETURN 0
+ENDIF
+
+IF l_column = 'kassa' 
+	l_return  = tmp_formula.kassa
+ENDIF
+
+IF l_column = 'saldoandmik' 
+	l_return  = tmp_formula.saldoandmik
+ENDIF
+RETURN l_return
+
+ENDFUNC
+

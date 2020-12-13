@@ -43,19 +43,12 @@ TEXT TO l_json TEXTMERGE noshow
 					[<<oDb.getJson()>>]
 ENDTEXT
 				lError = oDb.readFromModel('palk\palk_taabel', 'genTaabel', 'guserid,l_json', 'result')
-				If !lError OR !USED('result') OR EMPTY(result.result) 
-					lcViga = ''
-					If Used('result')
-						lcViga = result.error_message
-					Endif
-
+				
+				If !lError OR !USED('result')
 					Messagebox('Tekkis viga:' + lcViga,0+16,'Viga')
-					Set Step On
-					Use In result
 					Return .F.
-				Else
-					Messagebox('Kokku lisatud: ' + Alltrim(Str(result.result)),0+64,'Tulemus')
-					Use In result
+				ELSE
+					Do Form taitmine_raport With 'result' 
 					Return .T.
 				Endif
 			Endif

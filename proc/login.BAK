@@ -33,7 +33,7 @@ Define Class login As dokument
 		Set Classlib To Logo
 		olOgo = Createobject('logo')
 		olOgo.Show()
-		SET STEP ON 
+SET STEP on	
 		With Thisform
 			.Visible = .F.
 			ocOnnect = Newobject('connect', 'connect')

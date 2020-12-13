@@ -172,8 +172,6 @@ Function parce_invoice
 	Local l_parced_xml, l_invoice_start_line, l_invoice_last_line
 	Create Cursor v_log (XML m)
 
-
-SET STEP ON
 * <InvoiceInformation>
 	l_invoice_start_line = Atc('<InvoiceInformation>',l_xml_invoice)
 	l_invoice_last_line = Rat('</InvoiceInformation>',l_xml_invoice )
@@ -181,7 +179,10 @@ SET STEP ON
 	Insert Into v_xml (XML) Values (l_parced_xml)
 
 * remove <Type type="DEB"/>
-	l_parced_xml = Stuff(l_parced_xml, Atc('<Type type="DEB"/>',l_parced_xml), Len('<Type type="DEB"/>'),'')
+	IF ATC('<Type type="DEB"/>',l_parced_xml) > 0 
+		l_parced_xml = Stuff(l_parced_xml, Atc('<Type type="DEB"/>',l_parced_xml), Len('<Type type="DEB"/>'),'')
+	ENDIF
+
 	Insert Into v_xml (XML) Values (l_parced_xml)
 
 * remove <Extension>

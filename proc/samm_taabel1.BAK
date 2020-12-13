@@ -42,9 +42,8 @@ Do While lnStep>0
 TEXT TO l_json TEXTMERGE noshow
 					[<<oDb.getJson()>>]
 ENDTEXT
-_cliptext = l_json
 				lError = oDb.readFromModel('palk\palk_taabel', 'genTaabel', 'guserid,l_json', 'result')
-				brow
+				
 				If !lError OR !USED('result') OR EMPTY(result.result) 
 					lcViga = ''
 					If Used('result')
@@ -55,9 +54,8 @@ _cliptext = l_json
 					Set Step On
 					Use In result
 					Return .F.
-				Else
-					Messagebox('Kokku lisatud: ' + Alltrim(Str(result.result)),0+64,'Tulemus')
-					Use In result
+				ELSE
+					Do Form taitmine_raport With 'result' 
 					Return .T.
 				Endif
 			Endif

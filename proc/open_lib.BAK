@@ -23,13 +23,15 @@ If (l_test)
 Endif
 
 
+
+
 If Empty(tnOpt)
 	= OpenView('comTpremote',.T., 'comTpremote', 'libs\libraries\tp')
 	Select coMTpremote
 	Index On Id Tag Id
 	Index On Left(koOd,20) Tag koOd
 	Set Order To Id
-
+SET STEP ON 
 	= OpenView('comEelarveremote',.T., 'comEelarveRemote', 'libs\libraries\artikkel')
 	Select comEelarveremote
 	Index On Id Tag Id
@@ -55,7 +57,9 @@ If Empty(tnOpt)
 	Set Order To Id
 
 
-Endif
+ENDIF
+
+get_cities()
 
 = OpenView('comLaduRemote',.T., 'comLaduRemote', 'ladu\ladu')
 
@@ -188,6 +192,5 @@ IF !USED('qryCities')
 	INSERT INTO qryCities (nimetus) VALUES ('Võsu')
 	INSERT INTO qryCities (nimetus) VALUES ('Väike-Marja')
 	INSERT INTO qryCities (nimetus) VALUES ('Tapa')
-
 endif
 ENDPROC

@@ -460,7 +460,7 @@ Function parce_invoice
 	Select v_xml_invoice_parties
 	Locate For Alltrim(Str(v_xml_invoice_parties.regnumber)) <> Alltrim(qryRekv.regkood)
 
-	Replace v_xml_arv.asutus With v_xml_invoice_parties.Name, regkood With Alltrim(Str(v_xml_invoice_parties.regnumber)) In v_xml_arv
+	Replace v_xml_arv.asutus With v_xml_invoice_parties.Name, regkood With Alltrim(Str(v_xml_invoice_parties.regnumber, 12)) In v_xml_arv
 	Use In v_xml_invoice_parties
 
 

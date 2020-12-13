@@ -5,35 +5,36 @@ lnkassaOrder = 0
 lnKassaSumma = 0
 leRror = .T.
 
-IF EMPTY(gdkpv)
-	gdkpv = DATE()
-ENDIF
+If Empty(gdkpv)
+	gdkpv = Date()
+Endif
 
 * period
 TEXT TO l_where NOSHOW textmerge
 	aasta = <<YEAR(gdkpv)>>
-	and kuu = <<MONTH(gdkpv)>>	
+	and kuu = <<MONTH(gdkpv)>>
 ENDTEXT
 
-lError = oDb.readFromModel('ou\aasta', 'selectAsLibs', 'gRekv', 'tmp_period', l_where )
-If !lError OR !USED('tmp_period')
+leRror = oDb.readFromModel('ou\aasta', 'selectAsLibs', 'gRekv', 'tmp_period', l_where )
+If !leRror Or !Used('tmp_period')
 	Messagebox('Viga',0+16, 'Period')
 	Set Step On
-	Return .t.
-ENDIF
+	Return .T.
+Endif
 
-IF RECCOUNT('tmp_period') > 0 and !EMPTY(tmp_period.kinni)
-	MESSAGEBOX('Period on kinni',0+16,'Kontrol')
-	RETURN .f.
-ENDIF
+If Reccount('tmp_period') > 0 And !Empty(tmp_period.kinni)
+	Messagebox('Period on kinni',0+16,'Kontrol')
+	Return .F.
+Endif
 
-IF USED('tmp_period')
-	USE IN tmp_period
-ENDIF
+If Used('tmp_period')
+	Use In tmp_period
+Endif
 
 If Empty(tnIsikid)
 	tnIsikid = 0
 Endif
+
 If  .Not. Used('curSource')
 	Create Cursor curSource (Id Int, koOd C (20), niMetus C (120))
 Endif
@@ -41,14 +42,16 @@ If  .Not. Used('curValitud')
 	Create Cursor curValitud (Id Int, koOd C (20), niMetus C (120))
 Endif
 Create Cursor curResult (Id Int, osAkonnaid Int, paLklibid Int)
+
 lnStep = 1
+l_success = .f.	
 
 Do While lnStep>0
 	If  .Not. Empty(tnIsikid)
 		Insert Into curResult (osAkonnaid) ;
 			SELECT OSAKONDID From qryTootajad Where Id = tnIsikid
-			 
-		Insert Into curResult (Id) Values (tnIsikid) 
+
+		Insert Into curResult (Id) Values (tnIsikid)
 
 		lnStep = 3
 		tnIsikid = 0
@@ -63,6 +66,8 @@ Do While lnStep>0
 			Do geT_kood_list
 		Case lnStep>3
 			l_success = arVutus()
+		OTHERWISE 
+			l_success = .f.	
 	Endcase
 Enddo
 If Used('curSource')
@@ -124,12 +129,10 @@ TEXT TO lcJson TEXTMERGE noshow
 ENDTEXT
 * sql proc
 	task = 'palk.gen_palk_dok'
+	leRror = oDb.readFromModel('palk\palk_oper', 'executeTask', 'guserid,lcJson,task', 'qryResult')
+	Do Form taitmine_raport With 'qryResult' 
 
-	leRror = odB.readFromModel('palk\palk_oper', 'executeTask', 'guserid,lcJson,task', 'qryResult')
 	lnStep = 0
-	If leRror And qryResult.result > 0
-		Messagebox('Kogu valmistatud dokumendid: '+Alltrim(Str(qryResult.result)),0+48,'Tulemus')
-	Endif
 
 	Return leRror
 Endproc
@@ -137,7 +140,7 @@ Endproc
 
 Procedure geT_osakonna_list
 	If !Used('comOsakondRemote')
-		leRror = odB.readFromModel('libs\libraries\osakond', 'selectAsLibs', 'gRekv, guserid', 'comOsakondRemote')
+		leRror = oDb.readFromModel('libs\libraries\osakond', 'selectAsLibs', 'gRekv, guserid', 'comOsakondRemote')
 	Endif
 
 	Select curSource
@@ -171,14 +174,26 @@ Endproc
 *
 
 Procedure geT_isiku_list
-	If !Used('comTootajadRemote')
-		leRror = odB.readFromModel('palk\tootaja', 'selectAsLibs', 'gRekv, guserid', 'comTootajadRemote')
+	tcIsik = '%'
+	tnOsakondid1 = 0
+	tnOsakondid2 = 999999999
+	lcSqlWhere = ''
+	lcAlias = 'curTootajad'
+* parameters
 
-		If 	!leRror And Used('comTootajadRemote') And Reccount('comTootajadRemote') > 0
-			Messagebox('Töötajate nimekirja laadimine ebaõnnestus',0 + 48,'Error')
-			Return .F.
-		Endif
+TEXT TO lcSqlWhere textmerge	noshow
+	nimetus ilike ?tcIsik
+	and (osakondid >= ?tnOsakondid1 or osakondid is null)
+	and (osakondId <= ?tnOsakondid2 or osakondid is null)
+	and (algab <= ?gdKpv or algab is null)
+	and (lopp >= ?gdKpv or lopp is null)
+ENDTEXT
 
+	leRror = oDb.readFromModel('palk\tootaja', 'curTootajad', 'gRekv, guserid', 'qryTootajad', lcSqlWhere )
+
+	If 	!leRror And Used('qryTootajad') And Reccount('qryTootajad') > 0
+		Messagebox('Töötajate nimekirja laadimine ebaõnnestus',0 + 48,'Error')
+		Return .F.
 	Endif
 
 
@@ -188,7 +203,7 @@ Procedure geT_isiku_list
 	Endif
 
 
-	Select Distinct isikukood As koOd, niMetus, Id From comTootajadRemote Where osakondId In(Select  ;
+	Select Distinct isikukood As koOd, niMetus, Id From qryTootajad Where OSAKONDID In(Select  ;
 		osAkonnaid From curResult) Into Cursor query1
 
 	Select curSource
@@ -219,7 +234,7 @@ Endproc
 Procedure geT_kood_list
 
 	lcWhere = 'liik = 6'
-	leRror = odB.readFromModel('libs\libraries\palk_lib', 'selectAsLibs', 'gRekv, guserid', 'qryPalkLib',lcWhere)
+	leRror = oDb.readFromModel('libs\libraries\palk_lib', 'selectAsLibs', 'gRekv, guserid', 'qryPalkLib',lcWhere)
 
 
 	Select curSource

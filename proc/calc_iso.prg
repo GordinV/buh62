@@ -45,6 +45,12 @@ Function iso
 	ELSE
 	
 		lcRekvNimetus = Alltrim(qryRekv.nimetus)
+		* if full name is available, will use it
+		IF !EMPTY(qryRekv.muud)
+			lcRekvNimetus = Alltrim(qryRekv.muud)
+		ENDIF
+		
+		
 		lcRekvAadress = LEFT(Alltrim(qryRekv.aadress),70)
 	Endif
 
@@ -136,7 +142,7 @@ TEXT TO lcString ADDITIVE TEXTMERGE NOSHOW
 <GrpHdr>
 <MsgId><<ALLTRIM(STR(tmp_mk.Id))>></MsgId>
 <CreDtTm><<l_koostamise_kpv>>T08:00:00</CreDtTm>
-<NbOfTxs><<Alltrim(Str(Reccount('tmp_mk1')))>></NbOfTxs>
+<NbOfTxs><<RECCOUNT('tmp_mk1')>></NbOfTxs>
 <CtrlSum><<Alltrim(Str(lnSummaKokku,14,2))>></CtrlSum>
 <InitgPty><Nm><<Alltrim(lcRekvNimetus)>></Nm></InitgPty>
 </GrpHdr>
@@ -149,14 +155,20 @@ ENDTEXT
 			IIF(Month(tmp_mk.maksepaev)<10,'0','') + Alltrim(Str(Month(tmp_mk.maksepaev),2))+'-'+;
 			IIF(Day(tmp_mk.maksepaev)<10,'0','')+Alltrim(Str(Day(tmp_mk.maksepaev),2))
 
+	SELECT tmp_mk1
+	SUM summa TO l_mk_summa FOR parent_id = tmp_mk.Id
+		Select tmp_mk1
+		Scan For parent_id = tmp_mk.Id
+
+
 TEXT TO lcString ADDITIVE TEXTMERGE noshow
 
 <PmtInf>
 <PmtInfId><<ALLTRIM(tmp_mk.number)>></PmtInfId>
 <PmtMtd>TRF</PmtMtd>
 <BtchBookg>false</BtchBookg>
-<NbOfTxs><<Alltrim(Str(Reccount('tmp_mk1')))>></NbOfTxs>
-<CtrlSum><<Alltrim(Str(lnSummaKokku,14,2))>></CtrlSum>
+<NbOfTxs>1</NbOfTxs>
+<CtrlSum><<Alltrim(Str(tmp_mk1.summa ,14,2))>></CtrlSum>
 <PmtTpInf><SvcLvl><Cd>SEPA</Cd></SvcLvl></PmtTpInf>
 <ReqdExctnDt><<lcIsoKpv>></ReqdExctnDt>
 <Dbtr>
@@ -176,18 +188,10 @@ TEXT TO lcString ADDITIVE TEXTMERGE noshow
 </FinInstnId>
 </DbtrAgt>
 <ChrgBr>SLEV</ChrgBr>
-
-ENDTEXT
-
-		Select tmp_mk1
-		Scan For parent_id = tmp_mk.Id
-
-TEXT TO lcString ADDITIVE TEXTMERGE NOSHOW
-
 <CdtTrfTxInf>
 <PmtId>
 <InstrId><<ALLTRIM(tmp_mk.number)>></InstrId>
-<EndToEndId><<ALLTRIM(STR(tmp_mk1.lausnr))>></EndToEndId>
+<EndToEndId><<ALLTRIM(STR(tmp_mk1.id))>></EndToEndId>
 </PmtId>
 <Amt><InstdAmt Ccy="EUR"><<Alltrim(Str(tmp_mk1.Summa,14,2))>></InstdAmt></Amt>
 <Cdtr>
@@ -200,14 +204,10 @@ TEXT TO lcString ADDITIVE TEXTMERGE NOSHOW
 <<IIF(!Empty(tmp_mk.viitenr),'<Strd><CdtrRefInf><Tp><CdOrPrtry><Cd>SCOR</Cd></CdOrPrtry></Tp><Ref>'+Alltrim(tmp_mk.viitenr)+'</Ref></CdtrRefInf></Strd>','')>>
 </RmtInf>
 </CdtTrfTxInf>
-
-ENDTEXT
-		Endscan
-TEXT TO lcString ADDITIVE TEXTMERGE NOSHOW
 </PmtInf>
 
 ENDTEXT
-
+		Endscan
 		lnId = lnId + 1
 	Endscan
 TEXT TO lcString ADDITIVE TEXTMERGE NOSHOW

@@ -24,13 +24,20 @@ If !lError
 	Set Step On
 	Select 0
 	Return .F.
-Endif
+ENDIF
+
 
 Select artikkel, nimetus, Sum(eelarve) As eelarve, Sum(Iif(Empty(fltrAruanne.kassakulud), tegelik, kassa)) As taitmine,;
 	regkood, asutus ,;
 	parasutus, parregkood ;
 	from tmpReport ;
 	GROUP By artikkel, nimetus, regkood, asutus, parasutus,parregkood ;
+	ORDER By parasutus,asutus,  artikkel ;
+	INTO Cursor eelarve_report2_
+	
+Select * ;
+	from eelarve_report2_ ;
+	WHERE eelarve <> 0 OR taitmine <> 0 ;
 	ORDER By parasutus,asutus,  artikkel ;
 	INTO Cursor eelarve_report2
 

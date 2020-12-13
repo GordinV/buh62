@@ -1,20 +1,15 @@
 <?xml version = "1.0" encoding="Windows-1252" standalone="yes"?>
 <VFPData>
-  <connection>
-	<name>test_server</name>			 
-	<description>test_server 1</description>			 
-	<type>odbc</type>			 
-  </connection>
-  <connection>
-	<name>test_server2</name>			 
-	<description>test_server2</description>			 
-	<type>connection</type>	
-	<conn_str>DRIVER=PostgreSQL Unicode;DATABASE=test;server=213.184.47.198;PORT=5436;MaxVarcharSize=254;</conn_str>  
-  </connection>
-  <connection>
-	<name>test_local</name>			 
-	<description>local_server</description>			 
-	<type>connection</type>	
-	<conn_str>DRIVER=PostgreSQL Unicode;DATABASE=db;server=127.0.0.1;PORT=5432;MaxVarcharSize=254;</conn_str>  
-  </connection>
+	<connection>
+		<name>narvalv_db</name>
+		<description>uus narvalv db</description>
+		<type>connection</type>
+		<conn_str>DRIVER=PostgreSQL Unicode;DATABASE=db;server=80.235.127.119;PORT=5438;MaxVarcharSize=254;</conn_str>
+	</connection>
+	<connection>
+		<name>test2_narva</name>
+		<description>local_server</description>
+		<type>connection</type>
+		<conn_str>DRIVER=PostgreSQL Unicode;DATABASE=test2;server=dbarch.narva.ee;PORT=5436;MaxVarcharSize=254;</conn_str>
+	</connection>
 </VFPData>

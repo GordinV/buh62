@@ -46,47 +46,7 @@ ENDIF
 
 
 l_test = .f.
-If (l_test)
-	gcProgNimi = 'EELARVE'
-	Create Cursor curkey (versia c(20))
-	Insert Into curkey (versia) Values ('EELARVE')
-	
-	CREATE CURSOR config (keel int)
-	INSERT INTO config (keel) VALUES (2) 
-
-	Set Classlib To classes\Classlib
-	gVersia = 'PG'
-	oDb = Createobject('db')
-
-	gRekv = 63
-	guserid = 2477
-	tnId = 0
-	gdKpv = DATE()
-	* palk_oper, rekvid = 63
-	l_dokprop = 1716 
-
-* test_server
-	gnHandle = SQLConnect('test_server', 'vlad','Vlad490710')
-*	gnHandle = SQLConnect('localPg', 'vlad','123')
-	gnHandleAsync = gnHandle
-
-	If gnHandle < 0
-		Messagebox('Connection error',0+48,'Error')
-		Return .T.
-	Endif
-	tdKpv = Date()
-	* Vlad Gordin, rekvid = 63
-	tnIsikid = 29518
-
-	If !Used('qryRekv')
-		lError = oDb.readFromModel('ou\rekv', 'row', 'gRekv, guserid', 'qryRekv')
-
-	Endif
-	SET STEP ON 
-
-Endif
-
-IF EMPTY(l_dokprop) 
+ EMPTY(l_dokprop) 
 	SET PROCEDURE TO proc/getdokpropId additive
 	l_dokprop = getdokpropId('PALK_OPER', 'libs\libraries\dokprops')
 ENDIF
@@ -187,6 +147,8 @@ ENDTEXT
 * sql proc
 	task = 'palk.gen_palkoper'
 	leRror = odB.readFromModel('palk\palk_oper', 'executeTask', 'guserid,lcJson,task', 'qryResult')
+	Do Form taitmine_raport With 'qryResult' 
+	
 	Return leRror
 ENDFUNC
 

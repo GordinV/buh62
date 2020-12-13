@@ -23,14 +23,15 @@ If !lError
 	Set Step On
 	Select 0
 	Return .F.
-Endif
+ENDIF
+
 
 Select allikas, tegev, artikkel, nimetus, tunnus,;
 	Sum(eelarve_kinni) As eelarve_kinni, ;	
 	Sum(eelarve_parandatud) As eelarve_parandatud, ;	
+	sum(tegelik) as tegelik, ;
 	Sum(eelarve_kassa_kinni) As eelarve_kassa_kinni, ;	
 	Sum(eelarve_kassa_parandatud) As eelarve_kassa_parandatud, ;	
-	sum(tegelik) as tegelik, ;
 	sum(kassa) As kassa, ;
 	regkood, asutus ,;
 	parasutus, parregkood ;
