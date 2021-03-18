@@ -1,17 +1,22 @@
 Parameter cWhere
 
+l_kond = fltrAruanne.kond
 
 lcWhere = ''
-lcWhere = IIF(EMPTY(fltrAruanne.kond),' rekv_id = ' + STR(gRekv), '')
 
 
 TEXT TO lcWhere ADDITIVE TEXTMERGE noshow
 	<<IIF(LEN(lcWhere) > 0, 'and', '')>> konto ilike '<<ALLTRIM(fltrAruanne.konto)>>%'
 ENDTEXT
 
+l_tunnus = '%'
+IF (!EMPTY(fltrAruanne.tunnus))
+	l_tunnus = ALLTRIM(fltrAruanne.tunnus) + '%'
+ENDIF
+
 
 lError = oDb.readFromModel('aruanned\raamatupidamine\kaibeasutusandmik', 'kaibeasutusandmik_report',; 
-	'ALLTRIM(fltrAruanne.konto), fltrAruanne.asutusid, fltrAruanne.kpv1, fltrAruanne.kpv2, gRekv', 'tmpReport', lcWhere)
+	'ALLTRIM(fltrAruanne.konto), fltrAruanne.asutusid, fltrAruanne.kpv1, fltrAruanne.kpv2, gRekv,l_tunnus,l_kond  ', 'tmpReport', lcWhere)
 If !lError
 	Messagebox('Viga',0+16, 'Kaibeasutusandmik')
 	Set Step On

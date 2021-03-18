@@ -1,6 +1,4 @@
 Parameter cWhere
-Local lnDeebet, lnKreedit
-
 
 TEXT TO lcWhere TEXTMERGE noshow
 	rekv_id = <<gRekv>>

@@ -2,7 +2,7 @@
 
 Parameters td_since
 If Empty(td_since)
-	td_since = Date(2020,04,01)
+	td_since = Date(2021,01,01)
 Endif
 
 * will open cursors
@@ -34,6 +34,8 @@ With loXMLHTTP
 	.Send(cMessage)
 	Wait Window 'Oodan omniva... ok' Nowait
 	Insert Into m_memo (url, Header, Request, response) Values (cUrl, 'text/xml;charset=UTF-8', cMessage, .responsetext)
+
+	_cliptext = .responsetext
 	l_finished = kas_lopp(.responsetext)
 	l_found_xml = parse_response(.responsetext)
 	l_found_xml = Iif(Empty(l_found_xml),0,l_found_xml)
@@ -59,7 +61,8 @@ With loXMLHTTP
 		.Send(cMessage)
 		Insert Into m_memo (url, Header, Request, response) Values (cUrl, 'text/xml;charset=UTF-8', cMessage, .responsetext)
 		l_finished = kas_lopp(.responsetext)
-
+		_cliptext = cMessage
+		
 		Wait Window 'Loen vastus...' Nowait
 
 		SELECT v_xml
@@ -460,7 +463,7 @@ Function parce_invoice
 	Select v_xml_invoice_parties
 	Locate For Alltrim(Str(v_xml_invoice_parties.regnumber)) <> Alltrim(qryRekv.regkood)
 
-	Replace v_xml_arv.asutus With v_xml_invoice_parties.Name, regkood With Alltrim(Str(v_xml_invoice_parties.regnumber)) In v_xml_arv
+	Replace v_xml_arv.asutus With v_xml_invoice_parties.Name, regkood With Alltrim(Str(v_xml_invoice_parties.regnumber, 12)) In v_xml_arv
 	Use In v_xml_invoice_parties
 
 

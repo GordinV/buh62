@@ -4,6 +4,7 @@ TEXT TO lcWhere TEXTMERGE noshow
 	rekv_id = <<gRekv>>
 	and konto ilike '<<ALLTRIM(fltrAruanne.konto)>>%'
 ENDTEXT
+
 IF !EMPTY(fltrAruanne.grupp)
 	TEXT TO lcWhere ADDITIVE TEXTMERGE noshow
 		and grupp_id = <<fltrAruanne.grupp>>

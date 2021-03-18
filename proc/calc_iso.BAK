@@ -142,7 +142,7 @@ TEXT TO lcString ADDITIVE TEXTMERGE NOSHOW
 <GrpHdr>
 <MsgId><<ALLTRIM(STR(tmp_mk.Id))>></MsgId>
 <CreDtTm><<l_koostamise_kpv>>T08:00:00</CreDtTm>
-<NbOfTxs><<RECCOUNT('tmp_mk')>></NbOfTxs>
+<NbOfTxs><<RECCOUNT('tmp_mk1')>></NbOfTxs>
 <CtrlSum><<Alltrim(Str(lnSummaKokku,14,2))>></CtrlSum>
 <InitgPty><Nm><<Alltrim(lcRekvNimetus)>></Nm></InitgPty>
 </GrpHdr>
@@ -157,7 +157,6 @@ ENDTEXT
 
 	SELECT tmp_mk1
 	SUM summa TO l_mk_summa FOR parent_id = tmp_mk.Id
-
 		Select tmp_mk1
 		Scan For parent_id = tmp_mk.Id
 
@@ -169,7 +168,7 @@ TEXT TO lcString ADDITIVE TEXTMERGE noshow
 <PmtMtd>TRF</PmtMtd>
 <BtchBookg>false</BtchBookg>
 <NbOfTxs>1</NbOfTxs>
-<CtrlSum><<Alltrim(Str(l_mk_summa ,14,2))>></CtrlSum>
+<CtrlSum><<Alltrim(Str(tmp_mk1.summa ,14,2))>></CtrlSum>
 <PmtTpInf><SvcLvl><Cd>SEPA</Cd></SvcLvl></PmtTpInf>
 <ReqdExctnDt><<lcIsoKpv>></ReqdExctnDt>
 <Dbtr>
@@ -192,7 +191,7 @@ TEXT TO lcString ADDITIVE TEXTMERGE noshow
 <CdtTrfTxInf>
 <PmtId>
 <InstrId><<ALLTRIM(tmp_mk.number)>></InstrId>
-<EndToEndId><<ALLTRIM(STR(tmp_mk1.lausnr))>></EndToEndId>
+<EndToEndId><<ALLTRIM(STR(tmp_mk1.id))>></EndToEndId>
 </PmtId>
 <Amt><InstdAmt Ccy="EUR"><<Alltrim(Str(tmp_mk1.Summa,14,2))>></InstdAmt></Amt>
 <Cdtr>

@@ -1,0 +1,40 @@
+gnHandle  = SQLConnect('narvalvpg','vlad','Vlad490710')
+
+l_file = 'c:/temp/rendi_tasu'
+USE (l_file) IN 0 ALIAS tmpTasu
+SET STEP ON 
+SELECT tmpTasu
+SCAN
+	TEXT TO l_str TEXTMERGE noshow
+		SELECT id FROM arv 
+			WHERE rekvid = 130 
+			AND ALLTRIM(number) = '<<ALLTRIM(tmpTasu.number)>>' 	
+			and YEAR(kpv) = 2020
+			and jaak > 0 
+	ENDTEXT
+
+	l_error = SQLEXEC(gnHandle, l_str, 'qryArv')
+	IF l_error < 0 OR !USED('qryArv') OR RECCOUNT('qryArv') = 0 
+		SET STEP ON 
+	ELSE
+		l_kpv = DATE(2021,VAL(SUBSTR(tmpTasu.tasud,4,2)), VAL(LEFT(tmpTasu.tasud,2)))
+		TEXT TO l_str TEXTMERGE noshow
+			INSERT INTO arvtasu (rekvid, arvid, kpv, summa, pankkassa)
+				values (130, <<qryArv.id>>  '<<DTOC(l_kpv,1) >>'::date, <<tmpTasu.summa>>, 3);
+			select sp_updatearvjaak(<<qryArv.id>>, date());
+				
+		ENDTEXT
+		l_error = SQLEXEC(gnHandle, l_str)
+		IF (l_error) < 0 
+			SET STEP ON 
+		ENDIF 
+
+	ENDIF
+	
+	
+
+ENDSCAN
+USE IN tmpTasu
+
+
+SQLDISCONNECT(gnHandle)

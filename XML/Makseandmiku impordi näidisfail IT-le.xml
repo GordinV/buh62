@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Makseandmik xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Periood="2020-09-30" Registrikood="12345678" Aeg="2020-10-20">
+<Kirje>
+    <MaksjaRegistrikood>12345678</MaksjaRegistrikood>
+    <SaajaRegistrikood>FI2321321</SaajaRegistrikood>
+    <TP>123456</TP>
+    <SaajaNimi>Näide Oy</SaajaNimi>
+    <MakseKp>2020-09-20</MakseKp>
+    <Summa>432.43</Summa>
+    <KontoKlass>60</KontoKlass>
+    <TA>04330</TA>
+</Kirje>
+<Kirje>
+    <MaksjaRegistrikood>11111111</MaksjaRegistrikood>
+    <SaajaRegistrikood></SaajaRegistrikood>
+    <TP>123456</TP>
+    <SaajaNimi>Näide Oy</SaajaNimi>
+    <MakseKp>2020-09-08</MakseKp>
+    <Summa>50.7</Summa>
+    <KontoKlass>61</KontoKlass>
+    <TA>04600</TA>
+</Kirje>
+</Makseandmik>

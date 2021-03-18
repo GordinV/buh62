@@ -1,5 +1,6 @@
 Parameter cWhere
 
+SET STEP ON 
 create cursor doksaldo_report1 (arvid int, number c(120), kpv d, asutus c(120),asutusid int, liik int, summa y,;
  tasu y, jaak y, konto c(20), algdb y, algkr y, db n(18,4), kr n(18,4), loppdb n(18,4), loppkr n(18,4))
 index on arvid tag arvid
@@ -36,7 +37,7 @@ lcString = "select count(*) as count from pg_proc where proname = 'sp_kaibeandmi
 lError = oDb.execsql(lcString, 'tmpProc')
 If !Empty (lError) And Used('tmpProc') And !empty(tmpProc.Count)
 			wait window 'Serveri poolt funktsioon ...' nowait
-		SET STEP ON 	
+			
 *select sp_kaibeandmik_report('%', 6, date(2012,07,01), date(2012,07,31), '%', 2, 0)
 			
 		lError = oDb.Exec("sp_kaibeandmik_report ", "'%',"+Str(grekv)+;

@@ -1,31 +1,36 @@
 Parameter tnLepingId, tdKpv, tnPreliminary
 Local l_test
 
+If Empty(tdKpv)
+	tdKpv = Date()
+Endif
+
+
 * period
 TEXT TO l_where NOSHOW textmerge
 	aasta = <<YEAR(tdkpv)>>
-	and kuu = <<MONTH(tdkpv)>>	
+	and kuu = <<MONTH(tdkpv)>>
 ENDTEXT
 
 
 lError = oDb.readFromModel('ou\aasta', 'selectAsLibs', 'gRekv', 'tmp_period', l_where )
-If !lError OR !USED('tmp_period')
+If !lError Or !Used('tmp_period')
 	Messagebox('Viga',0+16, 'Period')
 	Set Step On
-	Return .t.
-ENDIF
+	Return .T.
+Endif
 
-IF RECCOUNT('tmp_period') > 0 and !EMPTY(tmp_period.kinni)
-	MESSAGEBOX('Period on kinni',0+16,'Kontrol')
-	RETURN .f.
-ENDIF
+If Reccount('tmp_period') > 0 And !Empty(tmp_period.kinni)
+	Messagebox('Period on kinni',0+16,'Kontrol')
+	Return .F.
+Endif
 
-IF USED('tmp_period')
-	USE IN tmp_period
-ENDIF
+If Used('tmp_period')
+	Use In tmp_period
+Endif
 
 
-l_test = .f.
+l_test = .F.
 If (l_test)
 	gcProgNimi = 'EELARVE'
 	Create Cursor curkey (versia c(20))
@@ -91,14 +96,14 @@ With oDb
 	If Empty(tnPreliminary)
 		If Used('v_dokprop')
 			Use In v_dokprop
-		ENDIF
-IF (l_test)		
-	nId = 0
-else
-		Set Procedure To Proc\getdokpropId Additive
-		
-		nId = getdokpropId('ARV', 'libs\libraries\dokprops')
-ENDIF
+		Endif
+		If (l_test)
+			nId = 0
+		Else
+			Set Procedure To Proc\getdokpropId Additive
+
+			nId = getdokpropId('ARV', 'libs\libraries\dokprops')
+		Endif
 
 		If !Used ('V_DOKPROP')
 			tnId = nId
@@ -110,13 +115,13 @@ ENDIF
 	Do While lnStep>0
 		If  .Not. Empty(tnLepingId)
 			Insert Into curResult (Id, lePingud) Values (tnLepingId, 1)
-			
+
 			tnId = tnLepingId
-			If !Used('v_leping1') OR RECCOUNT('v_leping1') = 0 OR EMPTY(v_leping1.id)
+			If !Used('v_leping1') Or Reccount('v_leping1') = 0 Or Empty(v_leping1.Id)
 				lError = oDb.readFromModel('raamatupidamine\leping', 'row', 'tnId, guserid', 'v_leping1')
-			ENDIF
-			
-			If !Used('v_leping2')	
+			Endif
+
+			If !Used('v_leping2')
 				lError = oDb.readFromModel('raamatupidamine\leping', 'details', 'tnId, guserid', 'v_leping2')
 			Endif
 
@@ -178,9 +183,9 @@ Procedure arVutus
 			If Empty(lError)
 				Exit
 			Endif
-		ENDIF
-		
-		If !EMPTY(lError) and !Empty(tnPreliminary) And v_arv.Summa > 0
+		Endif
+
+		If !Empty(lError) And !Empty(tnPreliminary) And v_arv.Summa > 0
 			Wait Window 'Salvestan aruanne..' Nowait
 			Select comAsutusRemote
 			Locate For Id = v_arv.asutusId
@@ -216,7 +221,7 @@ Function edIt_arve
 	Endif
 
 	tnId = 0
-	lError = oDb.readFromModel('raamatupidamine\arv', 'row', 'tnId, guserid', 'v_arv')	
+	lError = oDb.readFromModel('raamatupidamine\arv', 'row', 'tnId, guserid', 'v_arv')
 	lError = oDb.readFromModel('raamatupidamine\arv', 'details', 'tnId, guserid', 'v_arvread')
 	If !lError Or !Used('v_arv') Or !Used('v_arvread')
 		Messagebox('Viga arve laadimisel',0+16,'Error')
@@ -228,17 +233,17 @@ Function edIt_arve
 	lnPaev = 1
 	ldKpv = Date()
 	lnDokPropId = 0
-	
-	* arvestame tahtpaev
+
+* arvestame tahtpaev
 	If Empty(tnPreliminary)
 		lnMaxDay = Day(Gomonth(Date(Year(Date()),Month(Date()),1),1)-1)
 		Select v_arv
-		If !ISNULL(v_leping1.doklausid) AND !Empty(v_leping1.doklausid)
+		If !Isnull(v_leping1.doklausid) And !Empty(v_leping1.doklausid)
 			lnPaev = Iif( lnMaxDay < v_leping1.doklausid, lnMaxDay, v_leping1.doklausid)
 		Else
 			lnPaev = 15
 		Endif
-		If ISNULL(v_leping1.doklausid) OR Empty(v_leping1.doklausid) Or v_leping1.doklausid >= 30
+		If Isnull(v_leping1.doklausid) Or Empty(v_leping1.doklausid) Or v_leping1.doklausid >= 30
 			lnPaev = lnMaxDay
 		Endif
 
@@ -247,12 +252,12 @@ Function edIt_arve
 			ldKpv = Gomonth(ldKpv,1)
 		Endif
 		lnDokPropId = v_dokprop.Id
-		ldKpv = ldArvKpv + Iif(ISNULL(qryRekv.tahtpaev) or Empty(qryRekv.tahtpaev),lnPaev,qryRekv.tahtpaev)
+		ldKpv = ldArvKpv + Iif(Isnull(qryRekv.tahtpaev) Or Empty(qryRekv.tahtpaev),lnPaev,qryRekv.tahtpaev)
 
 	Endif
 
 	lcObjekt = ''
-	If !ISNULL(v_leping1.objektid) AND !Empty(v_leping1.objektid)
+	If !Isnull(v_leping1.objektid) And !Empty(v_leping1.objektid)
 
 		If !Used('comObjektRemote')
 			lError = oDb.readFromModel('libs\libraries\objekt', 'selectAsLibs', 'gRekv, guserid', 'comObjektRemote')
@@ -307,7 +312,7 @@ Function edIt_arve
 	Delete From v_arvread Where nomid Not In (Select Id From curResult Where teEnused = 1) Or Summa = 0
 	If lnKoef < 1
 		Scan
-			lnVat = IIF(ISDIGIT(v_arvread.km),VAL(v_arvread.km),0) / 100
+			lnVat = Iif(!ISNULL(v_arvread.km) and Isdigit(v_arvread.km),Val(v_arvread.km),0) / 100
 			Replace kogus With kogus * lnKoef,;
 				v_arvread.kbmta With hind * kogus,;
 				v_arvread.kbm With (v_arvread.kbmta - v_arvread.soodus) * lnVat,;
@@ -321,13 +326,13 @@ Function edIt_arve
 	Sum Summa To lnSumma
 	Replace v_arv.kbmta With lnKbmta, v_arv.kbm With lnKbm,  ;
 		v_arv.Summa With lnSumma, jaAk With lnSumma In v_arv
-		
-	IF RECCOUNT('v_arvread') > 0
-		RETURN .t.
-	ELSE
-		RETURN .f.
-	ENDIF
-	
+
+	If Reccount('v_arvread') > 0
+		Return .T.
+	Else
+		Return .F.
+	Endif
+
 Endfunc
 *
 Function coNvert_muud
@@ -384,11 +389,11 @@ Function coNvert_muud
 Endfunc
 *
 Function saVe_arve
-LPARAMETERS l_leping_id
+	Lparameters l_leping_id
 	Local lError
 	lError = .T.
-	
-	
+
+
 	Select v_arv
 
 	If v_arv.Summa > 0
@@ -401,19 +406,19 @@ LPARAMETERS l_leping_id
 			Go Top
 			lcJson = '"gridData":['+ oDb.getJson() + ']'
 
-			Select v_leping1.id as leping_id, * from v_arv INTO CURSOR qryArv
-			SELECT  qryArv
+			Select v_leping1.Id As leping_id, * From v_arv Into Cursor qryArv
+			Select  qryArv
 			lcJson = '{"id":' + Alltrim(Str(Id)) + ',"data": '+ oDb.getJson(lcJson) + '}'
 			lError = oDb.readFromModel('raamatupidamine\arv', 'saveDoc', 'lcJson,gUserid,gRekv', 'v_arv')
 
-			If !lError OR !USED('v_arv') OR EMPTY(v_arv.id)
+			If !lError Or !Used('v_arv') Or Empty(v_arv.Id)
 				Messagebox('Viga arve salvestamisel',0+16,'Error')
 				Return .F.
-			ENDIF
-			
-			Wait Window 'Salvestan arve nr.:'+Alltrim(v_arv.Number) + '..salvestatud ' nowait
+			Endif
+
+			Wait Window 'Salvestan arve nr.:'+Alltrim(v_arv.Number) + '..salvestatud ' Nowait
 			If  Used('v_dokprop') And v_dokprop.registr > 0
-				Wait Window 'Konteerimine arve nr.:'+Alltrim(v_arv.Number) nowait
+				Wait Window 'Konteerimine arve nr.:'+Alltrim(v_arv.Number) Nowait
 				tnId = v_arv.Id
 
 				lError = oDb.readFromModel('raamatupidamine\arv', 'generateJournal', 'guserid, tnId', 'qryArvLausend')
@@ -549,7 +554,7 @@ Function fnc_addfromleping
 	lnKSumma = 	0
 	lnKSummaKbm = 0
 	lnKSummaKokku = 0
-tnId = tnLepingId
+	tnId = tnLepingId
 	If !Used('v_leping2')
 		lError = oDb.readFromModel('raamatupidamine\leping', 'row', 'tnId, guserid', 'v_leping1')
 		lError = oDb.readFromModel('raamatupidamine\leping', 'details', 'tnId, guserid', 'v_leping2')
@@ -596,7 +601,7 @@ tnId = tnLepingId
 			Endif
 			lnSummaKokku = lnSumma
 
-			If !Empty(v_leping2.kbm)
+			If !Isnull(v_leping2.kbm) And !Empty(v_leping2.kbm)
 * ei siseldab kbm
 				lnKbm = l_kbm_maar * lnSumma
 				lnSummaKokku = lnSumma + lnKbm
@@ -605,17 +610,22 @@ tnId = tnLepingId
 				lnSumma = lnSummaKokku / (1 + l_kbm_maar)
 				lnKbm = lnSummaKokku - lnSumma
 
-			Endif
+			ENDIF
+		Endif
+		Select coMnomremote
+		Locate For Id = v_leping2.nomid
+		IF FOUND() AND (ISNULL(coMnomremote.vat) OR EMPTY(coMnomremote.vat) OR coMnomremote.vat = '.NULL.')
+			* remove kbm summa because rate is 0 
+			lnSummaKokku  = lnSumma
+			lnKbm = 0
 		ENDIF
-		SELECT comNomRemote
-		LOCATE FOR id = v_leping2.nomid
 		
-		SELECT comAsutusRemote
-		LOCATE FOR id = v_leping1.asutusid
-		
-		INSERT INTO v_arvread (nomid, hind, kogus, summa, soodus, kbm, kood1, kood2, kood3, kood5, konto, tp);
-			values (v_leping2.nomid, lnHind, lnKogus, lnSumma, lnSoodus, lnKbm, comNomRemote.tegev,comNomRemote.allikas, comNomRemote.rahavoog,;
-			comNomRemote.artikkel, comNomRemote.konto, comAsutusRemote.tp )
+		Select comAsutusRemote
+		Locate For Id = v_leping1.asutusId
+
+		Insert Into v_arvread (nomid, hind, kogus, Summa, soodus, kbm, kood1, kood2, kood3, kood5, konto, tp);
+			values (v_leping2.nomid, lnHind, lnKogus, lnSumma, lnSoodus, lnKbm, coMnomremote.tegev,coMnomremote.allikas, coMnomremote.rahavoog,;
+			coMnomremote.artikkel, coMnomremote.konto, comAsutusRemote.tp )
 	Endscan
 	Select v_arvread
 	Sum (v_arvread.kbmta - v_arvread.soodus) To lnKbmta

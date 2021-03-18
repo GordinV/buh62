@@ -59,7 +59,7 @@ Index On isikukood Tag kood
 Set Order To kood
 
 Create Cursor tsd_report (isikukood c(20), nimi c(254), v1020 c(20), v1030 N(14,2) Null , v1040 N(14,2) Null,;
-	v1050 c(100), v1060 N(14,2) Null , v1070 N(14,2) Null , v1080 N(14,2) Null, v1090 N(14,2) Null , ;
+	v1050 c(100) DEFAULT '', v1060 N(14,2) Null , v1070 N(14,2) Null , v1080 N(14,2) Null, v1090 N(14,2) Null , ;
 	v1100 N(14,2) Null, v1110 N(14,2) Null ,	v1120 N(14,2) Null , v1130 N(14,2) Null , v1140 N(14,2) Null , ;
 	v1150 c(20),	v1160 N(14,2) Null , v1160_610 N(14,2) Null, v1160_620 N(14,2) Null, v1160_630 N(14,2) Null, v1160_640 N(14,2) Null,;
 	v1170 N(14,2) Null , v1200 N(14,2) Null , v1210 N(14,2) Null, v1220 N(14,2) Null ,;

@@ -170,6 +170,7 @@ Function fnc_load_tootajad
 TEXT TO lcSqlWhere textmerge	noshow
 	(algab <= '<<DTOC(gdKpv,1)>>'::date or algab is null)
 	and (lopp >= '<<DTOC(gdKpv,1)>>'::date or lopp is null)
+	order by nimetus
 ENDTEXT
 
 	leRror = odB.readFromModel('palk\tootaja', 'curTootajad', 'gRekv, guserid', 'qryTootajad', lcSqlWhere)

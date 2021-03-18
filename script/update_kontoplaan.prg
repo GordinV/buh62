@@ -1,0 +1,130 @@
+l_str_test_2 = 'DRIVER=PostgreSQL Unicode;DATABASE=test2;server=dbarch.narva.ee;PORT=5436;MaxVarcharSize=254;uid=vlad;pwd=Vlad490710'
+l_str_new = 'DRIVER=PostgreSQL Unicode;DATABASE=db;server=80.235.127.119;PORT=5438;MaxVarcharSize=254;uid=vlad;pwd=Vlad490710'
+
+l_conect_test2 =  Sqlstringconnect(l_str_test_2)
+l_conect_new =  Sqlstringconnect(l_str_new)
+
+If l_conect_test2 < 1 Or l_conect_new < 0
+	Messagebox('Viga, uhendus')
+	Set Step On
+	Return
+Endif
+
+
+* get artikkels from test
+
+TEXT TO l_sql
+select id, rekvid, kood, nimetus, properties, coalesce(tun1,0) as tun1, coalesce(tun2,0) as tun2, 
+	coalesce(tun3,0) as tun3, coalesce(tun4,0) as tun4, coalesce(tun5,0) as tun5, muud, status, valid from (
+                  SELECT *, (properties::JSONB ->> 'valid') AS valid
+                  FROM libs.library
+                  WHERE library.library = 'KONTOD'
+              ) qry
+              where status < 3
+ENDTEXT
+
+l_result = SQLEXEC(l_conect_test2 , l_sql, 'tmpKontod')
+If l_result < 0
+	Set Step On
+	Return
+Endif
+
+* check for valid
+
+Select tmpKontod
+Brow
+
+* update valid
+Select tmpKontod
+Wait Window tmpKontod.kood Nowait
+Scan
+* status
+	If tmpKontod.Status = 3 Then
+
+TEXT TO l_sql TEXTMERGE noshow
+			UPDATE libs.library SET  status = 3
+			where id = <<tmpKontod.id>>
+			and  library.library = 'KONTOD'
+ENDTEXT
+		l_result = SQLEXEC(l_conect_new , l_sql)
+		If l_result < 0
+			Set Step On
+			_Cliptext = l_sql
+		Endif
+		Wait Window tmpKontod.kood + ' deleted' Timeout 1
+	Else
+		If !Isnull(tmpKontod.Valid) And !Empty(tmpKontod.Valid)
+TEXT TO l_sql TEXTMERGE noshow
+			UPDATE libs.library SET properties = properties::jsonb || '{"valid":"2020-12-31"}'::jsonb
+			where id = <<tmpKontod.id>>
+			and  library.library = 'KONTOD'
+ENDTEXT
+			l_result = SQLEXEC(l_conect_new , l_sql)
+			If l_result < 0
+				Set Step On
+				_Cliptext = l_sql
+			Endif
+			Wait Window tmpKontod.kood + ' UPDATED' Timeout 1
+		Else
+* check if available
+			Wait Window tmpKontod.kood Nowait
+TEXT TO l_sql
+				                  SELECT id
+				                  FROM libs.library
+				                  WHERE library.library = 'KONTOD'
+				                  and LTRIM(rtrim(kood)) = '<<LTRIM(RTRIM(tmpkONTOD.kood))>>'
+ENDTEXT
+			l_result = SQLEXEC(l_conect_new, l_sql, 'tmpNew')
+			If l_result < 0
+				Set Step On
+				Return
+			Endif
+			If Reccount('tmpNew') < 1
+				Wait Window tmpKontod.kood + 'puudub' Nowait
+* insert
+TEXT TO l_sql TEXTMERGE noshow
+					INSERT INTO libs.library (rekvid, kood, nimetus, library, status, tun1, tun2, tun3, tun4, tun5, properties)
+						values (63, '<<LTRIM(RTRIM(tmpkONTOD.kood))>>','<<LTRIM(RTRIM(tmpkONTOD.nimetus))>>',
+						'KONTOD',1,
+						<<tmpkONTOD.tun1>>, <<tmpkONTOD.tun2>>, <<tmpkONTOD.tun3>>, <<tmpkONTOD.tun4>>, <<tmpkONTOD.tun5>>,
+						'<<LTRIM(RTRIM(tmpkONTOD.properties))>>')
+ENDTEXT
+				l_result = SQLEXEC(l_conect_new, l_sql)
+				If l_result < 0
+					Set Step On
+					Return
+				Endif
+				Wait Window tmpKontod.kood + ' inserted' TIMEOUT 1
+			ELSE
+				* update
+TEXT TO l_sql TEXTMERGE noshow
+					update libs.library SET tun1 = <<tmpkONTOD.tun1>>, 
+						tun2 = <<tmpkONTOD.tun2>>, 
+						tun3 = <<tmpkONTOD.tun3>>, 
+						tun4 = <<tmpkONTOD.tun4>>, 
+						tun5 = <<tmpkONTOD.tun5>>
+						where id = <<tmpNew.id>>
+				l_result = SQLEXEC(l_conect_new, l_sql)
+				If l_result < 0
+					Set Step On
+					Return
+				Endif
+				Wait Window tmpKontod.kood + ' uuendatud' TIMEOUT 1
+
+ENDTEXT
+
+			Endif
+
+
+		Endif
+
+	Endif
+
+
+
+
+Endscan
+
+
+= sqldisconnect(l_conect_test2 )
+= sqldisconnect(l_conect_new )

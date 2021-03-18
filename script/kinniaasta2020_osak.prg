@@ -1,0 +1,683 @@
+Local lError
+
+l_str = 'DRIVER=PostgreSQL Unicode;DATABASE=db;server=80.235.127.119;PORT=5438;MaxVarcharSize=254;uid=vlad;pwd=Vlad490710'
+gnHandle2009 = Sqlstringconnect(l_str )
+
+If gnHandle2009 < 1
+	Messagebox('Viga, uhendus')
+	Set Step On
+	Return
+Endif
+
+
+gnHandle2008 = SQLConnect('narvalvpg','vlad','Vlad490710')
+If gnHandle2008 < 1
+	Messagebox('Viga, uhendus')
+	Set Step On
+	Return
+Endif
+
+* asutuse nimekirje
+lcString = "select id, nimetus from rekv where parentid < 999 and id in (select id from rekv where parentid = 119 or id = 119) " 
+*" and  id not in (select rekvid from journal)"
+
+*!*	and "+;
+*!*	" id not in (select distinct rekvid from journal where kpv = date(2009,12,31) and selg like 'Alg.saldo%') order by id "
+
+lError = sqlexec(gnHandle2009,lcString,'qryRekv')
+If lError < 0 Or Not Used('qryRekv')
+	Messagebox('Viga:'+lcString)
+	Return
+Endif
+
+lcKpv = 'date(2021,01,01)'
+lcKpv2 = 'date(2020,12,31)'
+
+Select qryRekv
+Scan
+	lcAsutuseNimi = Ltrim(Rtrim(qryRekv.nimetus))
+	Wait Window lcAsutuseNimi+' algus..' Nowait
+
+* Tellime saldoandmik
+
+	lcString  = " select sp_saldoandmik_report_8("+ Str(qryRekv.Id)+","+lcKpv2+",2,0,0)"
+	Wait Window lcAsutuseNimi+' saldoanmikuandmed..' Nowait
+	lError = sqlexec(gnHandle2008,lcString,'qrySA')
+	If lError < 0 Or !Used('qrySA')
+		Messagebox('Viga.'+lcString)
+		Exit
+	Endif
+
+	If Used('qrySA')
+		tcTimestamp = Alltrim(qrySA.sp_saldoandmik_report_8)
+		lcString = "select konto, tp, tegev, allikas, rahavoo, sum(db) as db, sum(kr) as kr, nimetus from tmp_saldoandmik where rekvid = "+Str(qryRekv.Id)+;
+			" and timestamp = '"+tcTimestamp +"' and "+;
+			" LEFT(konto,1) in ('1','2') and "+;
+			" left(konto,3) not in ('102','103','109','108','201','202','206','208','258', '200') "+;
+		" and LEFT(konto,6) not in ('103799','103930','103931','103932','202000','202010','202090','203010','203020','203030','203035') "+;
+			" and konto not in ('10010005')" +;
+			" group by konto, tp, tegev, allikas, rahavoo, nimetus order by konto, tp, tegev, allikas, rahavoo  "
+		lError = sqlexec(gnHandle2008,lcString,'qrySaldoaruanne')
+	ELSE 
+		SET STEP ON 
+	Endif
+
+*	Select qrySaldoaruanne
+*	brow
+
+* Tellime saldoasutusandmik
+
+	If Used('qrySaldoDeebet')
+		Use In qrySaldoDeebet
+	Endif
+
+	If Used('qrySaldoKreedit')
+		Use In qrySaldoKreedit
+	Endif
+
+	Wait Window lcAsutuseNimi+' subkontod ...' Nowait
+*!*		if qryrekv.id = 66
+*!*			set step on
+*!*		endif
+
+	lcString = "select sp_subkontod_report('102%',"+ Str(qryRekv.Id)+","+lcKpv2+","+lcKpv2+",0,'%',3,0)"
+	lError = sqlexec(gnHandle2008,lcString,'qrySA')
+	tcTimestamp = Alltrim(qrySA.sp_subkontod_report)
+
+	Wait Window lcAsutuseNimi+' subkontod 10...' Nowait
+
+	lcString = "select algjaak, konto, asutusId from tmp_subkontod_report where left(konto,3) in('102') and timestamp = '"+tcTimestamp+"' order by konto, asutusid"
+	lError = sqlexec(gnHandle2008,lcString,'qrySaldoDeebet1')
+
+	lcString = "select sp_subkontod_report('103%',"+ Str(qryRekv.Id)+","+lcKpv2+","+lcKpv2+",0,'%',3,0)"
+	lError = sqlexec(gnHandle2008,lcString,'qrySA')
+	tcTimestamp = Alltrim(qrySA.sp_subkontod_report)
+
+	lcString = "select algjaak, konto, asutusId from tmp_subkontod_report where left(konto,3) in('103') and timestamp = '"+tcTimestamp+"' order by konto, asutusid"
+	lError = sqlexec(gnHandle2008,lcString,'qrySaldoDeebet2')
+
+
+	lcString = "select sp_subkontod_report('108%',"+ Str(qryRekv.Id)+","+lcKpv2+","+lcKpv2+",0,'%',3,0)"
+	lError = sqlexec(gnHandle2008,lcString,'qrySA')
+	tcTimestamp = Alltrim(qrySA.sp_subkontod_report)
+
+	lcString = "select algjaak, konto, asutusId from tmp_subkontod_report where left(konto,3) in('108') and timestamp = '"+tcTimestamp+"' order by konto, asutusid"
+	lError = sqlexec(gnHandle2008,lcString,'qrySaldoDeebet3')
+
+	lcString = "select sp_subkontod_report('109%',"+ Str(qryRekv.Id)+","+lcKpv2+","+lcKpv2+",0,'%',3,0)"
+	lError = sqlexec(gnHandle2008,lcString,'qrySA')
+	tcTimestamp = Alltrim(qrySA.sp_subkontod_report)
+
+	lcString = "select algjaak, konto, asutusId from tmp_subkontod_report where left(konto,3) in('109') and timestamp = '"+tcTimestamp+"' order by konto, asutusid"
+	lError = sqlexec(gnHandle2008,lcString,'qrySaldoDeebet4')
+
+*!*		lcString = "select sp_subkontod_report('155%',"+ Str(qryRekv.id)+","+lcKpv2+","+lcKpv2+",0,'%',3,0)"
+*!*		lError = sqlexec(gnhandle2008,lcString,'qrySA')
+*!*		tcTimestamp = Alltrim(qrySA.sp_subkontod_report)
+
+*!*		lcString = "select algjaak, konto, asutusId from tmp_subkontod_report where left(konto,3) in('155') and timestamp = '"+tcTimestamp+"' order by konto, asutusid"
+*!*		lError = sqlexec(gnhandle2008,lcString,'qrySaldoDeebet5_')
+
+*	SELECT * from qrySaldoDeebet5_ where LEFT(konto,6) in ('159910','156920','155900','155910') INTO CURSOR qrySaldoDeebet5
+*	brow
+*	USE IN qrySaldoDeebet5_
+
+	Select * From qrySaldoDeebet1;
+		union All;
+		select * From qrySaldoDeebet2;
+		union All;
+		select * From qrySaldoDeebet3;
+		union All;
+		select * From qrySaldoDeebet4;
+		into Cursor qrySaldoDeebet
+
+*!*		union all;
+*!*		select * from qrySaldoDeebet5;
+
+*	brow
+
+	Wait Window lcAsutuseNimi+' subkontod 20...' Nowait
+
+	lcString = "select sp_subkontod_report('201%',"+ Str(qryRekv.Id)+","+lcKpv2+","+lcKpv2+",0,'%',3,0)"
+	lError = sqlexec(gnHandle2008,lcString,'qrySA')
+	tcTimestamp = Alltrim(qrySA.sp_subkontod_report)
+
+
+	lcString = "select algjaak, konto, asutusId from tmp_subkontod_report where left(konto,3) in('201') and timestamp = '"+tcTimestamp+"' order by konto, asutusid"
+	lError = sqlexec(gnHandle2008,lcString,'qrySaldoKreedit1')
+
+	lcString = "select sp_subkontod_report('202%',"+ Str(qryRekv.Id)+","+lcKpv2+","+lcKpv2+",0,'%',3,0)"
+	lError = sqlexec(gnHandle2008,lcString,'qrySA')
+	tcTimestamp = Alltrim(qrySA.sp_subkontod_report)
+
+	lcString = "select algjaak, konto, asutusId from tmp_subkontod_report where left(konto,3) in('202') and timestamp = '"+tcTimestamp+"' order by konto, asutusid"
+	lError = sqlexec(gnHandle2008,lcString,'qrySaldoKreedit2')
+
+	lcString = "select sp_subkontod_report('200%',"+ Str(qryRekv.Id)+","+lcKpv2+","+lcKpv2+",0,'%',3,0)"
+	lError = sqlexec(gnHandle2008,lcString,'qrySA')
+	tcTimestamp = Alltrim(qrySA.sp_subkontod_report)
+
+	lcString = "select algjaak, konto, asutusId from tmp_subkontod_report where left(konto,3) in('200') and timestamp = '"+tcTimestamp+"' order by konto, asutusid"
+	lError = sqlexec(gnHandle2008,lcString,'qrySaldoKreedit3')
+
+	lcString = "select sp_subkontod_report('206%',"+ Str(qryRekv.Id)+","+lcKpv2+","+lcKpv2+",0,'%',3,0)"
+	lError = sqlexec(gnHandle2008,lcString,'qrySA')
+	tcTimestamp = Alltrim(qrySA.sp_subkontod_report)
+
+	lcString = "select algjaak, konto, asutusId from tmp_subkontod_report where left(konto,3) in('206') and timestamp = '"+tcTimestamp+"' order by konto, asutusid"
+	lError = sqlexec(gnHandle2008,lcString,'qrySaldoKreedit4')
+
+	lcString = "select sp_subkontod_report('208%',"+ Str(qryRekv.Id)+","+lcKpv2+","+lcKpv2+",0,'%',3,0)"
+	lError = sqlexec(gnHandle2008,lcString,'qrySA')
+	tcTimestamp = Alltrim(qrySA.sp_subkontod_report)
+
+	lcString = "select algjaak, konto, asutusId from tmp_subkontod_report where left(konto,3) in('208') and timestamp = '"+tcTimestamp+"' order by konto, asutusid"
+	lError = sqlexec(gnHandle2008,lcString,'qrySaldoKreedit5')
+
+	lcString = "select sp_subkontod_report('258%',"+ Str(qryRekv.Id)+","+lcKpv2+","+lcKpv2+",0,'%',3,0)"
+	lError = sqlexec(gnHandle2008,lcString,'qrySA')
+	tcTimestamp = Alltrim(qrySA.sp_subkontod_report)
+
+	lcString = "select algjaak, konto, asutusId from tmp_subkontod_report where left(konto,3) in('258') and timestamp = '"+tcTimestamp+"' order by konto, asutusid"
+	lError = sqlexec(gnHandle2008,lcString,'qrySaldoKreedit6')
+
+	Select * From qrySaldoKreedit1;
+		union All;
+		select * From qrySaldoKreedit2;
+		union All;
+		select * From qrySaldoKreedit3;
+		union All;
+		select * From qrySaldoKreedit4;
+		union All;
+		select * From qrySaldoKreedit5;
+		union All;
+		select * From qrySaldoKreedit6;
+		into Cursor qrySaldoKreedit
+*!*		select * from qrySaldoKreedit3;
+*!*		union all;
+
+*	brow
+
+	Use In qrySaldoKreedit1
+	Use In qrySaldoKreedit2
+	Use In qrySaldoKreedit3
+	Use In qrySaldoKreedit4
+	Use In qrySaldoKreedit5
+	Use In qrySaldoKreedit6
+
+*		select * from qrySaldoKreedit1 into cursor qrySaldoKreedit
+
+
+* select logs
+TEXT TO lcString TEXTMERGE noshow
+		SELECT * from import_log
+		WHERE lib_name = 'ASUTUS'
+ENDTEXT
+	lError = sqlexec(gnHandle2009,lcString, 'qryImportLog')
+	If lError < 1 Or !Used('qryImportLog')
+		Set Step On
+
+	Endif
+
+
+	lcString = "select id, tp from asutus "
+	lError = sqlexec(gnHandle2008,lcString,'qryAsutus')
+
+
+* kustutame vana lausend
+*	wait window lcAsutuseNimi+' kustutame vana saldo..' nowait
+
+	lcString = "update aasta set kinni = 0 where rekvid = " + Str(qryRekv.Id,9)+ " and kuu = 12 and aasta = 2020"
+	lError = sqlexec(gnHandle2009,lcString)
+	If lError < 0
+		Messagebox('Viga.'+lcString)
+		Set Step On
+		Exit
+	Endif
+
+	lcString = "delete from journal where rekvid = " + Str(qryRekv.Id,9)+ " and kpv = date(2020,12,31) and selg ilike 'Alg.saldo%'"
+	lError = sqlexec(gnHandle2009,lcString)
+	If lError < 0
+		Messagebox('Viga.'+lcString)
+		Set Step On
+		Exit
+	Endif
+
+* Koostame deebet lausend
+	Wait Window lcAsutuseNimi+' deebet lausend..' Nowait
+	lnSummaDb = 0
+	lcString = "insert into journal (rekvid, userid, asutusid, kpv, selg, muud ) values ("+;
+		str(qryRekv.Id)+",60,0,"+lcKpv2+",'Alg.saldo deebet','ALGSALDO')"
+
+	lError = sqlexec(gnHandle2009,lcString)
+	If lError < 0
+		Messagebox('Viga.'+lcString)
+		Set Step On
+		Exit
+	Endif
+	lcString = "select id from journal order by id desc limit 1"
+	lError = sqlexec(gnHandle2009,lcString,'qryId')
+	If lError < 0 Or !Used('qryId')
+		Messagebox('Viga.'+lcString)
+		Set Step On
+		Exit
+	Endif
+
+	Select * from qrySaldoaruanne WHERE qrySaldoaruanne.db <> 0 ;
+			AND qrySaldoaruanne.konto Not In ('103799','103930','103931','103932','202000','202010','202090','203010','203020','203030','203035','10010005') ;
+			INTO CURSOR qrySaldoaruanne_
+
+
+
+
+SELECT qrySaldoaruanne_			
+	Scan 
+
+		lcTp = qrySaldoaruanne_.tp
+		If Left(Alltrim(qrySaldoaruanne_.konto),3) = '203' And lcTp <> '014001'
+			lcTp = '014001'
+		Endif
+* arvestame saldo
+TEXT TO lcString TEXTMERGE noshow
+	SELECT sum(summa) as summa FROM (
+		SELECT sum(summa) as summa FROM cur_journal
+		WHERE rekvid = <<qryRekv.id>>
+		and kpv < '2021-01-01'
+		and LTRIM(RTRIM(deebet)) = '<<RTRIM(LTRIM(qrySaldoaruanne_.konto))>>'
+		and LTRIM(RTRIM(kood1)) = '<<RTRIM(LTRIM(qrySaldoaruanne_.tegev))>>' 
+		and LTRIM(RTRIM(kood2)) = '<<RTRIM(LTRIM(qrySaldoaruanne_.allikas))>>' 
+		and LTRIM(RTRIM(kood3)) = '<<RTRIM(LTRIM(qrySaldoaruanne_.rahavoo))>>' 
+		union all
+		SELECT sum(-1 * summa) as summa FROM cur_journal
+		WHERE rekvid = <<qryRekv.id>>
+		and kpv < '2021-01-01'
+		and LTRIM(RTRIM(kreedit)) = '<<RTRIM(LTRIM(qrySaldoaruanne_.konto))>>'
+		and LTRIM(RTRIM(kood1)) = '<<RTRIM(LTRIM(qrySaldoaruanne_.tegev))>>' 
+		and LTRIM(RTRIM(kood2)) = '<<RTRIM(LTRIM(qrySaldoaruanne_.allikas))>>' 
+		and LTRIM(RTRIM(kood3)) = '<<RTRIM(LTRIM(qrySaldoaruanne_.rahavoo))>>' 
+		) qry
+ENDTEXT
+		lError = sqlexec(gnHandle2009 ,lcString, 'qrySaldo')
+		If lError < 1
+			_Cliptext = lcString
+			Set Step On
+		Endif
+
+		l_summa = qrySaldoaruanne_.db
+		If Reccount('qrySaldo') > 0 And !ISNULL(qrySaldo.Summa) AND qrySaldo.Summa <> 0
+			l_summa = qrySaldoaruanne_.db - qrySaldo.Summa
+		Endif
+		Wait Window qrySaldoaruanne_.konto + ' update ' + Str(l_summa,12,2) nowait
+
+
+		lcString = "select Sp_salvesta_journal1(0,"+ Str(qryId.Id,9)+", "+Str(Round(qrySaldoaruanne_.db,2),14,2)+",'','','"+;
+			qrySaldoaruanne_.tegev+"','"+qrySaldoaruanne_.allikas+"','"+ qrySaldoaruanne_.rahavoo+"','','','"+ qrySaldoaruanne_.konto+"','"+lcTp+"','999999','"+lcTp+"','EUR',1,"+;
+			str(Round(l_summa,2),14,2)+",'','')"
+
+
+*		if left(qrySaldoAruanne.KONTO,3) <> '102' and left(qrySaldoAruanne.konto,3) <> '103'
+			lcString = "insert into journal1 (parentid, summa,kood1,kood2,kood3,deebet,lisa_d,kreedit,lisa_k) values ("	+;
+				str(qryId.id,9)+","+str(l_summa ,14,2)+",'"+qrySaldoAruanne.tegev+"','"+qrySaldoAruanne.allikas+"','"+;
+				qrySaldoAruanne.rahavoo+"','"+qrySaldoAruanne.konto+"','"+lcTp+"','999999','"+lcTp+"')"
+
+		lError = sqlexec(gnHandle2009,lcString)
+		If lError < 0
+			Messagebox('Viga.'+lcString)
+			Set Step On
+			Exit
+		Endif
+		lnSummaDb = lnSummaDb +  l_summa
+*		endif
+	Endscan
+	If lError < 0
+		Exit
+	Endif
+
+
+* koostame deebet subkonto lausend
+
+	Select * FROM  qrySaldoDeebet ;
+ 	WHERE konto Not In ('103799','103930','103931','103932','202000','202010','202090','203010','203020','203030','203035','10010005') ;
+	INTO CURSOR qrySaldoDeebet_
+*	brow
+	SELECT qrySaldoDeebet_
+	Scan
+		lctegev = ''
+		lcAllikas = ''
+		lcRahavoo = ''
+		lcTp = ''
+
+		Select qryAsutus
+		Locate For Id = qrySaldoDeebet_.asutusId
+		If Found()
+			lcTp = qryAsutus.tp
+		Endif
+
+* locate new asutusId
+		Select qryImportLog
+		Locate For old_id = qrySaldoDeebet_.asutusId
+		If !Found()
+			lcString = 'SELECT * from asutus WHERE id = '  + STR(qrySaldoDeebet_.asutusId) 
+			lError = sqlexec(gnHandle2009 ,lcString, 'qryAsutus')
+			If lError < 1
+				_Cliptext = lcString
+				Set Step On
+			Endif
+			
+			* new asutus 
+			TEXT TO lcString TEXTMERGE noshow
+				SELECT id FROM libs.asutus WHERE regkood = '<<qryAsutus.regkood>>' limit 1 	
+			ENDTEXT
+			lError = sqlexec(gnHandle2009 ,lcString, 'qryNewAsutus')
+			If lError < 1
+				_Cliptext = lcString
+				Set Step On
+			Endif
+			
+			l_asutus_id = qryNewAsutus.id
+		ELSE
+			l_asutus_id = qryImportLog.new_id
+		
+		Endif
+
+		lcString = "insert into journal (rekvid, userid, asutusid, kpv,  selg,MUUD ) values ("+;
+			str(qryRekv.Id)+",60,"+Str(qrySaldoDeebet_.asutusId)+","+lcKpv2+",'Alg.saldo deebet','ALGSALDO')"
+
+		lError = sqlexec(gnHandle2009,lcString)
+		If lError < 0
+			Messagebox('Viga.'+lcString)
+			Set Step On
+			Exit
+		Endif
+		lcString = "select id from journal order by id desc limit 1"
+		lError = sqlexec(gnHandle2009,lcString,'qryId')
+		If lError < 0 Or !Used('qryId')
+			Messagebox('Viga.'+lcString)
+			Exit
+		Endif
+		If Left(Alltrim(qrySaldoDeebet_.konto),3) = '203' And lcTp <> '014001'
+			lcTp = '014001'
+		Endif
+
+* arvestame saldo
+
+
+TEXT TO lcString TEXTMERGE noshow
+	SELECT sum(summa) as summa FROM (
+		SELECT sum(summa) as summa FROM cur_journal
+		WHERE rekvid = <<qryRekv.id>>
+		and asutusid = <<l_asutus_id >>
+		and kpv < '2021-01-01'
+			and LTRIM(RTRIM(deebet)) = '<<RTRIM(LTRIM(qrySaldoDeebet_.konto))>>'
+	union all
+		SELECT sum(-1 * summa) as summa FROM cur_journal
+		WHERE rekvid = <<qryRekv.id>>
+		and kpv < '2021-01-01'
+		and asutusid = <<l_asutus_id >>
+		and LTRIM(RTRIM(kreedit)) = '<<RTRIM(LTRIM(qrySaldoDeebet_.konto))>>'
+		
+		) qry
+ENDTEXT
+		lError = sqlexec(gnHandle2009 ,lcString, 'qrySaldo')
+		If lError < 1
+			_Cliptext = lcString
+			Set Step On
+		Endif
+
+		l_summa = qrySaldoDeebet_.algjaak 
+		If Reccount('qrySaldo') > 0 And !ISNULL(qrySaldo.Summa) AND qrySaldo.Summa <> 0
+			l_summa = qrySaldoDeebet_.algjaak - qrySaldo.Summa
+		Endif
+		Wait Window qrySaldoDeebet_.konto + ' update ' + Str(l_summa,12,2) NOWAIT 
+
+
+		IF l_summa  <> 0 
+		lcString = "select Sp_salvesta_journal1(0,"+ Str(qryId.Id,9)+", "+Str(Round(l_summa ,2),14,2)+",'','','"+;
+			lctegev+"','"+lcAllikas+"','"+ lcRahavoo+"','','','"+ qrySaldoDeebet_.konto+"','"+lcTp+"','999999','"+lcTp+"','EUR',1,"+;
+			str(Round(l_summa ,2),14,2)+",'','')"
+
+		lcString = "insert into journal1 (parentid, summa,kood1,kood2,kood3,deebet,lisa_d,kreedit,lisa_k) values ("	+;
+			str(qryId.id,9)+","+str(qrySaldoDeebet.algjaak,14,2)+",'"+lcTegev+"','"+lcAllikas+"','"+;
+			lcRahavoo+"','"+qrySaldoDeebet.konto+"','"+lcTp+"','999999','"+lcTp+"')"
+
+		lError = sqlexec(gnHandle2009,lcString)
+		If lError < 0 Or !Used('qryId')
+			Messagebox('Viga.'+lcString)
+			Set Step On
+			Exit
+		Endif
+
+		ENDIF
+		
+		lnSummaDb = lnSummaDb +  l_summa
+
+	Endscan
+
+* Koostame kreedit lausend
+	Wait Window lcAsutuseNimi+' kreedit lausend..' Nowait
+	lnSummaKr = 0
+
+	lcString = "insert into journal (rekvid, userid, asutusid, kpv,  selg,muud ) values ("+;
+		str(qryRekv.Id)+",60,0,"+lcKpv2+",'Alg.saldo kreedit','ALGSALDO')"
+
+	lError = sqlexec(gnHandle2009,lcString)
+	If lError < 0
+		Messagebox('Viga.'+lcString)
+		Set Step On
+		Exit
+	Endif
+	lcString = "select id from journal order by id desc limit 1"
+	lError = sqlexec(gnHandle2009,lcString,'qryId')
+	If lError < 0 Or !Used('qryId')
+		Messagebox('Viga.'+lcString)
+		Exit
+	Endif
+
+	Select * from qrySaldoaruanne ;
+		WHERE qrySaldoaruanne.kr <> 0 ;
+ 		And konto Not In ('103799','103930','103931','103932','202000','202010','202090','203010','203020','203030','203035','10010005');
+		INTO CURSOR qrySaldoaruanne_
+		SELECT qrySaldoaruanne_
+	Scan
+*		if left(qrySaldoAruanne.konto,3) <> '201' and left(qrySaldoAruanne.konto,3) <> '202' and left(qrySaldoAruanne.konto,3) <> '203'
+
+		lcTp = qrySaldoaruanne_.tp
+		If Left(Alltrim(qrySaldoaruanne_.konto),3) = '203' And lcTp <> '014001'
+			lcTp = '014001'
+		Endif
+
+
+* arvestame saldo
+TEXT TO lcString TEXTMERGE noshow
+	SELECT sum(-1 * summa) as summa FROM (
+		SELECT sum(summa) as summa FROM cur_journal
+		WHERE rekvid = <<qryRekv.id>>
+		and kpv < '2021-01-01'::date
+		and LTRIM(RTRIM(deebet)) = '<<RTRIM(LTRIM(qrySaldoaruanne_.konto))>>'
+		and LTRIM(RTRIM(kood1)) = '<<RTRIM(LTRIM(qrySaldoaruanne_.tegev))>>' 
+		and LTRIM(RTRIM(kood2)) = '<<RTRIM(LTRIM(qrySaldoaruanne_.allikas))>>' 
+		and LTRIM(RTRIM(kood3)) = '<<RTRIM(LTRIM(qrySaldoaruanne_.rahavoo))>>' 
+		
+		union all
+		SELECT sum(summa) as summa FROM cur_journal
+		WHERE rekvid = <<qryRekv.id>>
+		and kpv < '2021-01-01'::date
+		and LTRIM(RTRIM(kreedit)) = '<<RTRIM(LTRIM(qrySaldoaruanne_.konto))>>'
+		and LTRIM(RTRIM(kood1)) = '<<RTRIM(LTRIM(qrySaldoaruanne_.tegev))>>' 
+		and LTRIM(RTRIM(kood2)) = '<<RTRIM(LTRIM(qrySaldoaruanne_.allikas))>>' 
+		and LTRIM(RTRIM(kood3)) = '<<RTRIM(LTRIM(qrySaldoaruanne_.rahavoo))>>' 
+		
+		) qry
+ENDTEXT
+		lError = sqlexec(gnHandle2009 ,lcString, 'qrySaldo')
+		If lError < 1
+			_Cliptext = lcString
+			Set Step On
+		Endif
+
+		l_summa = qrySaldoaruanne_.kr
+		If Reccount('qrySaldo') > 0 And !ISNULL(qrySaldo.Summa) AND qrySaldo.Summa <> 0
+			l_summa = qrySaldoaruanne_.kr - (-1 * qrySaldo.Summa)
+		Endif
+
+
+
+		lcString = "select Sp_salvesta_journal1(0,"+ Str(qryId.Id,9)+", "+Str(Round(l_summa ,2),14,2)+",'','','"+;
+			qrySaldoaruanne_.tegev+"','"+qrySaldoaruanne_.allikas+"','"+ qrySaldoaruanne_.rahavoo+"','','','999999','"+lcTp+"','"+qrySaldoaruanne_.konto+"','"+lcTp+"','EUR',1,"+;
+			str(Round(l_summa ,2),14,2)+",'','')"
+
+		If l_summa  <> 0
+
+			lError = sqlexec(gnHandle2009,lcString)
+			If lError < 0
+				Messagebox('Viga.'+lcString)
+				Set Step On
+				Exit
+			Endif
+			lnSummaKr = lnSummaKr +  l_summa
+		Endif
+	Endscan
+	If lError < 0
+		Exit
+	Endif
+
+* koostame kreedit subkonto lausend
+
+
+
+	Select * from qrySaldoKreedit ;
+		WHERE qrySaldoKreedit.algjaak <> 0 ;
+ 		And konto Not In ('103799','103930','103931','103932','202000','202010','202090','203010','203020','203030','203035','10010005');
+		INTO CURSOR qrySaldoKreedit_ 
+	
+*	brow
+
+SELECT qrySaldoKreedit_
+	Scan
+		lctegev = ''
+		lcAllikas = ''
+		lcRahavoo = ''
+		lcTp = ''
+
+		Select qryAsutus
+		Locate For Id = qrySaldoKreedit_.asutusId
+		If Found()
+			lcTp = qryAsutus.tp
+		Endif
+		Select qrySaldoKreedit_
+
+		lcString = "insert into journal (rekvid, asutusid, kpv, userid, selg,muud ) values ("+;
+			str(qryRekv.Id)+","+Str(qrySaldoKreedit_.asutusId)+","+lcKpv2+",60,'Alg.saldo kreedit','ALGSALDO')"
+
+		lError = sqlexec(gnHandle2009,lcString)
+		If lError < 0
+			Messagebox('Viga.'+lcString)
+			Set Step On
+			Exit
+		Endif
+		lcString = "select id from journal order by id desc limit 1"
+		lError = sqlexec(gnHandle2009,lcString,'qryId')
+		If lError < 0 Or !Used('qryId')
+			Messagebox('Viga.'+lcString)
+			Set Step On
+			Exit
+		Endif
+*!*			if qrySaldoKreedit.konto = '202010'
+*!*				set step on
+*!*			endif
+
+*		lcTp = qrySaldoAruanne.tp
+		If Left(Alltrim(qrySaldoKreedit_.konto),3) = '203' And lcTp <> '014001'
+			lcTp = '014001'
+		Endif
+
+* locate new asutusId
+		Select qryImportLog
+		Locate For old_id = qrySaldoKreedit_.asutusId
+		If !Found()
+			lcString = 'SELECT * from asutus WHERE id = ' + STR(qrySaldoKreedit_.asutusId)
+			lError = sqlexec(gnHandle2009 ,lcString, 'qryAsutus')
+			If lError < 1
+				_Cliptext = lcString
+				Set Step On
+			Endif
+			
+			* new asutus 
+			TEXT TO lcString TEXTMERGE noshow
+				SELECT id FROM libs.asutus WHERE regkood = '<<qryAsutus.regkood>>' limit 1 	
+			ENDTEXT
+			lError = sqlexec(gnHandle2009 ,lcString, 'qryNewAsutus')
+			If lError < 1
+				_Cliptext = lcString
+				Set Step On
+			Endif
+			
+			l_asutus_id = qryNewAsutus.id
+		ELSE
+			l_asutus_id = qryImportLog.new_id
+		
+		Endif
+
+TEXT TO lcString TEXTMERGE noshow
+	SELECT sum(-1 * summa) as summa FROM (
+		SELECT sum(summa) as summa FROM cur_journal
+		WHERE rekvid = <<qryRekv.id>>
+		and asutusid = <<l_asutus_id >>
+		and kpv < '2021-01-01'
+		and LTRIM(RTRIM(deebet)) = '<<ALLTRIM(qrySaldoKreedit_.konto)>>'
+		union all
+		SELECT sum(summa) as summa FROM cur_journal
+		WHERE rekvid = <<qryRekv.id>>
+		and kpv < '2021-01-01'
+		and asutusid = <<l_asutus_id >>
+		and LTRIM(RTRIM(kreedit)) = '<<ALLTRIM(qrySaldoKreedit_.konto)>>'
+		) qry
+ENDTEXT
+		lError = sqlexec(gnHandle2009 ,lcString, 'qrySaldo')
+		If lError < 1
+			_Cliptext = lcString
+			Set Step On
+		Endif
+
+		l_summa = -1 * qrySaldoKreedit_.algjaak
+		If Reccount('qrySaldo') > 0 And !ISNULL(qrySaldo.Summa) AND qrySaldo.Summa <> 0
+			l_summa = -1 * qrySaldoKreedit_.algjaak - qrySaldo.Summa
+		Endif
+		Wait Window qrySaldoKreedit_.konto + ' update ' + Str(l_summa,12,2) nowait
+
+		lcString = "select Sp_salvesta_journal1(0,"+ Str(qryId.Id,9)+", "+Str(Round(l_summa ,2),14,2)+",'','','"+;
+			lctegev+"','"+lcAllikas+"','"+ lcRahavoo+"','','','999999','"+lcTp+"','"+qrySaldoKreedit_.konto+"','"+lcTp+"','EUR',1,"+;
+			str(Round(l_summa ,2),14,2)+",'','')"
+
+
+*!*			lcString = "insert into journal1 (parentid, summa,kood1,kood2,kood3,kreedit,lisa_k,deebet,lisa_d) values ("	+;
+*!*				str(qryId.id,9)+","+ str(-1 * qrySaldoKreedit.algjaak,14,2)+",'"+lcTegev+"','"+lcAllikas+"','"+;
+*!*				lcRahavoo+"','"+qrySaldoKreedit.konto+"','"+lcTp+"','999999','"+lcTp+"')"
+		If l_summa  <> 0
+
+			lError = sqlexec(gnHandle2009,lcString)
+			If lError < 0 Or !Used('qryId')
+				Messagebox('Viga.'+lcString)
+				Set Step On
+				Exit
+			Endif
+
+			lnSummaKr = lnSummaKr +  l_summa
+		Endif
+
+	Endscan
+
+* update subkonto, eelarveinf, tunnusinf
+	Wait Window lcAsutuseNimi+' Nullime algsaldo kontoplaanis ...' Nowait
+
+	If (lnSummaDb - lnSummaKr) = 0
+		Wait Window lcAsutuseNimi+' lõpp. edukalt' Timeout 5
+	Endif
+
+
+Endscan
+
+
+
+=sqldisconnect(gnHandle2008)
+=sqldisconnect(gnHandle2009)

@@ -352,10 +352,9 @@
     <not_initial_load>true</not_initial_load>
   </select>
   <selectAsLibs>
-    <sql>SELECT *
+    <sql>SELECT *, $2 as rekvid
                    FROM com_arved a
-                   WHERE (a.rekvId = $1::INTEGER)
-                     AND docs.usersRigths(a.id, 'select', $2::INTEGER)</sql>
+                   WHERE (a.rekvId = $1::INTEGER)</sql>
     <alias>selectAsLibs</alias>
   </selectAsLibs>
   <saveDoc>
@@ -409,7 +408,7 @@
                          coalesce(to_char((ajalugu -&gt;&gt; 'deleted')::TIMESTAMP, 'DD.MM.YYYY HH.MM.SS'),
                                   '')::VARCHAR(20)                                                                   AS kustutatud
                   FROM (
-                           SELECT jsonb_array_elements(history) AS ajalugu, d.id, d.rekvid
+                           SELECT jsonb_array_elements( history) AS ajalugu, d.id, d.rekvid
                            FROM docs.doc d,
                                 ou.userid u
                            WHERE d.id = $1

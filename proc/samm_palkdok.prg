@@ -127,6 +127,7 @@ TEXT TO lcJson TEXTMERGE noshow
 		"osakond_ids":[<<l_osak_ids>>],
 		"lib_ids":[<<l_lib_ids>>],"kpv":<<DTOC(gdKpv,1)>>}
 ENDTEXT
+_cliptext = lcJson
 * sql proc
 	task = 'palk.gen_palk_dok'
 	leRror = oDb.readFromModel('palk\palk_oper', 'executeTask', 'guserid,lcJson,task', 'qryResult')
@@ -178,7 +179,6 @@ Procedure geT_isiku_list
 	tnOsakondid1 = 0
 	tnOsakondid2 = 999999999
 	lcSqlWhere = ''
-	lcAlias = 'curTootajad'
 * parameters
 
 TEXT TO lcSqlWhere textmerge	noshow
@@ -187,6 +187,8 @@ TEXT TO lcSqlWhere textmerge	noshow
 	and (osakondId <= ?tnOsakondid2 or osakondid is null)
 	and (algab <= ?gdKpv or algab is null)
 	and (lopp >= ?gdKpv or lopp is null)
+		order by nimetus
+
 ENDTEXT
 
 	leRror = oDb.readFromModel('palk\tootaja', 'curTootajad', 'gRekv, guserid', 'qryTootajad', lcSqlWhere )
@@ -204,7 +206,9 @@ ENDTEXT
 
 
 	Select Distinct isikukood As koOd, niMetus, Id From qryTootajad Where OSAKONDID In(Select  ;
-		osAkonnaid From curResult) Into Cursor query1
+		osAkonnaid From curResult) ;
+		ORDER BY niMetus ;
+		Into Cursor query1
 
 	Select curSource
 	Append From Dbf('query1')

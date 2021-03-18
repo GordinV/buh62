@@ -23,7 +23,7 @@ Endif
 SELECT * ;
 from tmpReport ;
 ORDER BY grupp, pvkood, kpv;
-INTO CURSOR pvoper_report1
+INTO CURSOR pvoperaruanne_report1
 
 USE IN tmpReport
-SELECT pvoper_report1
+SELECT pvoperaruanne_report1

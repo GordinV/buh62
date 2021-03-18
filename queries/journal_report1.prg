@@ -1,66 +1,42 @@
 Parameter cWhere
 
-IF !USED('curJournal')
-	RETURN .f.
-ENDIF
+If !Used('curJournal')
+	Return .F.
+Endif
 
-SELECT * from curJournal INTO CURSOR journal_report1
+Create Cursor journal_report1 (Id Int, kpv d, asutusid Int Null, Number Int, deebet c(20), kreedit c(20), lisa_d c(20)Null, lisa_k c(20) Null,;
+	kood1 c(20) Null, kood2 c(20) Null, kood3 c(20) Null, kood4 c(20) Null, kood5 c(20) Null, Summa N(14,2), selg c(254) Null,;
+	dok c(120) Null, asutus c(254) Null, tunnus c(20) Null, Proj c(20) Null, summa_kokku N(14,2), valuuta c(20) Default 'EUR', read_kokku Int)
 
-SELECT journal_report1
-RETURN .t.
 
-*!*	tcKood1 = rtrim(ltrim(fltrJournal.kood1))+'%'
-*!*	tcKood2 = rtrim(ltrim(fltrJournal.kood2))+'%'
-*!*	tcKood3 = rtrim(ltrim(fltrJournal.kood3))+'%'
-*!*	tcKood4 = rtrim(ltrim(fltrJournal.kood4))+'%'
-*!*	tcKood5 = rtrim(ltrim(fltrJournal.kood5))+'%'
-*!*	cSelg = '%'+rtrim(ltrim(fltrJournal.selg))+'%'
-*!*	cDeebet = rtrim(ltrim(fltrJournal.deebet))+'%'
-*!*	cKreedit = rtrim(ltrim(fltrJournal.kreedit))+'%'
-*!*	cAsutus = '%'+upper(rtrim(ltrim(fltrJournal.asutus)))+'%'
-*!*	cDok = '%'+upper(ltrim(rtrim(fltrJournal.dok)))+'%'
-*!*	tcTunnus = upper(ltrim(rtrim(fltrJournal.tunnus)))+'%'
-*!*	dKpv1 = fltrJournal.kpv1
-*!*	dKpv2 = iif(empty(fltrJournal.kpv2),date()+365*10,fltrJournal.kpv2)
-*!*	nSumma1 = iif(empty(fltrJournal.Summa1),-999999999,fltrJournal.Summa1)
-*!*	nSumma2 = iif(empty(fltrJournal.Summa2),999999999,fltrJournal.Summa2)
-*!*	tcTpD = rtrim(ltrim(fltrJournal.tpD))+'%'
-*!*	tcTpK = rtrim(ltrim(fltrJournal.tpK))+'%'
-*!*	tcKasutaja = rtrim(ltrim(fltrJournal.ametnik))+'%'
-*!*	tcMuud = '%'+rtrim(ltrim(fltrJournal.muud))+'%'
-*!*	tcValuuta = rtrim(ltrim(fltrJournal.valuuta))+'%'
-*!*	cQuery = 'curJournal'
+Index On Id Tag Id
+Index On kpv Tag kpv Additive
+Index On Number Tag Number Additive
+Index On deebet Tag deebet Additive
+Index On kreedit Tag kreedit Additive
+Index On kood1 Tag kood1 Additive
+Index On kood2 Tag kood2 Additive
+Index On kood3 Tag kood3 Additive
+Index On kood4 Tag kood4 Additive
+Index On kood5 Tag kood5 Additive
+Index On lisa_d Tag lisa_d Additive
+Index On lisa_k Tag lisa_k Additive
+Index On Summa Tag Summa Additive
+Index On Left(Upper(selg),40) Tag selg Additive
+Index On Left(Upper(dok),40) Tag dok Additive
+Index On Left(Upper(valuuta),40) Tag valuuta Additive
+Index On Left(Upper(asutus),40) Tag asutus Additive
+Index On tunnus Tag tunnus Additive
 
-*!*	oDb.use(cQuery,'journal_report1')
-*!*	select journal_report1
+l_order = 'id'
 
-*!*		Index on id tag id
-*!*		Index on kpv tag kpv additive
-*!*		Index on number tag number additive
-*!*		Index on deebet tag deebet additive
-*!*		Index on kreedit tag kreedit additive
-*!*		Index on kood1 tag kood1 additive
-*!*		Index on kood2 tag kood2 additive
-*!*		Index on kood3 tag kood3 additive
-*!*		Index on kood4 tag kood4 additive
-*!*		Index on kood5 tag kood5 additive
-*!*		Index on lisa_d tag lisa_d additive
-*!*		Index on Lisa_k tag lisa_k additive
-*!*		Index on summa tag summa additive
-*!*		Index on left(upper(selg),40) tag selg additive
-*!*		Index on left(upper(dok),40) tag dok additive
-*!*		Index on left(upper(asutus),40) tag asutus additive
-*!*		Index on tunnus tag tunnus additive
+If Used('curJournal')
+	l_order = Order('curJournal')
+Endif
+Select journal_report1
+Set Order To (l_order )
 
-*!*	IF USED('curJournal') 
-*!*		SELECT curJournal
-*!*		lcTag = TAG()
-*!*	ELSE
-*!*		lctag = 'KPV'
-*!*	ENDIF
-*!*	SELECT journal_report1
-*!*	IF !EMPTY(fltrJournal.objekt)
-*!*		DELETE FROM journal_report1 WHERE objekt <> fltrJournal.objekt
-*!*	endif
+Append From Dbf('curJournal')
 
-*!*	SET ORDER TO (lctag)
+Return .T.
+

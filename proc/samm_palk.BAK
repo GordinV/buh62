@@ -44,9 +44,7 @@ If Used('v_dokprop')
 	Use In v_dokprop
 ENDIF
 
-
-l_test = .f.
- EMPTY(l_dokprop) 
+if EMPTY(l_dokprop) 
 	SET PROCEDURE TO proc/getdokpropId additive
 	l_dokprop = getdokpropId('PALK_OPER', 'libs\libraries\dokprops')
 ENDIF
@@ -145,6 +143,7 @@ TEXT TO lcJson TEXTMERGE noshow
 				}
 ENDTEXT
 * sql proc
+_cliptext = lcJson
 	task = 'palk.gen_palkoper'
 	leRror = odB.readFromModel('palk\palk_oper', 'executeTask', 'guserid,lcJson,task', 'qryResult')
 	Do Form taitmine_raport With 'qryResult' 
@@ -259,6 +258,7 @@ TEXT TO lcSqlWhere textmerge	noshow
 	and (osakondId <= ?tnOsakondid2 or osakondid is null)
 	and (algab <= ?gdKpv or algab is null)
 	and (lopp >= ?gdKpv or lopp is null)
+	order by nimetus
 ENDTEXT
 
 	leRror = odB.readFromModel('palk\tootaja', 'curTootajad', 'gRekv, guserid', 'qryTootajad', lcSqlWhere)

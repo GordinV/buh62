@@ -24,9 +24,10 @@ With loXMLHTTP
 	.setRequestHeader('soapAction', '')
 
 	Wait Window 'Oodan omniva... ' Nowait
+		
 		.Send(cMessage)
 		Select m_memo
-		MODIFY MEMO m_memo.response 
+*		MODIFY MEMO m_memo.response 
 	
 	
 	Wait Window 'Oodan omniva... ok' Nowait

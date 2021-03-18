@@ -62,7 +62,7 @@ SELECT 'S' as is_esita, ;
 	sum(tegelik) as tegelik, sum(kassa) as kassa, sum(saldoandmik) as saldoandmik ;
 	FROM qryReport ;
 	where LEFT(artikkel,2) like  '35%' ;
-	AND artikkel NOT in ('3502');
+	AND artikkel NOT in ('3502','352');
 	INTO CURSOR tmp1
 
 select eelarve_report_query 
@@ -255,7 +255,7 @@ SELECT 'S' as is_esita, ;
 	sum(eelarve_taps) as eelarve_taps, sum(eelarve_kassa_taps) as eelarve_kassa_taps,;
 	sum(tegelik) as tegelik, sum(kassa) as kassa, sum(saldoandmik) as saldoandmik ;
 	FROM qryReport ;
-	where alltrim(tegev) in ('01111','01112','01800','01600','01700','01110','01120','01130','01210','01220','01310','01320','01330','01400','01500') ;
+	where alltrim(tegev) in ('01111','01112','01600','01700','01110','01120','01130','01210','01220','01310','01320','01330','01400','01500') ;
 	INTO CURSOR tmp1
 
 select eelarve_report_query 
@@ -270,7 +270,7 @@ USE IN tmp1
 UPDATE eelarve_report_query  ;
 	SET idx = '3.1.0', sub_idx = 4 ;
 	WHERE ALLTRIM(idx) = '3.1' ;
-	AND ALLTRIM(tegev) in  ('01110','01120','01130','01210','01220','01310','01320','01330','01400','01500') 
+	AND ALLTRIM(tegev) in  ('01110','01120','01130','01210','01220','01310','01320','01330','01400','01500','01800') 
 
 SELECT 'S' as is_esita, ;
 	'3.1.0' as idx, 2 as sub_idx, gRekv as rekvid, space(20) as tegev, '' as artikkel, UPPER('Ülalnimetamata üldised valitsussektori kulud kokku') as nimetus, ;
@@ -336,7 +336,7 @@ UPDATE eelarve_report_query  ;
 	sub_idx = 4, ;
 	is_esita = 'E' ;
 	WHERE ALLTRIM(idx) = '3.1' ;
-	AND ALLTRIM(tegev) in  ('03101','03300','03400','03500') 
+	AND ALLTRIM(tegev) in  ('03101','03300','03400','03500','03600') 
 	
 * ,'03600'
 
@@ -406,7 +406,7 @@ UPDATE eelarve_report_query  ;
 	SET idx = '3.1.5', ;
 	sub_idx = 4 ;
 	WHERE ALLTRIM(idx) = '3.1' ;
-	AND ALLTRIM(tegev) in ('05100','05200','05300','05400') 
+	AND ALLTRIM(tegev) in ('05100','05101','05200','05300','05400') 
 
 SELECT 'S' as is_esita, ;
 	'3.1.5' as idx, 2 as sub_idx, gRekv as rekvid, space(20) as tegev, '' as artikkel, UPPER('Keskkonnakaitse') as nimetus, ;
@@ -522,7 +522,7 @@ UPDATE eelarve_report_query  ;
 	SET idx = '3.1.8', ;
 	sub_idx = 4 ;
 	WHERE ALLTRIM(tegev) in ('08102','08103','08105','08106','08107','08108','08109','08201','08202','08203',;
-		'08204','08205','08206','08207','08208','08209','08210','08211','08212','08300','08400','08500','08600') 
+		'08204','08205','08206','08207','08208','08209','08210','08211','08212','08236','08300','08400','08500','08600') 
 
 SELECT 'S' as is_esita, ;
 	'3.1.8' as idx, 2 as sub_idx, gRekv as rekvid, space(20) as tegev, '' as artikkel, UPPER('Vaba aeg, kultuur ja religioon') as nimetus, ;
@@ -531,7 +531,7 @@ SELECT 'S' as is_esita, ;
 	sum(tegelik) as tegelik, sum(kassa) as kassa, sum(saldoandmik) as saldoandmik ;
 	FROM qryReport ;
 	where alltrim(tegev) in ('08102','08103','08105','08106','08107','08108','08109','08201','08202','08203',;
-		'08204','08205','08206','08207','08208','08209','08210','08211','08212','08300','08400','08500','08600') ;
+		'08204','08205','08206','08207','08208','08209','08210','08211','08212','08236','08300','08400','08500','08600') ;
 	INTO CURSOR tmp1
 
 select eelarve_report_query 
@@ -544,8 +544,8 @@ USE IN tmp1
 UPDATE eelarve_report_query  ;
 	SET idx = '3.1.9', ;
 	sub_idx = 4 ;
-	WHERE ALLTRIM(tegev) in ('09110','09210','09211','09212','09220','09221','09222','09400','09500',;
-		'09600','09601','09700','09800') 
+	WHERE ALLTRIM(tegev) in ('09110','09210','09211','09212','09213','09220','09221','09222','09400','09500','09510',;
+		'09600','09601','09602','09700','09800') 
 
 SELECT 'S' as is_esita, ;
 	'3.1.9' as idx, 2 as sub_idx, gRekv as rekvid, space(20) as tegev, '' as artikkel, UPPER('Haridus') as nimetus, ;
@@ -553,8 +553,8 @@ SELECT 'S' as is_esita, ;
 	sum(eelarve_taps) as eelarve_taps, sum(eelarve_kassa_taps) as eelarve_kassa_taps, ;	
 	sum(tegelik) as tegelik, sum(kassa) as kassa, sum(saldoandmik) as saldoandmik ;
 	FROM qryReport ;
-	where alltrim(tegev) in ('09110','09210','09211','09212','09220','09221','09222','09400','09500',;
-		'09600','09601','09700','09800')  ;
+	where alltrim(tegev) in ('09110','09210','09211','09212','09213','09220','09221','09222','09400','09500','09510',;
+		'09600','09601','09602','09700','09800')  ;
 	INTO CURSOR tmp1
 
 select eelarve_report_query 
@@ -658,7 +658,7 @@ replace rea_1 WITH 'likviidsed varad', summa_11 WITH l_result_kassa, summa_12 WI
 
 
 * majandusliku sisu ja tegevusalade võrdlus 
-SET STEP ON 
+
 l_result_kassa =  get_kontrol ('','50','','kassa') + get_kontrol ('','15','','kassa') + get_kontrol ('','4502','','kassa') + ;
 	get_kontrol ('','1501','','kassa') + get_kontrol ('','1511','','kassa') + get_kontrol ('','1531','','kassa')+  get_kontrol ('','650','','kassa') +;
 	get_kontrol ('3.1-5-0','','','kassa')

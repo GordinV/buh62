@@ -15,8 +15,6 @@ IF !EMPTY(fltrAruanne.arvestus)
 	WAIT WINDOW 'Arvestan ...tehtud' nowait
 ENDIF
 
-	SET STEP on
-
 TEXT TO lcWhere TEXTMERGE noshow
 	coalesce(konto,'') like '<<ALLTRIM(fltrAruanne.konto)>>%'
 	and coalesce(tegev,'') like '<<ALLTRIM(fltrAruanne.tegev)>>%'

@@ -11,6 +11,13 @@ IF !EMPTY(fltrAruanne.grupp)
 	ENDTEXT
 ENDIF
 
+IF !EMPTY(fltrAruanne.asutusid)
+	TEXT TO lcWhere ADDITIVE TEXTMERGE noshow
+		and vastisik_id = <<fltrAruanne.asutusid>>
+	ENDTEXT
+ENDIF
+
+
 lError = oDb.readFromModel('aruanned\pv\varadearuanne', 'varadearuanne_report', 'fltrAruanne.kpv1,fltrAruanne.kpv2, gRekv', 'tmpReport', lcWhere)
 If !lError
 	Messagebox('Viga',0+16, 'Varadearuanne')

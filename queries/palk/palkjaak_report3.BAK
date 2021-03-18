@@ -3,21 +3,12 @@ If !Used('fltrPalkJaak')
 	Return .F.
 Endif
 
-lcOsakond = ''
-If !Empty(fltrPalkJaak.osakond)
-	Select comTunnusRemote
-	Locate For Alltrim(Upper(kood)) = Alltrim(Upper(fltrPalkJaak.osakond))
-	If Found()
-		lcOsakond = Ltrim(Rtrim(comTunnusRemote.nimetus))
-	Endif
-
-Endif
 
 tdKpv1 = Date(fltrPalkJaak.aasta1, fltrPalkJaak.kuu1, 1)
 tdKpv2 = Gomonth(Date(fltrPalkJaak.aasta2, fltrPalkJaak.kuu2, 1),1) - 1
 
 Create Cursor palkJaak_report1 (isikid Int, isik c(254), isikukood c(20), period c(30) Default Dtoc(tdKpv1)+".a. - "+Dtoc(tdKpv2)+".a.",;
-	arv Y, tasu Y, tulumaks Y,  tki Y, muud Y, sots Y, tka Y, jaak Y, kinni Y, kKinni Y, pm Y, tunnus c(254) Default lcOsakond )
+	arv Y, tasu Y, tulumaks Y,  tki Y, muud Y, sots Y, tka Y, jaak Y, kinni Y, kKinni Y, pm Y, tunnus c(254) , osakonna_nimetus c(254), osakond c(20) )
 Index On Left(Upper(isik),40) Tag isik
 Set Order To isik
 
@@ -25,12 +16,13 @@ Select palkJaak_report1
 
 TEXT TO lcSqlWhere TEXTMERGE noshow
 		isik ilike '%<<+Rtrim(Ltrim(fltrPalkJaak.nimetus))>>%'
-		and osakond ilike '%<<Rtrim(Ltrim(lcOsakond))>>%'
+		and osakond ilike '%<<Rtrim(Ltrim(fltrPalkJaak.osakond))>>%'
 		and kuu >= <<fltrPalkJaak.kuu1>>
 		and kuu <= <<fltrPalkJaak.kuu2>>
 		and aasta >= <<fltrPalkJaak.aasta1>>
 		and aasta <= <<fltrPalkJaak.aasta2>>
 		and rekvid = <<gRekv>>
+		and status <= <<IIF(EMPTY(fltrPalkJaak.status),2,1)>>
 ENDTEXT
 
 lError = oDb.readFromModel('palk\palk_jaak', 'printPalkJaak', 'gRekv, guserid', 'tmpPalkOper', lcSqlWhere)

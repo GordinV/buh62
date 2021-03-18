@@ -207,6 +207,11 @@ Procedure geT_kood_list
 		lcWhere = 'liik = 6'
 	ENDIF
 	
+	TEXT TO lcWhere ADDITIVE TEXTMERGE noshow
+	and (valid >= '<<DTOC(date(year(gdKpv),MONTH(gdKpv),DAY(gdKpv)),1)>>'::date  or valid is null)
+	endtext	
+	
+	
 	leRror = odB.readFromModel('libs\libraries\palk_lib', 'curPalklib', 'gRekv, guserid', 'qryPalkLib', lcWhere)
 
 	Select curSource
@@ -257,6 +262,7 @@ TEXT TO lcSqlWhere textmerge	noshow
 	and (osakondId <= ?tnOsakondid2 or osakondid is null)
 	and (algab <= ?gdKpv or algab is null)
 	and (lopp >= ?gdKpv or lopp is null)
+	order by nimetus
 ENDTEXT
 
 	leRror = odB.readFromModel('palk\tootaja', 'curTootajad', 'gRekv, guserid', 'qryTootajad', lcSqlWhere)

@@ -13,10 +13,6 @@ Set order to Konto
 
 SELECT * from comKontodRemote WHERE kood LIKE ALLTRIM(fltrAruanne.konto) + '%' ORDER BY kood INTO CURSOR qryKontod
 
-TEXT TO lcWhere TEXTMERGE noshow	
-	tunnus ilike '%<<ALLTRIM(fltrAruanne.tunnus)>>%'
-ENDTEXT
-
 IF EMPTY(fltrAruanne.kond)
 	TEXT TO lcWhere ADDITIVE TEXTMERGE noshow
 		and rekv_id  = <<gRekv>>
@@ -26,7 +22,7 @@ ENDIF
 
 SELECT qryKontod
 SCAN
-		lError = oDb.readFromModel('aruanned\raamatupidamine\kontoandmik', 'kontoandmik_report', 'alltrim(qryKontod.kood), fltrAruanne.kpv1,fltrAruanne.kpv2, gRekv', 'tmpReport', lcWhere)	
+		lError = oDb.readFromModel('aruanned\raamatupidamine\kontoandmik', 'kontoandmik_report', 'alltrim(qryKontod.kood), fltrAruanne.kpv1,fltrAruanne.kpv2, gRekv, ALLTRIM(fltrAruanne.tunnus)', 'tmpReport')	
 		IF !lError
 			MESSAGEBOX('Viga',0+16, 'Kontoandmik')
 			SET STEP ON 

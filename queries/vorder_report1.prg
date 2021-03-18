@@ -1,7 +1,7 @@
 Parameter cWhere
-If isdigit(alltrim(cWhere))
-	cWhere = val(alltrim(cWhere))
-ENDIF
+If Isdigit(Alltrim(cWhere))
+	cWhere = Val(Alltrim(cWhere))
+Endif
 
 tnId = cWhere
 
@@ -18,6 +18,7 @@ Select v_korder1.Id, v_korder1.Number, v_korder1.kpv, v_korder1.nimi,  v_korder1
 	ORDER By v_Korder2.nimetus ;
 	INTO Cursor vorder_report1
 
+tnId = v_korder1.journalId
 
 lError = oDb.readFromModel('raamatupidamine\journal', 'row', 'tnId, guserid', 'qryJournal')
 lError = oDb.readFromModel('raamatupidamine\journal', 'details', 'tnId, guserid', 'qryJournal1')
@@ -26,16 +27,16 @@ Create Cursor vorder_lausend (Id Int, lausend m)
 Append Blank
 Select qryJournal1
 Scan
-	TEXT TO lcString TEXTMERGE noshow
-					D: <<allrim(qryJournal1.deebet)>> TP: <<alltrim(qryJournal1.lisa_d)>>  K: <<alltrim(qryJournal1.kreedit)>>  TP: <<alltrim(qryJournal1.lisa_k)
-	ENDTEXT
-	TEXT TO lcString TEXTMERGE NOSHOW additive
-					Summa  <<alltrim(Str (qryJournal1.Summa,12,2))>> Eel: <<alltrim(qryJournal1.kood5)>>
-	ENDTEXT
-	TEXT TO lcString TEXTMERGE NOSHOW additive
-					TT: <<alltrim(qryJournal1.kood1)>>
+TEXT TO lcString TEXTMERGE noshow
+D: <<alltrim(qryJournal1.deebet)>> TP: <<alltrim(qryJournal1.lisa_d)>>  K: <<alltrim(qryJournal1.kreedit)>>  TP: <<alltrim(qryJournal1.lisa_k)>>
+ENDTEXT
+TEXT TO lcString TEXTMERGE NOSHOW additive
+Summa  <<alltrim(Str (qryJournal1.Summa,12,2))>> Eel: <<alltrim(qryJournal1.kood5)>>
+ENDTEXT
+TEXT TO lcString TEXTMERGE NOSHOW additive
+TT: <<alltrim(qryJournal1.kood1)>>
 
-	ENDTEXT
+ENDTEXT
 
 	Replace Id With qryJournal.Number,;
 		vorder_lausend.lausend With lcString Additive In vorder_lausend

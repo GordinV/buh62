@@ -22,7 +22,7 @@ ENDIF
 
 IF !EMPTY(fltrAruanne.asutusid)
 	TEXT TO lcWhere ADDITIVE TEXTMERGE noshow
-		and vastisik_id = <<fltrAruanne.asutusid>>
+		and vastisikid = <<fltrAruanne.asutusid>>
 	ENDTEXT
 ENDIF
 

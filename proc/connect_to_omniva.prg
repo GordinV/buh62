@@ -2,7 +2,7 @@
 
 Parameters td_since
 If Empty(td_since)
-	td_since = Date(2020,04,01)
+	td_since = Date(2021,01,01)
 Endif
 
 * will open cursors
@@ -34,6 +34,7 @@ With loXMLHTTP
 	.Send(cMessage)
 	Wait Window 'Oodan omniva... ok' Nowait
 	Insert Into m_memo (url, Header, Request, response) Values (cUrl, 'text/xml;charset=UTF-8', cMessage, .responsetext)
+
 	l_finished = kas_lopp(.responsetext)
 	l_found_xml = parse_response(.responsetext)
 	l_found_xml = Iif(Empty(l_found_xml),0,l_found_xml)
@@ -59,7 +60,8 @@ With loXMLHTTP
 		.Send(cMessage)
 		Insert Into m_memo (url, Header, Request, response) Values (cUrl, 'text/xml;charset=UTF-8', cMessage, .responsetext)
 		l_finished = kas_lopp(.responsetext)
-
+		_cliptext = cMessage
+		
 		Wait Window 'Loen vastus...' Nowait
 
 		SELECT v_xml

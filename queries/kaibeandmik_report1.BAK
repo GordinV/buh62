@@ -5,16 +5,18 @@ IF USED('tmpReport')
 ENDIF
 
 
-lcWhere = ''
-lcWhere = IIF(EMPTY(fltrAruanne.kond),' rekv_id = ' + STR(gRekv), '')
-
 
 TEXT TO lcWhere ADDITIVE TEXTMERGE noshow
 	<<IIF(LEN(lcWhere) > 0, 'and', '')>> konto ilike '<<ALLTRIM(fltrAruanne.konto)>>%'
 ENDTEXT
 
+l_tunnus = '%'
+l_kond = fltrAruanne.kond
+IF (!EMPTY(fltrAruanne.tunnus)
+	l_tunnus = ALLTRIM(fltrAruanne.tunnus) + '%'
+ENDIF
 
-lError = oDb.readFromModel('aruanned\raamatupidamine\kaibeandmik', 'kaibeandmik_report', 'fltrAruanne.kpv1,fltrAruanne.kpv2, gRekv', 'tmpReport', lcWhere)
+lError = oDb.readFromModel('aruanned\raamatupidamine\kaibeandmik', 'kaibeandmik_report', 'fltrAruanne.kpv1,fltrAruanne.kpv2, gRekv,l_kond,l_tunnus', 'tmpReport', lcWhere)
 If !lError
 	Messagebox('Viga',0+16, 'Kaibeandmik')
 	Set Step On
@@ -23,11 +25,11 @@ If !lError
 Endif
 
 SELECT alg_db as algdb, alg_kr as algkr, deebet, kreedit, lopp_db as loppdb, lopp_kr as loppkr,;
-	konto, nimetus, rekv_nimi,;
-	LEFT(konto,IIF(LEFT(konto, 6) = '100100', 6,Len(Alltrim(konto)) - Round(Len(Alltrim(konto))/2,0))) as pohikonto;
+	konto, nimetus, ;
+	LEFT(konto,IIF(LEFT(konto, 6) = '100100', 6,IIF(LEFT(konto,3) = '500', 3,Len(Alltrim(konto)) - Round(Len(Alltrim(konto))/2,0)))) as pohikonto;
 	FROM tmpReport ;
 	WHERE alg_db <> 0 OR  alg_kr <> 0 OR deebet <> 0 OR kreedit <> 0 OR lopp_db <> 0 OR lopp_kr <> 0 ;
-	order by konto, rekv_nimi ;
+	order by konto;
 	INTO CURSOR kaibeandmik_report1
 
 USE IN 	tmpReport

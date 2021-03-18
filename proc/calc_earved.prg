@@ -10,8 +10,8 @@ If !Empty(tnId)
 	Endif
 
 	Select a.*,;
-		IIF(a.liik = 0,Iif(!Isnull(qryRekv.muud),qryRekv.muud,qryRekv.nimetus), Alltrim(a.asutus) + ' ' + Alltrim(a.omvorm))  As muuja,;
-		IIF(a.liik = 1 ,Iif(!Isnull(qryRekv.muud),qryRekv.muud,qryRekv.nimetus),Alltrim(a.asutus) + ' ' + Alltrim(a.omvorm)) As ostja,;
+		IIF(a.liik = 0,Iif(!Isnull(qryRekv.muud),qryRekv.muud,qryRekv.nimetus), Alltrim(a.asutus) )  As muuja,;
+		IIF(a.liik = 1 ,Iif(!Isnull(qryRekv.muud),qryRekv.muud,qryRekv.nimetus),Alltrim(a.asutus) ) As ostja,;
 		IIF(a.liik = 1, qryRekv.regkood,Alltrim(asutus.regkood)) As ostja_regkood,;
 		IIF(a.liik = 1, qryRekv.aadress,asutus.aadress) As ostja_aadress,;
 		IIF(a.liik = 1, qryRekv.email,Alltrim(asutus.email)) As ostja_email,;
@@ -28,8 +28,8 @@ If !Empty(tnId)
 Else
 	If Used('curArved')
 		Select a.*,;
-			IIF(a.liik = 0,Iif(!Isnull(qryRekv.muud),qryRekv.muud,qryRekv.nimetus), Alltrim(a.asutus) + ' ' + Alltrim(a.omvorm))  As muuja,;
-			IIF(a.liik = 1 ,Iif(!Isnull(qryRekv.muud),qryRekv.muud,qryRekv.nimetus),Alltrim(a.asutus) + ' ' + Alltrim(a.omvorm)) As ostja,;
+			IIF(a.liik = 0,Iif(!Isnull(qryRekv.muud),qryRekv.muud,qryRekv.nimetus), Alltrim(a.asutus) )  As muuja,;
+			IIF(a.liik = 1 ,Iif(!Isnull(qryRekv.muud),qryRekv.muud,qryRekv.nimetus),Alltrim(a.asutus) ) As ostja,;
 			IIF(a.liik = 0, qryRekv.regkood,Alltrim(a.regkood)) As muuja_regkood,;
 			IIF(a.liik = 1, qryRekv.regkood,Alltrim(a.regkood)) As ostja_regkood,;
 			IIF(a.liik = 1, qryRekv.aadress,asutus.aadress) As ostja_aadress,;
@@ -39,7 +39,7 @@ Else
 			IIF(a.liik = 0, qryRekv.tel, Alltrim(asutus.tel)) As muuja_tel,;
 			a.markused As muud, a.aa As arve;
 			From curArved a;
-			inner Join comAsutusRemote asutus On asutus.Id = curArved.asutusId;
+			inner Join comAsutusRemote asutus On asutus.Id = a.asutusId;
 			Where !Empty(valitud);
 			INTO Cursor qryeArved
 	Endif
@@ -60,13 +60,13 @@ Function execute
 		IIF(Month(Date())<10,'0','') + Alltrim(Str(Month(Date()),2))+'-'+;
 		IIF(Day(Date())<10,'0','')+Alltrim(Str(Day(Date()),2))
 
-
+l_id = qryeArved.id
 TEXT TO lcFileString NOSHOW
 <?xml version="1.0" encoding="UTF-8"?>
 <E_Invoice>
 <Header>
 <Date><<lcKpv>></Date>
-<FileId>1</FileId>
+<FileId><<l_id>></FileId>
 <AppId>EARVE</AppId>
 <Version>1.1</Version>
 </Header>
@@ -107,6 +107,18 @@ TEXT TO lcFileString ADDITIVE NOSHOW
 <RegNumber><<Alltrim(qryeArved.muuja_regkood)>></RegNumber>
 <ContactData>
 <PhoneNumber><<ALLTRIM(qryeArved.muuja_tel)>></PhoneNumber>
+
+ENDTEXT
+
+IF !EMPTY(qryeArved.muuja_email)
+TEXT TO lcFileString ADDITIVE NOSHOW textmerge
+<EmailAddress><<ALLTRIM(qryeArved.muuja_email)>></EmailAddress>
+
+ENDTEXT
+
+ENDIF
+
+TEXT TO lcFileString ADDITIVE NOSHOW textmerge
 <LegalAddress>
 <PostalAddress1><<Alltrim(convert_to_utf(lc_muuja_Post))>></PostalAddress1>
 <City><<ALLTRIM(convert_to_utf(lc_muuja_City))>></City>
@@ -117,7 +129,20 @@ TEXT TO lcFileString ADDITIVE NOSHOW
 <Name><<Alltrim(convert_to_utf(qryeArved.ostja))>></Name>
 <RegNumber><<Alltrim(qryeArved.ostja_regkood)>></RegNumber>
 <ContactData>
-<E-mailAddress><<Alltrim(convert_to_utf(qryeArved.ostja_email))>></E-mailAddress>
+
+ENDTEXT
+IF !EMPTY(qryeArved.ostja_email)
+TEXT TO lcFileString ADDITIVE NOSHOW textmerge
+<EmailAddress><<ALLTRIM(qryeArved.ostja_email)>></EmailAddress>
+
+ENDTEXT
+ENDIF
+
+TEXT TO lcFileString ADDITIVE NOSHOW textmerge
+<LegalAddress>
+<PostalAddress1><<Alltrim(convert_to_utf(la_ostja_Address))>></PostalAddress1>
+<City><<ALLTRIM(convert_to_utf(lc_ostja_City))>></City>
+</LegalAddress>
 </ContactData>
 </BuyerParty>
 </InvoiceParties>
@@ -154,13 +179,13 @@ ENDTEXT
 		lError = oDb.readFromModel('raamatupidamine\arv', 'details', 'tnId, guserid', 'tmpeArveDet')
 		Select tmpeArveDet
 
-		Select Iif(Empty(km) Or km = '-', '0',km) As vatRate,;
+		Select Iif(ISNULL(km) OR Empty(km) Or km = '-', '0',km) As vatRate,;
 			sum(kbm) As vatSum,  Sum(Summa) As Summa ;
 			from tmpeArveDet ;
 			group By km;
 			INTO Cursor qryeArvedVat
 
-		Select Iif(Empty(km) Or km = '-', '0',km) As vatRate, ;
+		Select Iif(ISNULL(km) OR Empty(km) Or km = '-', '0',km) As vatRate, ;
 			kbm As vat_summa,;
 			alltrim(nimetus) + ' ' + Alltrim(Iif(Isnull(muud),'',muud)) As Description, uhik As ItemUnit,;
 			kogus As ItemAmount, hind As ItemPrice, (Summa - kbm) As ItemSum, kbm As vatSum, Summa As ItemTotal;
@@ -169,13 +194,12 @@ ENDTEXT
 
 
 * koguneme kaibemaksu summad
-
 		Select qryeArvedVat
 		Scan
 TEXT TO lcFileString ADDITIVE NOSHOW
 
 <VAT>
-<VATRate><<Alltrim((qryeArvedVat.vatRate))>></VATRate>
+<VATRate><<Alltrim((IIF(qryeArvedVat.vatRate = '.NULL.','0',qryeArvedVat.vatRate)))>></VATRate>
 <VATSum><<Alltrim(Str(qryeArvedVat.vatSum,14,2))>></VATSum>
 </VAT>
 
@@ -268,7 +292,7 @@ TEXT TO lcString ADDITIVE NOSHOW
 <ItemSum><<Alltrim(Str(qryeArvedDet.itemSum,14,2))>></ItemSum>
 <VAT>
 <SumBeforeVAT><<Alltrim(Str(qryeArvedDet.ItemSum, 14,2))>></SumBeforeVAT>
-<VATRate><<Alltrim(qryeArvedDet.vatRate)>></VATRate>
+<VATRate><<IIF(qryeArvedDet.vatRate = '.NULL.','0', qryeArvedDet.vatRate)>></VATRate>
 <VATSum><<Alltrim(Str(qryeArvedDet.vatSum,14,2))>></VATSum>
 <Currency>EUR</Currency>
 </VAT>

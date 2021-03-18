@@ -11,8 +11,13 @@ ENDTEXT
 l_kpv1 = fltrAruanne.kpv1
 l_kpv2 = fltrAruanne.kpv2
 l_kond = IIF(EMPTY(fltrAruanne.kond), null, 1)
+l_tunnus = '%'
+IF (!EMPTY(fltrAruanne.tunnus))
+	l_tunnus = ALLTRIM(fltrAruanne.tunnus) + '%'
+ENDIF
 
-lError = oDb.readFromModel('aruanned\eelarve\saldoandmik', 'saldoandmik_report', 'l_kpv2, gRekv, l_kond', 'tmpReport', lcWhere)
+SET STEP ON 
+lError = oDb.readFromModel('aruanned\eelarve\saldoandmik', 'saldoandmik_report', 'l_kpv2, gRekv, l_kond, l_tunnus', 'tmpReport', lcWhere)
 If !lError
 	Messagebox('Viga',0+16, 'Eelarve kulud')
 	Set Step On

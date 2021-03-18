@@ -14,6 +14,12 @@ IF !EMPTY(fltrAruanne.grupp)
 	ENDTEXT
 ENDIF
 
+IF !EMPTY(fltrAruanne.aadress)
+	TEXT TO lcWhere ADDITIVE TEXTMERGE noshow
+		and aadress is not null and aadress ilike '%<<ALLTRIM(fltrAruanne.aadress)>>%'
+	ENDTEXT
+ENDIF
+
 IF !EMPTY(fltrAruanne.asutusid)
 	TEXT TO lcWhere ADDITIVE TEXTMERGE noshow
 		and vastisik_id = <<fltrAruanne.asutusid>>

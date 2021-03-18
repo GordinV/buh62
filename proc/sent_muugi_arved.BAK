@@ -14,6 +14,7 @@ Create Cursor m_memo (url c(120), Header c(120), Request m, response m, Timestam
 
 cMessage = get_xml()
 _cliptext = cMessage
+RETURN
 
 loXMLHTTP = Createobject("MSXML2.XMLHTTP")
 
@@ -25,9 +26,10 @@ With loXMLHTTP
 	.setRequestHeader('soapAction', '')
 
 	Wait Window 'Oodan omniva... ' Nowait
-*	.Send(cMessage)
+		
+		.Send(cMessage)
 		Select m_memo
-		MODIFY MEMO m_memo.response 
+*		MODIFY MEMO m_memo.response 
 	
 	
 	Wait Window 'Oodan omniva... ok' Nowait

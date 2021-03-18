@@ -25,6 +25,10 @@ If !lError
 	Return .F.
 Endif
 
+SELECT tmpReport 
+brow
+
+
 Select allikas, tegev, artikkel, rahavoog, nimetus, tunnus,;
 	Sum(eelarve_kinni) As eelarve_kinni, ;	
 	Sum(eelarve_parandatud) As eelarve_parandatud, ;	
@@ -35,8 +39,8 @@ Select allikas, tegev, artikkel, rahavoog, nimetus, tunnus,;
 	regkood, asutus ,;
 	parasutus, parregkood ;
 	from tmpReport ;
-	GROUP By allikas, tegev, artikkel,rahavoog, nimetus, regkood, asutus, parasutus,parregkood, tunnus ;
-	ORDER By parasutus,asutus, artikkel, allikas, tegev, rahavoog,   tunnus ;
+	GROUP By allikas, tegev, idx, artikkel,rahavoog, nimetus, regkood, asutus, parasutus,parregkood, tunnus ;
+	ORDER By parasutus,asutus, idx, artikkel, allikas, tegev, rahavoog,   tunnus ;
 	INTO Cursor eelarve_report2
 
 Use In tmpReport

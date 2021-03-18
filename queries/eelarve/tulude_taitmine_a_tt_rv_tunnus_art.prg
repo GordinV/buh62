@@ -22,7 +22,7 @@ If !lError
 	Set Step On
 	Select 0
 	Return .F.
-Endif
+ENDIF
 
 Select allikas, tegev, artikkel, rahavoog, nimetus, tunnus,;
 	Sum(eelarve_kinni) As eelarve_kinni, ;	
