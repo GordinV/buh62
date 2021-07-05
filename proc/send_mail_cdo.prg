@@ -1,7 +1,7 @@
 Lparameters l_from, l_to, l_sbj, l_text, l_attachment, l_sendusing, l_smtp, l_ssl, l_port, l_auth, l_user, l_pass
 
 Local l_test, loCdoMessage, loConfig
-WAIT WINDOW 'Saadan email ...' nowait
+Wait Window 'Saadan email ...' Nowait
 If Empty(l_sendusing)
 	l_sendusing = 2
 Endif
@@ -25,7 +25,7 @@ If l_test
 	l_from = "vladislav.gordin@gmail.com"
 	l_to = "vladislav.gordin@bs2.ee"
 	l_text = "test body meke"
-	l_attachment = "c:\temp\arve_report1.pdf"
+	l_attachment = "c:\temp\buh60\pdf\buh60.pdf"
 	l_sendusing = 2
 	l_smtp = "smtp.gmail.com"
 	l_ssl = .T.
@@ -36,7 +36,6 @@ If l_test
 	l_sbj = 'subject'
 Endif
 
-*SET STEP ON 
 loConfig = Createobject('CDO.Configuration')
 
 loCdoMessage = Createobject("CDO.Message")
@@ -60,14 +59,8 @@ With loConfig.Fields
 	.Item("http://schemas.microsoft.com/cdo/configuration/smtpserverport") = l_port
 	.Item("http://schemas.microsoft.com/cdo/configuration/smtpauthenticate") = l_auth
 
-	If Empty(l_user)
-		.Item("http://schemas.microsoft.com/cdo/configuration/sendusername") = "vladislav.gordin@gmail.com"
-		.Item("http://schemas.microsoft.com/cdo/configuration/sendpassword") = "Vlad490710A"
-	ELSE
-		.Item("http://schemas.microsoft.com/cdo/configuration/sendusername") = l_user
-		.Item("http://schemas.microsoft.com/cdo/configuration/sendpassword") = l_pass
-	
-	Endif
+	.Item("http://schemas.microsoft.com/cdo/configuration/sendusername") = l_user
+	.Item("http://schemas.microsoft.com/cdo/configuration/sendpassword") = l_pass
 
 	.Item("http://schemas.microsoft.com/cdo/configuration/smtpconnectiontimeout") = 60
 
@@ -75,7 +68,14 @@ With loConfig.Fields
 
 Endwith
 
+TRY
+	loCdoMessage.Send()
+CATCH TO oException
+   IF oException.ErrorNo > 0 
+   	WAIT WINDOW 'Saadan email ...ebaõnnestus, vea kood: ' + STR(oException.ErrorNo) TIMEOUT 5
+   ENDIF
+FINALLY
+	Wait Window  'Saadan email ...tehtud' Nowait
+ENDTRY
 
-loCdoMessage.Send()
-WAIT WINDOW  'Saadan email ...tehtud' nowait
-RETURN .t.
+Return .T.

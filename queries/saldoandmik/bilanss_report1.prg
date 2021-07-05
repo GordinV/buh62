@@ -20,22 +20,9 @@ IF !EMPTY(fltrAruanne.arvestus)
 	
 ENDIF
 
-
-TEXT TO lcWhere TEXTMERGE noshow
-	(EMPTY(<<fltrAruanne.asutusid>>) or rekv_id = <<fltrAruanne.asutusid>>)
-	and coalesce(konto,'') like '<<ALLTRIM(fltrAruanne.konto)>>%'
-ENDTEXT
-
 l_kpv2 = fltrAruanne.kpv2
-*!*	l_rekv = IIF(fltrAruanne.kond = 1 and gRekv = 63,999, gRekv)
 
-*!*	If Empty(fltrAruanne.kond)
-*!*		TEXT TO lcWhere ADDITIVE TEXTMERGE noshow
-*!*				and rekv_id = <<l_rekv>>
-*!*		ENDTEXT
-*!*	ENDIF
-
-lError = oDb.readFromModel('aruanned\eelarve\pikk_bilanss', 'pikk_bilanss', 'l_kpv2, gRekv, fltrAruanne.kond', 'tmpReport', lcWhere)
+lError = oDb.readFromModel('aruanned\eelarve\pikk_bilanss', 'pikk_bilanss', 'l_kpv2, gRekv, fltrAruanne.kond', 'tmpReport')
 If !lError
 	Messagebox('Viga',0+16, 'Eelarve kondsaldoandmik')
 	Set Step On

@@ -1,5 +1,6 @@
 Parameter tcWhere
 
+SET STEP ON
 IF !EMPTY(fltrAruanne.arvestus)
 	TEXT TO l_params TEXTMERGE NOSHOW 
 		{"kpv":"<<DTOC(fltrAruanne.kpv2,1)>>","tyyp":1,"kond":<<fltrAruanne.kond>>,"rekvid":<<gRekv>>}

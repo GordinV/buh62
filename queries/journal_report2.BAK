@@ -13,31 +13,11 @@ Create Cursor journal_report1 (Id Int, kpv d, asutus c(254), dok c(120) Null, ;
 	kood1 c(20) Null, valuuta c(20) Default 'EUR', kuurs N(14,4) Default 1, kood2 c(20) Null,;
 	kood3 c(20) Null, kood4 c(20) Null, kood5 c(20) Null, muud m Null, kasutaja c(120) Null, TUNNUS c(20) Null, Proj c(20) Null)
 
-Index On Id Tag Id
-Index On kpv Tag kpv Additive
-Index On id Tag Number Additive
-Index On deebet Tag deebet Additive
-Index On kreedit Tag kreedit Additive
-Index On kood1 Tag kood1 Additive
-Index On kood2 Tag kood2 Additive
-Index On kood3 Tag kood3 Additive
-Index On kood4 Tag kood4 Additive
-Index On kood5 Tag kood5 Additive
-Index On lisa_d Tag lisa_d Additive
-Index On lisa_k Tag lisa_k Additive
-Index On Summa Tag Summa Additive
-Index On Left(Upper(selg),40) Tag selg Additive
-Index On Left(Upper(dok),40) Tag dok Additive
-Index On Left(Upper(asutus),40) Tag asutus Additive
-Index On TUNNUS Tag TUNNUS Additive
 
-l_order = 'id'
+select journal_report1 
+index on alltrim(kood2)+'-'+ALLTRIM(deebet) +'-'+ALLTRIM(kreedit) tag lausend additive
 
-If Used('curJournal')
-	l_order = Order('curJournal')
-	Select journal_report1
-Endif
-Set Order To (l_order )
+SET ORDER to lausend 
 
 
 Select qryJournal1

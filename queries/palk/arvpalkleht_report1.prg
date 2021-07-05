@@ -7,8 +7,6 @@ TEXT TO l_where TEXTMERGE NOSHOW
 	and isik_id <= <<IIF(!EMPTY(fltrAruanne.asutusId),fltrAruanne.asutusId, 999999999)>>
 ENDTEXT
 
-SET STEP ON 
-
 lError = oDb.readFromModel('aruanned\palk\palk_leht', 'palk_leht', 'fltrAruanne.kpv1,fltrAruanne.kpv2, gRekv,fltrAruanne.kond, fltrAruanne.osakondid', 'tmpReport', l_where)
 If !lError
 	Messagebox('Viga',0+16, 'Arv. palgaleht')

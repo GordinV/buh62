@@ -27,15 +27,8 @@ TEXT TO lcWhere TEXTMERGE noshow
 ENDTEXT
 
 l_kpv2 = fltrAruanne.kpv2
-*!*	l_rekv = IIF(fltrAruanne.kond = 1 and gRekv = 63,999, gRekv)
 
-*!*	If Empty(fltrAruanne.kond)
-*!*		TEXT TO lcWhere ADDITIVE TEXTMERGE noshow
-*!*				and rekv_id = <<l_rekv>>
-*!*		ENDTEXT
-*!*	ENDIF
-
-lError = oDb.readFromModel('aruanned\eelarve\pikk_tulem', 'pikk_tulem', 'l_kpv2, gRekv, fltrAruanne.kond', 'tmpReport', lcWhere)
+lError = oDb.readFromModel('aruanned\eelarve\pikk_tulem', 'pikk_tulem', 'l_kpv2, gRekv, fltrAruanne.kond', 'bilanss_report1', lcWhere)
 If !lError
 	Messagebox('Viga',0+16, 'Pikk tulem')
 	Set Step On
@@ -43,12 +36,4 @@ If !lError
 	Return .F.
 Endif
 
-Select sum(summa) as summa, konto, nimetus ;
-	from tmpReport ;
-	GROUP By konto, nimetus ;	
-	ORDER By konto ;
-	INTO Cursor bilanss_report1
-
-Use In tmpReport
 Select bilanss_report1
-

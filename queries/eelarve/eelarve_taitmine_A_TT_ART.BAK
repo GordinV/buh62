@@ -25,7 +25,7 @@ If !lError
 	Return .F.
 Endif
 
-Select allikas, tegev, artikkel, rahavoog, nimetus, tunnus,;
+Select allikas, tegev, artikkel, nimetus,;
 	Sum(eelarve_kinni) As eelarve_kinni, ;	
 	Sum(eelarve_parandatud) As eelarve_parandatud, ;	
 	Sum(eelarve_kassa_kinni) As eelarve_kassa_kinni, ;	
@@ -35,8 +35,8 @@ Select allikas, tegev, artikkel, rahavoog, nimetus, tunnus,;
 	regkood, asutus ,;
 	parasutus, parregkood ;
 	from tmpReport ;
-	GROUP By allikas, tegev, idx, artikkel,rahavoog, nimetus, regkood, asutus, parasutus,parregkood, tunnus ;
-	ORDER By parasutus,asutus, idx, artikkel, allikas, tegev, rahavoog,   tunnus ;
+	GROUP By allikas, tegev, idx, artikkel,nimetus, regkood, asutus, parasutus,parregkood;
+	ORDER By parasutus,asutus, idx, artikkel, allikas, tegev ;
 	INTO Cursor eelarve_report2
 
 Use In tmpReport

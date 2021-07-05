@@ -12,6 +12,7 @@ l_secret = ALLTRIM(qryRekv.earved)
 *=check_cursors()
 Create Cursor m_memo (url c(120), Header c(120), Request m, response m, Timestamp T Default Datetime())
 
+
 cMessage = get_xml()
 
 loXMLHTTP = Createobject("MSXML2.XMLHTTP")

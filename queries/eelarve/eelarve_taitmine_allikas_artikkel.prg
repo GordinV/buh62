@@ -7,6 +7,7 @@ TEXT TO lcWhere TEXTMERGE noshow
 	and coalesce(tegev,'') like '<<ALLTRIM(fltrAruanne.kood1)>>%'
 	and coalesce(allikas,'') like '<<ALLTRIM(fltrAruanne.kood2)>>%'
 	and coalesce(rahavoog,'') like '<<ALLTRIM(fltrAruanne.kood3)>>%'
+	and coalesce(tunnus,'') ilike '<<ALLTRIM(fltrAruanne.tunnus)>>%'
 ENDTEXT
 
 If Empty(fltrAruanne.kond)
@@ -17,7 +18,7 @@ ENDIF
 l_aasta = year(fltrAruanne.kpv2)
 
 
-lError = oDb.readFromModel('aruanned\eelarve\taitmine_allikas_artikkel', 'kulud_report', 'l_aasta,fltrAruanne.kpv2, gRekv, fltrAruanne.kond', 'tmpReport', lcWhere)
+lError = oDb.readFromModel('aruanned\eelarve\taitmine_allikas_artikkel', 'kulud_report', 'l_aasta,fltrAruanne.kpv1, fltrAruanne.kpv2, gRekv, fltrAruanne.kond', 'tmpReport', lcWhere)
 If !lError
 	Messagebox('Viga',0+16, 'Eelarve kulud')
 	Set Step On
@@ -35,7 +36,7 @@ Select allikas, tegev, artikkel, rahavoog, nimetus, tunnus,;
 	regkood, asutus ,;
 	parasutus, parregkood ;
 	from tmpReport ;
-	GROUP By allikas, tegev, idx, artikkel,rahavoog, nimetus, regkood, asutus, parasutus,parregkood, tunnus ;
+	GROUP By allikas, tegev, idx, artikkel,rahavoog, nimetus, regkood, asutus, parasutus,parregkood, tunnus;
 	ORDER By parasutus,asutus, idx, artikkel, allikas, tegev, rahavoog,   tunnus ;
 	INTO Cursor eelarve_report2
 

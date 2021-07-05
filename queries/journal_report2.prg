@@ -14,6 +14,10 @@ Create Cursor journal_report1 (Id Int, kpv d, asutus c(254), dok c(120) Null, ;
 	kood3 c(20) Null, kood4 c(20) Null, kood5 c(20) Null, muud m Null, kasutaja c(120) Null, TUNNUS c(20) Null, Proj c(20) Null)
 
 
+select journal_report1 
+*index on alltrim(kood2)+'-'+ALLTRIM(deebet) +'-'+ALLTRIM(kreedit) tag lausend additive
+
+*SET ORDER to lausend 
 
 
 Select qryJournal1

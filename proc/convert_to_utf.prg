@@ -39,7 +39,16 @@ FOR i = 0 TO LEN(tcSona)
 		CASE lcTaht = 'Ð'
 			lcTaht = '&#352;'
 		CASE lcTaht = '&'
-			lcTaht = '&#038;'
+			lcTaht = '&amp;'
+		CASE lcTaht = "'"
+			lcTaht = '&apos;'
+		CASE lcTaht = '"'
+			lcTaht = '&quot;'
+		CASE lcTaht = '>'
+			lcTaht = '&gt;'
+		CASE lcTaht = '<'
+			lcTaht = '&lt;'
+					
 	ENDCASE
 	lcReturnSona = lcReturnSona + lcTaht
 ENDFOR

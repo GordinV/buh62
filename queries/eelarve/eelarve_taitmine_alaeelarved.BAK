@@ -11,7 +11,7 @@ TEXT TO lcWhere TEXTMERGE noshow
 	and coalesce(tegev,'') like '<<ALLTRIM(fltrAruanne.kood1)>>%'
 	and coalesce(allikas,'') like '<<ALLTRIM(fltrAruanne.kood2)>>%'
 	and coalesce(rahavoog,'') like '<<ALLTRIM(fltrAruanne.kood3)>>%'
-	and idx < 200
+	and idx >= 200
 ENDTEXT
 
 If Empty(fltrAruanne.kond)
@@ -22,7 +22,7 @@ Endif
 l_aasta = Year(fltrAruanne.kpv2)
 
 
-lError = oDb.readFromModel('aruanned\eelarve\taitmine_allikas_artikkel', 'kulud_report', 'l_aasta,fltrAruanne.kpv2, gRekv, fltrAruanne.kond', 'tmpReport', lcWhere)
+lError = oDb.readFromModel('aruanned\eelarve\taitmine_allikas_artikkel', 'kulud_report', 'l_aasta,DATE(l_aasta,01,01), fltrAruanne.kpv2, gRekv, fltrAruanne.kond', 'tmpReport', lcWhere)
 If !lError
 	Messagebox('Viga',0+16, 'Eelarve kulud')
 	Set Step On

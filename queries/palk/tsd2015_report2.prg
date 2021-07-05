@@ -96,7 +96,6 @@ Select isikukood, isik, Sum(Summa) As Summa, Sum(puhkused) As puhkused, Sum(haig
 	ORDER By isikukood, tululiik;
 	INTO Cursor curTSD
 Select curTSD
-
 Scan
 * 1090
 
@@ -119,11 +118,26 @@ Scan
 
 	l_1090 = 0
 	
-	If !Isnull(curTSD.arv_min_sots) And l_used_1090 = .F.
+	If !Isnull(curTSD.arv_min_sots) AND !EMPTY(curTSD.arv_min_sots) And l_used_1090 = .F. ;
+		and Alltrim(curTSD.tululiik) <> ('17') ;
+		and Alltrim(curTSD.tululiik) <> ('16') ;
+		and Alltrim(curTSD.tululiik) <> ('24') ;
+		and Alltrim(curTSD.tululiik) <> ('55') 
 	
 		l_1090 = curTSD.min_sots_alus
 		* kui sm vaiksem kui sots maks min palgast, siis kasutame min.sots
-		l_sm = IIF(curTSD.sm < curTSD.arv_min_sots, curTSD.arv_min_sots,  curTSD.sm)
+*!*			IF curTSD.sm < curTSD.arv_min_sots  AND curTSD.sm > 0 
+*!*				* vana
+*!*				l_sm = curTSD.arv_min_sots
+
+*!*			ELSE
+*!*				* uus lisa SM
+*!*				l_sm = curTSD.sm + curTSD.arv_min_sots
+*!*			ENDIF
+			* uus lisa SM
+		l_sm = curTSD.sm + curTSD.arv_min_sots
+		
+		
 		l_used_1090 = .T.
 	Endif
 

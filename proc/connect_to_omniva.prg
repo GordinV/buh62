@@ -34,6 +34,7 @@ With loXMLHTTP
 	.Send(cMessage)
 	Wait Window 'Oodan omniva... ok' Nowait
 	Insert Into m_memo (url, Header, Request, response) Values (cUrl, 'text/xml;charset=UTF-8', cMessage, .responsetext)
+	SELECT m_memo 
 
 	l_finished = kas_lopp(.responsetext)
 	l_found_xml = parse_response(.responsetext)
@@ -60,7 +61,6 @@ With loXMLHTTP
 		.Send(cMessage)
 		Insert Into m_memo (url, Header, Request, response) Values (cUrl, 'text/xml;charset=UTF-8', cMessage, .responsetext)
 		l_finished = kas_lopp(.responsetext)
-		_cliptext = cMessage
 		
 		Wait Window 'Loen vastus...' Nowait
 
@@ -78,6 +78,9 @@ With loXMLHTTP
 	Wait Window 'Loen vastus...' + Alltrim(Str(l_found_kokku)) + ' arved' Nowait
 
 ENDWITH
+
+SELECT v_xml_arv
+
 
 Return l_found_kokku
 Endfunc
@@ -194,6 +197,7 @@ Function parce_invoice
 
 	Create Cursor v_xml_invoice_data (invoiceNumber c(20), invoiceDate d, paymentreferencenumber c(20), DueDate d, ContractNumber c(254), accountNUmber c(20))
 	Xmltocursor(l_parced_xml,'v_xml_invoice_data',8192)
+	
 
 	Select v_xml_arv
 	Append Blank
@@ -460,9 +464,20 @@ Function parce_invoice
 
 	Xmltocursor(l_parced_xml,'v_xml_invoice_parties',0)
 	Select v_xml_invoice_parties
-	Locate For Alltrim(Str(v_xml_invoice_parties.regnumber)) <> Alltrim(qryRekv.regkood)
+	
+*!*		Locate For Alltrim(Str(v_xml_invoice_parties.regnumber)) <> Alltrim(qryRekv.regkood);
+*!*			and (ALLTRIM(v_xml_invoice_parties.regnumber)) <> 'ERAISIK'	
 
-	Replace v_xml_arv.asutus With v_xml_invoice_parties.Name, regkood With Alltrim(Str(v_xml_invoice_parties.regnumber, 12)) In v_xml_arv
+	SELECT * from v_xml_invoice_parties ;
+		WHERE Alltrim(IIF(VARTYPE(v_xml_invoice_parties.regnumber) = 'C',v_xml_invoice_parties.regnumber,Str(v_xml_invoice_parties.regnumber))) NOT in ('ERAISIK', Alltrim(qryRekv.regkood)) ;
+		INTO CURSOR qryAsutus
+
+	SELECT qryAsutus
+	
+	IF USED('qryAsutus') AND RECCOUNT('qryAsutus') > 0 
+		Replace v_xml_arv.asutus With qryAsutus.Name, regkood With Alltrim(Str(qryAsutus.regnumber, 12)) In v_xml_arv
+	ENDIF
+	
 	Use In v_xml_invoice_parties
 
 
@@ -517,7 +532,12 @@ Function parce_invoice
 	Endif
 
 	Return .T.
-Endfunc
+ENDFUNC
+
+Function IsNumeric
+Lparameters pString
+Return  m.pString == Chrtran(m.pString, Chrtran(m.pString, "0123456789", ""), "")
+EndFunc
 
 
 Function check_cursors

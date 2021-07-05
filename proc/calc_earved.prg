@@ -112,7 +112,7 @@ ENDTEXT
 
 IF !EMPTY(qryeArved.muuja_email)
 TEXT TO lcFileString ADDITIVE NOSHOW textmerge
-<EmailAddress><<ALLTRIM(qryeArved.muuja_email)>></EmailAddress>
+<E-mailAddress><<ALLTRIM(qryeArved.muuja_email)>></E-mailAddress>
 
 ENDTEXT
 
@@ -133,7 +133,7 @@ TEXT TO lcFileString ADDITIVE NOSHOW textmerge
 ENDTEXT
 IF !EMPTY(qryeArved.ostja_email)
 TEXT TO lcFileString ADDITIVE NOSHOW textmerge
-<EmailAddress><<ALLTRIM(qryeArved.ostja_email)>></EmailAddress>
+<E-mailAddress><<ALLTRIM(qryeArved.ostja_email)>></E-mailAddress>
 
 ENDTEXT
 ENDIF

@@ -35,7 +35,9 @@ ENDIF
 
 
 Select Sum(Summa) As arv, ;
-	sum(tm) As tm, Sum(IIF(arv_min_sots > sm AND min_sots_alus > 0, ROUND(min_sots_alus * 0.33,2), 0) * sm_arv + sm ) As sm, Sum(tki) As tki,  Sum(pm) As pm, Sum(tulubaas) As tulubaas, Sum(tka) As tka, sum(eri_tm) as eri_tm, sum(eri_sm) as eri_sm ;
+	sum(tm) As tm, ;
+	max(sm_kokku ) As sm, ;
+	Sum(tki) As tki,  Sum(pm) As pm, Sum(tulubaas) As tulubaas, Sum(tka) As tka, sum(eri_tm) as eri_tm, sum(eri_sm) as eri_sm ;
 	from tmpReport ;
 	into Cursor qryTsd
 

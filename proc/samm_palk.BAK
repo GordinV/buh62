@@ -143,7 +143,6 @@ TEXT TO lcJson TEXTMERGE noshow
 				}
 ENDTEXT
 * sql proc
-_cliptext = lcJson
 	task = 'palk.gen_palkoper'
 	leRror = odB.readFromModel('palk\palk_oper', 'executeTask', 'guserid,lcJson,task', 'qryResult')
 	Do Form taitmine_raport With 'qryResult' 
@@ -207,6 +206,11 @@ Procedure geT_kood_list
 	ELSE
 		lcWhere = 'liik = 6'
 	ENDIF
+	
+	TEXT TO lcWhere ADDITIVE TEXTMERGE noshow
+	and (valid >= '<<DTOC(date(year(gdKpv),MONTH(gdKpv),DAY(gdKpv)),1)>>'::date  or valid is null)
+	endtext	
+	
 	
 	leRror = odB.readFromModel('libs\libraries\palk_lib', 'curPalklib', 'gRekv, guserid', 'qryPalkLib', lcWhere)
 

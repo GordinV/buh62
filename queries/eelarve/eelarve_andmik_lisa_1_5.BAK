@@ -1,12 +1,12 @@
-LPARAMETERS tcParams
+Lparameters tcParams
 *!*		SET STEP on
 *!*	gRekv = 64
 *!*	CREATE CURSOR fltrAruanne (kpv2 d, kond i)
 *!*	APPEND BLANK
 *!*	replace kpv2 WITH DATE(2019,01,03), kond WITH 0
-*!*	 
+*!*
 *!*	gnHandle = SQLCONNECT('NarvaLvPg','vlad','Vlad490710')
-*!*	 
+*!*
 
 TEXT TO lcWhere TEXTMERGE noshow
 	(EMPTY(<<fltrAruanne.asutusid>>) or rekvid = <<fltrAruanne.asutusid>>)
@@ -16,12 +16,12 @@ TEXT TO lcWhere TEXTMERGE noshow
 ENDTEXT
 
 If Empty(fltrAruanne.kond)
-	TEXT TO lcWhere ADDITIVE TEXTMERGE noshow
+TEXT TO lcWhere ADDITIVE TEXTMERGE noshow
 			and rekvid = <<gRekv>>
-	ENDTEXT
-ENDIF
+ENDTEXT
+Endif
 
-WAIT WINDOW 'Päring...' nowait
+Wait Window 'Päring...' Nowait
 lError = oDb.readFromModel('aruanned\eelarve\eelarve_andmik_lisa_1_5', 'eelarve_andmik_lisa_1_5_report', 'fltrAruanne.kpv2, gRekv, fltrAruanne.kond', 'qryReport', lcWhere)
 If !lError
 	Messagebox('Viga',0+16, 'Eelarve täitmine')
@@ -32,559 +32,613 @@ Endif
 
 
 
-WAIT WINDOW 'Andmed, analüüs...' nowait
+Wait Window 'Andmed, analüüs...' Nowait
 
-CREATE CURSOR eelarve_report_query (idx c(20), sub_idx integer DEFAULT 0, idx1 integer DEFAULT 5, is_esita c(1) null, rekvid i, tegev c(20), artikkel c(20), nimetus c(254) null,;
-	eelarve n(14,2) null , eelarve_kassa n(14,2) null, eelarve_taps n(14,2) null, eelarve_kassa_taps n(14,2) null,;
-	tegelik n(14,2) null, kassa n(14,2) null, saldoandmik n(14,2) null)
+Create Cursor eelarve_report_query (idx c(20), sub_idx Integer Default 0, idx1 Integer Default 5, is_esita c(1) Null, rekvid i, tegev c(20), artikkel c(20), nimetus c(254) Null,;
+	eelarve N(14,2) Null , eelarve_kassa N(14,2) Null, eelarve_taps N(14,2) Null, eelarve_kassa_taps N(14,2) Null,;
+	tegelik N(14,2) Null, kassa N(14,2) Null, saldoandmik N(14,2) Null)
+
+
+* kontrol
+Create Cursor kontrol_report (rea_1 c(254), rea_2 c(254), rea_3 c(254), rea_4 c(254), rea_5 c(254), rea_6 c(254), rea_7 c(254),rea_8 c(254),;
+	rea_9 c(254), rea_10 c(254),rea_11 c(254),rea_12 c(254),rea_13 c(254),rea_14 c(254),rea_15 c(254),;
+	summa_11 N(14,2), summa_12 N(14,2), summa_13 N(14,2),summa_14 N(14,2),summa_15 N(14,2),summa_16 N(14,2),;
+	summa_21 N(14,2), summa_22 N(14,2),summa_23 N(14,2),summa_24 N(14,2),summa_25 N(14,2),summa_26 N(14,2),;
+	summa_31 N(14,2), summa_32 N(14,2), summa_33 N(14,2), summa_34 N(14,2),summa_35 N(14,2),summa_36 N(14,2),;
+	summa_41 N(14,2), summa_42 N(14,2), summa_43 N(14,2),summa_44 N(14,2),summa_45 N(14,2),summa_46 N(14,2),;
+	summa_51 c(20), summa_52 c(20), summa_53 c(20), summa_54 c(20), summa_55 c(20), summa_56 c(20),;
+	summa_61 c(20), summa_62 c(20), summa_63 c(20), summa_64 c(20), summa_65 c(20), summa_66 c(20),;
+	summa_71 c(20), summa_72 c(20), summa_73 c(20), summa_74 c(20), summa_75 c(20), summa_76 c(20),;
+	summa_81 c(20), summa_82 c(20), summa_83 c(20), summa_84 c(20), summa_85 c(20), summa_86 c(20),;
+	summa_91 c(20), summa_92 c(20), summa_93 c(20), summa_94 c(20), summa_95 c(20), summa_96 c(20),;
+	summa_101 c(20), summa_102 c(20), summa_103 c(20), summa_104 c(20), summa_105 c(20), summa_106 c(20),;
+	summa_111 c(20), summa_112 c(20), summa_113 c(20), summa_114 c(20), summa_115 c(20), summa_116 c(20),;
+	summa_121 c(20), summa_122 c(20), summa_123 c(20), summa_124 c(20), summa_125 c(20), summa_126 c(20),;
+	summa_131 c(20), summa_132 c(20), summa_133 c(20), summa_134 c(20), summa_135 c(20), summa_136 c(20),;
+	summa_141 c(20), summa_142 c(20), summa_143 c(20), summa_144 c(20), summa_145 c(20), summa_146 c(20),;
+	summa_151 c(20), summa_152 c(20), summa_153 c(20), summa_154 c(20), summa_155 c(20), summa_156 c(20);
+	)
+
 
 * 3000+3030+3044+3045+3047
 
-SELECT 'S' as is_esita, ;
-	'2.1' as idx, 2 as sub_idx, gRekv as rekvid, space(20) as tegev, '30' as artikkel, UPPER('Maksutulud') as nimetus, ;
-	sum(eelarve) as eelarve, sum(eelarve_kassa) as eelarve_kassa,;
-	sum(eelarve_taps) as eelarve_taps, sum(eelarve_kassa_taps) as eelarve_kassa_taps, sum(tegelik) as tegelik, sum(kassa) as kassa, sum(saldoandmik) as saldoandmik ;
+Select 'S' As is_esita, ;
+	'2.1' As idx, 2 As sub_idx, gRekv As rekvid, Space(20) As tegev, '30' As artikkel, Upper('Maksutulud') As nimetus, ;
+	sum(eelarve) As eelarve, Sum(eelarve_kassa) As eelarve_kassa,;
+	sum(eelarve_taps) As eelarve_taps, Sum(eelarve_kassa_taps) As eelarve_kassa_taps, Sum(tegelik) As tegelik, Sum(kassa) As kassa, Sum(saldoandmik) As saldoandmik ;
 	FROM qryReport ;
-	where LEFT(artikkel,4) IN ('3000','3030','3044','3045','3047') ;  
-	INTO CURSOR tmp1
+	where Left(artikkel,4) In ('3000','3030','3044','3045','3047') ;
+	INTO Cursor tmp1
 
-select eelarve_report_query 
-append FROM DBF('tmp1')
+Select eelarve_report_query
+Append From Dbf('tmp1')
 
-USE IN tmp1
+Use In tmp1
 
 *	where artikkel in  ('3500','352','35200','35201') ;
 
-SELECT 'S' as is_esita, ;
-	'2.1' as idx, 2 as sub_idx, gRekv as rekvid, space(20) as tegev, '35' as artikkel, UPPER('Saadud toetused tegevuskuludeks') as nimetus, ;
-	sum(eelarve) as eelarve, sum(eelarve_kassa) as eelarve_kassa, ;
-	sum(eelarve_taps) as eelarve_taps, sum(eelarve_kassa_taps) as eelarve_kassa_taps,;
-	sum(tegelik) as tegelik, sum(kassa) as kassa, sum(saldoandmik) as saldoandmik ;
+Select 'S' As is_esita, ;
+	'2.1' As idx, 2 As sub_idx, gRekv As rekvid, Space(20) As tegev, '35' As artikkel, Upper('Saadud toetused tegevuskuludeks') As nimetus, ;
+	sum(eelarve) As eelarve, Sum(eelarve_kassa) As eelarve_kassa, ;
+	sum(eelarve_taps) As eelarve_taps, Sum(eelarve_kassa_taps) As eelarve_kassa_taps,;
+	sum(tegelik) As tegelik, Sum(kassa) As kassa, Sum(saldoandmik) As saldoandmik ;
 	FROM qryReport ;
-	where LEFT(artikkel,2) like  '35%' ;
-	AND artikkel NOT in ('3502','352');
-	INTO CURSOR tmp1
+	where Left(artikkel,2) Like  '35%' ;
+	AND artikkel Not In ('3502');
+	INTO Cursor tmp1
 
-select eelarve_report_query 
-append FROM DBF('tmp1')
+*	AND artikkel NOT in ('3502','352');	update 02.04.2021 V.B
 
-USE IN tmp1
 
-SELECT 'S' as is_esita, ;
-	'2.1' as idx, 3 as sub_idx, gRekv as rekvid, space(20) as tegev, '38' as artikkel, UPPER('Muud tegevustulud ') as nimetus, ;
-	sum(eelarve) as eelarve, sum(eelarve_kassa) as eelarve_kassa, ;
-	sum(eelarve_taps) as eelarve_taps, sum(eelarve_kassa_taps) as eelarve_kassa_taps, ;
-	sum(tegelik) as tegelik, sum(kassa) as kassa, sum(saldoandmik) as saldoandmik ;
+Select eelarve_report_query
+Append From Dbf('tmp1')
+
+Use In tmp1
+
+Select 'S' As is_esita, ;
+	'2.1' As idx, 3 As sub_idx, gRekv As rekvid, Space(20) As tegev, '38' As artikkel, Upper('Muud tegevustulud ') As nimetus, ;
+	sum(eelarve) As eelarve, Sum(eelarve_kassa) As eelarve_kassa, ;
+	sum(eelarve_taps) As eelarve_taps, Sum(eelarve_kassa_taps) As eelarve_kassa_taps, ;
+	sum(tegelik) As tegelik, Sum(kassa) As kassa, Sum(saldoandmik) As saldoandmik ;
 	FROM qryReport ;
-	where (artikkel  in ('3818') OR LEFT(artikkel,3) in ('388','382'));
-	INTO CURSOR tmp1
+	where (artikkel  In ('3818') Or Left(artikkel,3) In ('388','382'));
+	INTO Cursor tmp1
 
-select eelarve_report_query 
-append FROM DBF('tmp1')
+Select eelarve_report_query
+Append From Dbf('tmp1')
 
-USE IN tmp1
+Use In tmp1
 
 
-SELECT 'S' as is_esita, ;
-	'2.11' as idx, 4 as sub_idx, gRekv as rekvid, space(20) as tegev, '4' as artikkel, UPPER('Antud toetused tegevuskuludeks') as nimetus, ;
-	sum(eelarve) as eelarve, sum(eelarve_kassa) as eelarve_kassa, ;
-	sum(eelarve_taps) as eelarve_taps, sum(eelarve_kassa_taps) as eelarve_kassa_taps, ;
-	sum(tegelik) as tegelik, sum(kassa) as kassa, sum(saldoandmik) as saldoandmik ;
+Select 'S' As is_esita, ;
+	'2.11' As idx, 4 As sub_idx, gRekv As rekvid, Space(20) As tegev, '4' As artikkel, Upper('Antud toetused tegevuskuludeks') As nimetus, ;
+	sum(eelarve) As eelarve, Sum(eelarve_kassa) As eelarve_kassa, ;
+	sum(eelarve_taps) As eelarve_taps, Sum(eelarve_kassa_taps) As eelarve_kassa_taps, ;
+	sum(tegelik) As tegelik, Sum(kassa) As kassa, Sum(saldoandmik) As saldoandmik ;
 	FROM qryReport ;
-	where (artikkel like '40%' OR artikkel like '413%' OR artikkel like '4500%'  OR artikkel like '452%');
-	INTO CURSOR tmp1
-*40+413+4500+452	
+	where (artikkel Like '40%' Or artikkel Like '413%' Or artikkel Like '4500%'  Or artikkel Like '452%');
+	INTO Cursor tmp1
+*40+413+4500+452
 
-select eelarve_report_query 
-append FROM DBF('tmp1')
+Select eelarve_report_query
+Append From Dbf('tmp1')
 
-USE IN tmp1
+Use In tmp1
 
-SELECT 'S' as is_esita, ;
-	'2.12' as idx, 4 as sub_idx, gRekv as rekvid, space(20) as tegev, '' as artikkel, UPPER('Muud tegevuskulud') as nimetus, ;
-	sum(eelarve) as eelarve, sum(eelarve_kassa) as eelarve_kassa, ;
-	sum(eelarve_taps) as eelarve_taps, sum(eelarve_kassa_taps) as eelarve_kassa_taps, ;
-	sum(tegelik) as tegelik, sum(kassa) as kassa, sum(saldoandmik) as saldoandmik ;
+Select 'S' As is_esita, ;
+	'2.12' As idx, 4 As sub_idx, gRekv As rekvid, Space(20) As tegev, '' As artikkel, Upper('Muud tegevuskulud') As nimetus, ;
+	sum(eelarve) As eelarve, Sum(eelarve_kassa) As eelarve_kassa, ;
+	sum(eelarve_taps) As eelarve_taps, Sum(eelarve_kassa_taps) As eelarve_kassa_taps, ;
+	sum(tegelik) As tegelik, Sum(kassa) As kassa, Sum(saldoandmik) As saldoandmik ;
 	FROM qryReport ;
-	where (artikkel LIKE '5%' OR LEFT(ARTIKKEL,2) = '60') ;
-	INTO CURSOR tmp1
+	where (artikkel Like '5%' Or Left(artikkel,2) = '60') ;
+	INTO Cursor tmp1
 
-select eelarve_report_query 
-append FROM DBF('tmp1')
-USE IN tmp1
+Select eelarve_report_query
+Append From Dbf('tmp1')
+Use In tmp1
 
 
-SELECT IIF(EMPTY(q.is_e),'E','') as is_esita,  ;
-	q.idx, 8 as sub_idx, q.rekvid, q.tegev, q.artikkel, q.nimetus, ;
+Select Iif(Empty(q.is_e),'E','') As is_esita,  ;
+	q.idx, 8 As sub_idx, q.rekvid, q.tegev, q.artikkel, q.nimetus, ;
 	q.eelarve, q.eelarve_kassa, ;
 	q.eelarve_taps, q.eelarve_kassa_taps, ;
 	q.tegelik, q.kassa, q.saldoandmik ;
 	from qryReport q ;
-	INTO cursor tmp2
+	INTO Cursor tmp2
 
 
-select eelarve_report_query 
+Select eelarve_report_query
 
-append FROM DBF('tmp2')
+Append From Dbf('tmp2')
 
-USE IN tmp2
+Use In tmp2
 
 
 
 *  30+32+35+38
-SELECT 'S' as is_esita, ;
-	'1.0' as idx, 0 as sub_idx, gRekv as rekvid, space(20) as tegev, space(20) as artikkel, UPPER('PÕHITEGEVUSE TULUD KOKKU') as nimetus, ;
-	sum(eelarve) as eelarve, sum(eelarve_kassa) as eelarve_kassa, ;
-	sum(eelarve_taps) as eelarve_taps, sum(eelarve_kassa_taps) as eelarve_kassa_taps, ;
-	sum(tegelik) as tegelik, sum(kassa) as kassa, sum(saldoandmik) as saldoandmik ;
+Select 'S' As is_esita, ;
+	'1.0' As idx, 0 As sub_idx, gRekv As rekvid, Space(20) As tegev, Space(20) As artikkel, Upper('PÕHITEGEVUSE TULUD KOKKU') As nimetus, ;
+	sum(eelarve) As eelarve, Sum(eelarve_kassa) As eelarve_kassa, ;
+	sum(eelarve_taps) As eelarve_taps, Sum(eelarve_kassa_taps) As eelarve_kassa_taps, ;
+	sum(tegelik) As tegelik, Sum(kassa) As kassa, Sum(saldoandmik) As saldoandmik ;
 	FROM eelarve_report_query ;
-	where artikkel in ('30','32', '35','38') ;
-	INTO CURSOR tmp_tulud_kokku
+	where artikkel In ('30','32', '35','38') ;
+	INTO Cursor tmp_tulud_kokku
 
-select eelarve_report_query 
-append FROM DBF('tmp_tulud_kokku')
+Select eelarve_report_query
+Append From Dbf('tmp_tulud_kokku')
 
 
-SELECT 'S' as is_esita, ;
-	'2.11' as idx, 4 as idx1, 2 as sub_idx, gRekv as rekvid, space(20) as tegev, '' as artikkel, UPPER('PÕHITEGEVUSE KULUD KOKKU') as nimetus, ;
-	sum(eelarve) as eelarve, sum(eelarve_kassa) as eelarve_kassa, ;
-	sum(eelarve_taps) as eelarve_taps, sum(eelarve_kassa_taps) as eelarve_kassa_taps, ;
-	sum(tegelik) as tegelik, sum(kassa) as kassa, sum(saldoandmik) as saldoandmik ;
+Select 'S' As is_esita, ;
+	'2.11' As idx, 4 As idx1, 2 As sub_idx, gRekv As rekvid, Space(20) As tegev, '' As artikkel, Upper('PÕHITEGEVUSE KULUD KOKKU') As nimetus, ;
+	sum(eelarve) As eelarve, Sum(eelarve_kassa) As eelarve_kassa, ;
+	sum(eelarve_taps) As eelarve_taps, Sum(eelarve_kassa_taps) As eelarve_kassa_taps, ;
+	sum(tegelik) As tegelik, Sum(kassa) As kassa, Sum(saldoandmik) As saldoandmik ;
 	FROM qryReport ;
-	where (LEFT(artikkel,2) in ('60') OR artikkel like '4%' OR artikkel like '5%') ;
-	AND artikkel NOT in ('4502');
-	INTO CURSOR tmp_kulud_kokku
+	where (Left(artikkel,2) In ('60') Or artikkel Like '4%' Or artikkel Like '5%') ;
+	AND artikkel Not In ('4502');
+	INTO Cursor tmp_kulud_kokku
 
-select eelarve_report_query 
-append FROM DBF('tmp_kulud_kokku')
+Select eelarve_report_query
+Append From Dbf('tmp_kulud_kokku')
 
 
-INSERT into eelarve_report_query (idx , sub_idx, is_esita , rekvid, tegev, artikkel, nimetus ,;
+Insert Into eelarve_report_query (idx , sub_idx, is_esita , rekvid, tegev, artikkel, nimetus ,;
 	eelarve , eelarve_kassa, eelarve_taps, eelarve_kassa_taps, tegelik , kassa, saldoandmik ) ;
-VALUES ('2.3', 2, 'S', gRekv , space(20), '', UPPER('PÕHITEGEVUSE TULEM') , ;
-	(tmp_tulud_kokku.eelarve + tmp_kulud_kokku.eelarve),; 
-	(tmp_tulud_kokku.eelarve_kassa + tmp_kulud_kokku.eelarve_kassa),; 
-	(tmp_tulud_kokku.eelarve_taps + tmp_kulud_kokku.eelarve_taps),; 
-	(tmp_tulud_kokku.eelarve_kassa_taps + tmp_kulud_kokku.eelarve_kassa_taps),; 
+	VALUES ('2.3', 2, 'S', gRekv , Space(20), '', Upper('PÕHITEGEVUSE TULEM') , ;
+	(tmp_tulud_kokku.eelarve + tmp_kulud_kokku.eelarve),;
+	(tmp_tulud_kokku.eelarve_kassa + tmp_kulud_kokku.eelarve_kassa),;
+	(tmp_tulud_kokku.eelarve_taps + tmp_kulud_kokku.eelarve_taps),;
+	(tmp_tulud_kokku.eelarve_kassa_taps + tmp_kulud_kokku.eelarve_kassa_taps),;
 	(tmp_tulud_kokku.tegelik + tmp_kulud_kokku.tegelik) , ;
 	(tmp_tulud_kokku.kassa + tmp_kulud_kokku.kassa), ;
-	(tmp_tulud_kokku.saldoandmik + tmp_kulud_kokku.saldoandmik) ) 
+	(tmp_tulud_kokku.saldoandmik + tmp_kulud_kokku.saldoandmik) )
 
 
-SELECT 'S' as is_esita, ;
-	'2.4' as idx, 1 as sub_idx, gRekv as rekvid, space(20) as tegev, '' as artikkel, UPPER('INVESTEERIMISTEGEVUS KOKKU') as nimetus, ;
-	sum(eelarve) as eelarve, sum(eelarve_kassa) as eelarve_kassa, ;
-	sum(eelarve_taps) as eelarve_taps, sum(eelarve_kassa_taps) as eelarve_kassa_taps, ;	
-	sum(tegelik) as tegelik, sum(kassa) as kassa, sum(saldoandmik) as saldoandmik ;
+Select 'S' As is_esita, ;
+	'2.4' As idx, 1 As sub_idx, gRekv As rekvid, Space(20) As tegev, '' As artikkel, Upper('INVESTEERIMISTEGEVUS KOKKU') As nimetus, ;
+	sum(eelarve) As eelarve, Sum(eelarve_kassa) As eelarve_kassa, ;
+	sum(eelarve_taps) As eelarve_taps, Sum(eelarve_kassa_taps) As eelarve_kassa_taps, ;
+	sum(tegelik) As tegelik, Sum(kassa) As kassa, Sum(saldoandmik) As saldoandmik ;
 	FROM qryReport ;
-	where alltrim(artikkel) in ('381', '15','3502','4502','1502','1501','1512','1511','1531', '1532', '1032','655','650') ;
-	INTO CURSOR investeerimis_tegevus
+	where Alltrim(artikkel) In ('381', '15','3502','4502','1502','1501','1512','1511','1531', '1532', '1032','655','650') ;
+	INTO Cursor investeerimis_tegevus
 
-select eelarve_report_query 
-append FROM DBF('investeerimis_tegevus')
+Select eelarve_report_query
+Append From Dbf('investeerimis_tegevus')
 
-INSERT into eelarve_report_query (idx , sub_idx, is_esita , rekvid, tegev, artikkel, nimetus ,;
+Insert Into eelarve_report_query (idx , sub_idx, is_esita , rekvid, tegev, artikkel, nimetus ,;
 	eelarve , eelarve_kassa, ;
 	eelarve_taps, eelarve_kassa_taps,;
 	tegelik , kassa, saldoandmik ) ;
-VALUES ('2.4.6', 1, 'S', gRekv , space(20), '', UPPER('EELARVE TULEM (ÜLEJÄÄK (+) / PUUDUJÄÄK (-))') , ;
-	(tmp_tulud_kokku.eelarve + tmp_kulud_kokku.eelarve) + investeerimis_tegevus.eelarve,; 
-	(tmp_tulud_kokku.eelarve_kassa + tmp_kulud_kokku.eelarve_kassa) + investeerimis_tegevus.eelarve_kassa,; 
-	(tmp_tulud_kokku.eelarve_taps + tmp_kulud_kokku.eelarve_taps) + investeerimis_tegevus.eelarve_taps,; 
-	(tmp_tulud_kokku.eelarve_kassa_taps + tmp_kulud_kokku.eelarve_kassa_taps) + investeerimis_tegevus.eelarve_kassa_taps,; 	
+	VALUES ('2.4.6', 1, 'S', gRekv , Space(20), '', Upper('EELARVE TULEM (ÜLEJÄÄK (+) / PUUDUJÄÄK (-))') , ;
+	(tmp_tulud_kokku.eelarve + tmp_kulud_kokku.eelarve) + investeerimis_tegevus.eelarve,;
+	(tmp_tulud_kokku.eelarve_kassa + tmp_kulud_kokku.eelarve_kassa) + investeerimis_tegevus.eelarve_kassa,;
+	(tmp_tulud_kokku.eelarve_taps + tmp_kulud_kokku.eelarve_taps) + investeerimis_tegevus.eelarve_taps,;
+	(tmp_tulud_kokku.eelarve_kassa_taps + tmp_kulud_kokku.eelarve_kassa_taps) + investeerimis_tegevus.eelarve_kassa_taps,;
 	(tmp_tulud_kokku.tegelik + tmp_kulud_kokku.tegelik) + investeerimis_tegevus.tegelik , ;
 	(tmp_tulud_kokku.kassa + tmp_kulud_kokku.kassa) + investeerimis_tegevus.kassa, ;
-	(tmp_tulud_kokku.saldoandmik + tmp_kulud_kokku.saldoandmik) + investeerimis_tegevus.saldoandmik ) 
+	(tmp_tulud_kokku.saldoandmik + tmp_kulud_kokku.saldoandmik) + investeerimis_tegevus.saldoandmik )
 
 
-SELECT 'S' as is_esita, ;
-	'2.4.6' as idx, 2 as sub_idx, gRekv as rekvid, space(20) as tegev, '' as artikkel, UPPER('FINANTSEERIMISTEGEVUS') as nimetus, ;
-	sum(eelarve) as eelarve, sum(eelarve_kassa) as eelarve_kassa, ;
-	sum(eelarve_taps) as eelarve_taps, sum(eelarve_kassa_taps) as eelarve_kassa_taps, ;
-	sum(tegelik) as tegelik, sum(kassa) as kassa, sum(saldoandmik) as saldoandmik ;
+Select 'S' As is_esita, ;
+	'2.4.6' As idx, 2 As sub_idx, gRekv As rekvid, Space(20) As tegev, '' As artikkel, Upper('FINANTSEERIMISTEGEVUS') As nimetus, ;
+	sum(eelarve) As eelarve, Sum(eelarve_kassa) As eelarve_kassa, ;
+	sum(eelarve_taps) As eelarve_taps, Sum(eelarve_kassa_taps) As eelarve_kassa_taps, ;
+	sum(tegelik) As tegelik, Sum(kassa) As kassa, Sum(saldoandmik) As saldoandmik ;
 	FROM qryReport ;
-	where LEFT(artikkel,4) in ('2585','2586') ;
-	INTO CURSOR finants_tegenus
+	where Left(artikkel,4) In ('2585','2586') ;
+	INTO Cursor finants_tegenus
 
-select eelarve_report_query 
-append FROM DBF('finants_tegenus')
+Select eelarve_report_query
+Append From Dbf('finants_tegenus')
 
 
-SELECT 'S' as is_esita, ;
-	'2.4.8' as idx, 2 as sub_idx, gRekv as rekvid, space(20) as tegev, '' as artikkel, UPPER('NÕUETE JA KOHUSTUSTE SALDODE MUUTUS (tekkepõhise e/a korral) (+/-)') as nimetus, ;
-	(qryReport.eelarve) - ((tmp_tulud_kokku.eelarve + tmp_kulud_kokku.eelarve) + investeerimis_tegevus.eelarve) + finants_tegenus.eelarve as eelarve, ;
-	(qryReport.eelarve_kassa) - ((tmp_tulud_kokku.eelarve_kassa + tmp_kulud_kokku.eelarve_kassa) + investeerimis_tegevus.eelarve_kassa) + finants_tegenus.eelarve_kassa as eelarve_kassa, ;
-	(qryReport.eelarve_taps) - ((tmp_tulud_kokku.eelarve_taps + tmp_kulud_kokku.eelarve_taps) + investeerimis_tegevus.eelarve_taps) + ;
-	finants_tegenus.eelarve_taps as eelarve_taps, ;
-	(qryReport.eelarve_kassa_taps) - ((tmp_tulud_kokku.eelarve_kassa_taps + tmp_kulud_kokku.eelarve_kassa_taps) + ;
-	investeerimis_tegevus.eelarve_kassa_taps) + finants_tegenus.eelarve_kassa_taps as eelarve_kassa_taps, ;		
-	(qryReport.tegelik) - ((tmp_tulud_kokku.tegelik + tmp_kulud_kokku.tegelik) + investeerimis_tegevus.tegelik) + finants_tegenus.tegelik as tegelik, ;
-	0  as kassa, ;
-	(qryReport.saldoandmik) - ((tmp_tulud_kokku.saldoandmik + tmp_kulud_kokku.saldoandmik) + investeerimis_tegevus.saldoandmik) + finants_tegenus.saldoandmik  as saldoandmik ;
+Select 'S' As is_esita, ;
+	'2.4.8' As idx, 2 As sub_idx, gRekv As rekvid, Space(20) As tegev, '' As artikkel, Upper('NÕUETE JA KOHUSTUSTE SALDODE MUUTUS (tekkepõhise e/a korral) (+/-)') As nimetus, ;
+	qryReport.eelarve - ((tmp_tulud_kokku.eelarve + tmp_kulud_kokku.eelarve) + investeerimis_tegevus.eelarve) - finants_tegenus.eelarve As eelarve, ;
+	qryReport.eelarve_kassa - ((tmp_tulud_kokku.eelarve_kassa + tmp_kulud_kokku.eelarve_kassa) + investeerimis_tegevus.eelarve_kassa) - finants_tegenus.eelarve_kassa As eelarve_kassa, ;
+	qryReport.eelarve_taps - ((tmp_tulud_kokku.eelarve_taps + tmp_kulud_kokku.eelarve_taps) + investeerimis_tegevus.eelarve_taps) - ;
+	finants_tegenus.eelarve_taps As eelarve_taps, ;
+	qryReport.eelarve_kassa_taps - ((tmp_tulud_kokku.eelarve_kassa_taps + tmp_kulud_kokku.eelarve_kassa_taps) + ;
+	investeerimis_tegevus.eelarve_kassa_taps) - finants_tegenus.eelarve_kassa_taps As eelarve_kassa_taps, ;
+	qryReport.tegelik - ((tmp_tulud_kokku.tegelik + tmp_kulud_kokku.tegelik) + investeerimis_tegevus.tegelik) - finants_tegenus.tegelik As tegelik, ;
+	0  As kassa, ;
+	qryReport.saldoandmik - ((tmp_tulud_kokku.saldoandmik + tmp_kulud_kokku.saldoandmik) + investeerimis_tegevus.saldoandmik) - finants_tegenus.saldoandmik  As saldoandmik ;
 	FROM qryReport;
-	where alltrim(artikkel) = ('100') ;
-	INTO CURSOR tmp1
+	where Alltrim(artikkel) = ('100') ;
+	INTO Cursor tmp1
 
-select eelarve_report_query 
-append FROM DBF('tmp1')
+Select eelarve_report_query
+Append From Dbf('tmp1')
 
 *-- PÕHITEGEVUSE KULUDE JA INVESTEERIMISTEGEVUSE VÄLJAMINEKUTE JAOTUS TEGEVUSALADE JÄRGI
 
 
-SELECT 'S' as is_esita, ;
-'3.1' as idx, 0 as sub_idx, gRekv as rekvid,;
-'' as tegev, '' as artikkel, UPPER('Põhitegevuse kulude ja investeerimistegevuse väljaminekute jaotus tegevusalade järgi') as nimetus,;
-sum(eelarve) as eelarve, sum(eelarve_kassa) as eelarve_kassa, ;
-sum(eelarve_taps) as eelarve_taps, sum(eelarve_kassa_taps) as eelarve_kassa_taps, ;
-sum(tegelik) as tegelik, sum(kassa) as kassa, sum(saldoandmik) as saldoandmik ;
-FROM qryReport;
-where !EMPTY(tegev);
-INTO CURSOR tegev_kokku
+Select 'S' As is_esita, ;
+	'3.1' As idx, 0 As sub_idx, gRekv As rekvid,;
+	'' As tegev, '' As artikkel, Upper('Põhitegevuse kulude ja investeerimistegevuse väljaminekute jaotus tegevusalade järgi') As nimetus,;
+	sum(eelarve) As eelarve, Sum(eelarve_kassa) As eelarve_kassa, ;
+	sum(eelarve_taps) As eelarve_taps, Sum(eelarve_kassa_taps) As eelarve_kassa_taps, ;
+	sum(tegelik) As tegelik, Sum(kassa) As kassa, Sum(saldoandmik) As saldoandmik ;
+	FROM qryReport;
+	where !Empty(tegev);
+	INTO Cursor tegev_kokku
 
-select eelarve_report_query 
-append FROM DBF('tegev_kokku')
+Select eelarve_report_query
+Append From Dbf('tegev_kokku')
 
-USE IN tegev_kokku
+Use In tegev_kokku
 
 
 * Üldised valitsussektori teenused
 
-SELECT 'S' as is_esita, ;
-	'3.1' as idx, 1 as sub_idx, gRekv as rekvid, space(20) as tegev, '' as artikkel, UPPER('Üldised valitsussektori teenused') as nimetus, ;
-	sum(eelarve) as eelarve, sum(eelarve_kassa) as eelarve_kassa, ;
-	sum(eelarve_taps) as eelarve_taps, sum(eelarve_kassa_taps) as eelarve_kassa_taps,;
-	sum(tegelik) as tegelik, sum(kassa) as kassa, sum(saldoandmik) as saldoandmik ;
+
+Select 'S' As is_esita, ;
+	'3.1' As idx, 1 As sub_idx, gRekv As rekvid, Space(20) As tegev, '' As artikkel, Upper('Üldised valitsussektori teenused') As nimetus, ;
+	sum(eelarve) As eelarve, Sum(eelarve_kassa) As eelarve_kassa, ;
+	sum(eelarve_taps) As eelarve_taps, Sum(eelarve_kassa_taps) As eelarve_kassa_taps,;
+	sum(tegelik) As tegelik, Sum(kassa) As kassa, Sum(saldoandmik) As saldoandmik ;
 	FROM qryReport ;
-	where alltrim(tegev) in ('01111','01112','01600','01700','01110','01120','01130','01210','01220','01310','01320','01330','01400','01500') ;
-	INTO CURSOR tmp1
+	where Alltrim(tegev) In ('01111', '01112','01114','01600','01700',;
+	'01110','01120','01130','01210','01220','01310','01320','01330','01400','01500','01800') ;
+	INTO Cursor tmp1
 
-select eelarve_report_query 
-append FROM DBF('tmp1')
+Select eelarve_report_query
+Append From Dbf('tmp1')
 
-USE IN tmp1
+Use In tmp1
 
 * 	IIF(ISNULL(q.eelarve),00000000.00,q.eelarve) as eelarve, q.tegelik, q.kassa, q.saldoandmik ;
 
 * Ülalnimetamata üldised valitsussektori kulud kokku
 
-UPDATE eelarve_report_query  ;
+Update eelarve_report_query  ;
 	SET idx = '3.1.0', sub_idx = 4 ;
-	WHERE ALLTRIM(idx) = '3.1' ;
-	AND ALLTRIM(tegev) in  ('01110','01120','01130','01210','01220','01310','01320','01330','01400','01500','01800') 
+	WHERE Alltrim(idx) = '3.1' ;
+	AND Alltrim(tegev) In  ('01110','01120','01130','01210','01220','01310','01320','01330','01400','01500','01800')
 
-SELECT 'S' as is_esita, ;
-	'3.1.0' as idx, 2 as sub_idx, gRekv as rekvid, space(20) as tegev, '' as artikkel, UPPER('Ülalnimetamata üldised valitsussektori kulud kokku') as nimetus, ;
-	sum(eelarve) as eelarve, sum(eelarve_kassa) as eelarve_kassa, ;
-	sum(eelarve_taps) as eelarve_taps, sum(eelarve_kassa_taps) as eelarve_kassa_taps, ;
-	sum(tegelik) as tegelik, sum(kassa) as kassa, sum(saldoandmik) as saldoandmik ;
+Select 'S' As is_esita, ;
+	'3.1.0' As idx, 2 As sub_idx, gRekv As rekvid, Space(20) As tegev, '' As artikkel, Upper('Ülalnimetamata üldised valitsussektori kulud kokku') As nimetus, ;
+	sum(eelarve) As eelarve, Sum(eelarve_kassa) As eelarve_kassa, ;
+	sum(eelarve_taps) As eelarve_taps, Sum(eelarve_kassa_taps) As eelarve_kassa_taps, ;
+	sum(tegelik) As tegelik, Sum(kassa) As kassa, Sum(saldoandmik) As saldoandmik ;
 	FROM qryReport ;
-	where alltrim(tegev) in ('01110','01120','01130','01210','01220','01310','01320','01330','01400','01500') ;
-	INTO CURSOR tmp1
+	where Alltrim(tegev) In ('01110','01120','01130','01210','01220','01310','01320','01330','01400','01500','01800') ;
+	INTO Cursor tmp1
 
-select eelarve_report_query 
-append FROM DBF('tmp1')
+Select eelarve_report_query
+Append From Dbf('tmp1')
 
-USE IN tmp1
+Use In tmp1
 
 * Riigikaitse
 
 
-UPDATE eelarve_report_query  ;
+Update eelarve_report_query  ;
 	SET idx = '3.1.1', sub_idx = 4, is_esita = 'E' ;
-	WHERE ALLTRIM(idx) = '3.1' ;
-	AND ALLTRIM(tegev) in  ('02100','02200','02300','02400','02500') 
+	WHERE Alltrim(idx) = '3.1' ;
+	AND Alltrim(tegev) In  ('02100','02200','02300','02400','02500')
 
-SELECT 'S' as is_esita, ;
-	'3.1.1' as idx, 2 as sub_idx, gRekv as rekvid, space(20) as tegev, '' as artikkel, UPPER('Riigikaitse') as nimetus, ;
-	sum(eelarve) as eelarve, sum(eelarve_kassa) as eelarve_kassa, ;
-	sum(eelarve_taps) as eelarve_taps, sum(eelarve_kassa_taps) as eelarve_kassa_taps, ;
-	sum(tegelik) as tegelik, sum(kassa) as kassa, sum(saldoandmik) as saldoandmik ;
+Select 'S' As is_esita, ;
+	'3.1.1' As idx, 2 As sub_idx, gRekv As rekvid, Space(20) As tegev, '' As artikkel, Upper('Riigikaitse') As nimetus, ;
+	sum(eelarve) As eelarve, Sum(eelarve_kassa) As eelarve_kassa, ;
+	sum(eelarve_taps) As eelarve_taps, Sum(eelarve_kassa_taps) As eelarve_kassa_taps, ;
+	sum(tegelik) As tegelik, Sum(kassa) As kassa, Sum(saldoandmik) As saldoandmik ;
 	FROM qryReport ;
-	where alltrim(tegev) in ('02100','02200','02300','02400','02500') ;
-	INTO CURSOR tmp1
+	where Alltrim(tegev) In ('02100','02200','02300','02400','02500') ;
+	INTO Cursor tmp1
 
-select eelarve_report_query 
-append FROM DBF('tmp1')
+Select eelarve_report_query
+Append From Dbf('tmp1')
 
-USE IN tmp1
+Use In tmp1
 
 * Avalik kord ja julgeolek
 
-UPDATE eelarve_report_query  ;
+Update eelarve_report_query  ;
 	SET idx = '3.1.2', sub_idx = 4 ;
-	WHERE ALLTRIM(idx) = '3.1' ;
-	AND ALLTRIM(tegev) in  ('03100','03200') 
+	WHERE Alltrim(idx) = '3.1' ;
+	AND Alltrim(tegev) In  ('03100','03200')
 
-SELECT 'S' as is_esita, ;
-	'3.1.2' as idx, 2 as sub_idx, gRekv as rekvid, space(20) as tegev, '' as artikkel, UPPER('Avalik kord ja julgeolek') as nimetus, ;
-	sum(eelarve) as eelarve, sum(eelarve_kassa) as eelarve_kassa, ;
-	sum(eelarve_taps) as eelarve_taps, sum(eelarve_kassa_taps) as eelarve_kassa_taps, ;
-	sum(tegelik) as tegelik, sum(kassa) as kassa, sum(saldoandmik) as saldoandmik ;
+Select 'S' As is_esita, ;
+	'3.1.2' As idx, 2 As sub_idx, gRekv As rekvid, Space(20) As tegev, '' As artikkel, Upper('Avalik kord ja julgeolek') As nimetus, ;
+	sum(eelarve) As eelarve, Sum(eelarve_kassa) As eelarve_kassa, ;
+	sum(eelarve_taps) As eelarve_taps, Sum(eelarve_kassa_taps) As eelarve_kassa_taps, ;
+	sum(tegelik) As tegelik, Sum(kassa) As kassa, Sum(saldoandmik) As saldoandmik ;
 	FROM qryReport ;
-	where alltrim(tegev) in ('03100','03200')  ;
-	INTO CURSOR tmp1
+	where Alltrim(tegev) In ('03100','03200')  ;
+	INTO Cursor tmp1
 
-select eelarve_report_query 
-append FROM DBF('tmp1')
+Select eelarve_report_query
+Append From Dbf('tmp1')
 
-USE IN tmp1
+Use In tmp1
 
 * Muu avalik kord ja julgeolek kokku
 
-UPDATE eelarve_report_query  ;
+Update eelarve_report_query  ;
 	SET idx = '3.1.2', ;
 	sub_idx = 4, ;
 	is_esita = 'E' ;
-	WHERE ALLTRIM(idx) = '3.1' ;
-	AND ALLTRIM(tegev) in  ('03101','03300','03400','03500','03600') 
-	
+	WHERE Alltrim(idx) = '3.1' ;
+	AND Alltrim(tegev) In  ('03101','03300','03400','03500','03600')
+
 * ,'03600'
 
-SELECT 'S' as is_esita, ;
-	'3.1.2' as idx, 2 as sub_idx, gRekv as rekvid, space(20) as tegev, '' as artikkel, UPPER('Muu avalik kord ja julgeolek kokku') as nimetus, ;
-	sum(eelarve) as eelarve, sum(eelarve_kassa) as eelarve_kassa, ;
-	sum(eelarve_taps) as eelarve_taps, sum(eelarve_kassa_taps) as eelarve_kassa_taps, ;
-	sum(tegelik) as tegelik, sum(kassa) as kassa, sum(saldoandmik) as saldoandmik ;
+Select 'S' As is_esita, ;
+	'3.1.2' As idx, 2 As sub_idx, gRekv As rekvid, Space(20) As tegev, '' As artikkel, Upper('Muu avalik kord ja julgeolek kokku') As nimetus, ;
+	sum(eelarve) As eelarve, Sum(eelarve_kassa) As eelarve_kassa, ;
+	sum(eelarve_taps) As eelarve_taps, Sum(eelarve_kassa_taps) As eelarve_kassa_taps, ;
+	sum(tegelik) As tegelik, Sum(kassa) As kassa, Sum(saldoandmik) As saldoandmik ;
 	FROM qryReport ;
-	where alltrim(tegev) in ('03101','03300','03400','03500','03600')   ;
-	INTO CURSOR tmp1
+	where Alltrim(tegev) In ('03101','03300','03400','03500','03600')   ;
+	INTO Cursor tmp1
 
-select eelarve_report_query 
-append FROM DBF('tmp1')
+Select eelarve_report_query
+Append From Dbf('tmp1')
 
-USE IN tmp1
+Use In tmp1
 
 * Majandus
 
 
-UPDATE eelarve_report_query  ;
+Update eelarve_report_query  ;
 	SET idx = '3.1.3', ;
 	sub_idx = 4 ;
-	WHERE ALLTRIM(idx) = '3.1' ;
-	AND ALLTRIM(tegev) in  ('04120','04210','04220','04230','04350','04360','04510','04512','04520', '04540','04600','04710','04730','04740','04900') 
+	WHERE Alltrim(idx) = '3.1' ;
+	AND Alltrim(tegev) In  ('04120','04210','04220','04230','04350','04360','04510','04512','04520', '04540','04600','04710','04730','04740','04900')
 
-SELECT 'S' as is_esita, ;
-	'3.1.3' as idx, 2 as sub_idx, gRekv as rekvid, space(20) as tegev, '' as artikkel, UPPER('Majandus') as nimetus, ;
-	sum(eelarve) as eelarve, sum(eelarve_kassa) as eelarve_kassa, ;
-	sum(eelarve_taps) as eelarve_taps, sum(eelarve_kassa_taps) as eelarve_kassa_taps, ;
-	sum(tegelik) as tegelik, sum(kassa) as kassa, sum(saldoandmik) as saldoandmik ;
+Select 'S' As is_esita, ;
+	'3.1.3' As idx, 2 As sub_idx, gRekv As rekvid, Space(20) As tegev, '' As artikkel, Upper('Majandus') As nimetus, ;
+	sum(eelarve) As eelarve, Sum(eelarve_kassa) As eelarve_kassa, ;
+	sum(eelarve_taps) As eelarve_taps, Sum(eelarve_kassa_taps) As eelarve_kassa_taps, ;
+	sum(tegelik) As tegelik, Sum(kassa) As kassa, Sum(saldoandmik) As saldoandmik ;
 	FROM qryReport ;
-	where alltrim(tegev) in ('04120','04210','04220','04230','04350','04360','04510','04512','04520', '04540','04600','04710','04730','04740','04900');
-	INTO CURSOR tmp1
+	where Alltrim(tegev) In ('04120','04210','04220','04230','04350','04360','04510','04512','04520', '04540','04600','04710','04730','04740','04900');
+	INTO Cursor tmp1
 
-select eelarve_report_query 
-append FROM DBF('tmp1')
+Select eelarve_report_query
+Append From Dbf('tmp1')
 
-USE IN tmp1
+Use In tmp1
 
 * Ülalnimetamata majandus kokku
 
-UPDATE eelarve_report_query  ;
+Update eelarve_report_query  ;
 	SET idx = '3.1.4', ;
 	sub_idx = 4, ;
 	is_esita = 'E' ;
-	WHERE ALLTRIM(idx) = '3.1' ;
-	AND ALLTRIM(tegev) in ('04110','04310','04320','04330','04340','04410','04420','04430','04530','04550','04720','04810','04820','04830','04840','04850','04860','04870') 
+	WHERE Alltrim(idx) = '3.1' ;
+	AND Alltrim(tegev) In ('04110','04310','04320','04330','04340','04410','04420','04430','04530','04550','04720','04810','04820','04830','04840','04850','04860','04870')
 
-SELECT 'S' as is_esita, ;
-	'3.1.4' as idx, 2 as sub_idx, gRekv as rekvid, space(20) as tegev, '' as artikkel, UPPER('Ülalnimetamata majandus kokku') as nimetus, ;
-	sum(eelarve) as eelarve, sum(eelarve_kassa) as eelarve_kassa, ;
-	sum(eelarve_taps) as eelarve_taps, sum(eelarve_kassa_taps) as eelarve_kassa_taps, ;
-	sum(tegelik) as tegelik, sum(kassa) as kassa, sum(saldoandmik) as saldoandmik ;
+Select 'S' As is_esita, ;
+	'3.1.4' As idx, 2 As sub_idx, gRekv As rekvid, Space(20) As tegev, '' As artikkel, Upper('Ülalnimetamata majandus kokku') As nimetus, ;
+	sum(eelarve) As eelarve, Sum(eelarve_kassa) As eelarve_kassa, ;
+	sum(eelarve_taps) As eelarve_taps, Sum(eelarve_kassa_taps) As eelarve_kassa_taps, ;
+	sum(tegelik) As tegelik, Sum(kassa) As kassa, Sum(saldoandmik) As saldoandmik ;
 	FROM qryReport ;
-	where alltrim(tegev) in ('04110','04310','04320','04330','04340','04410','04420','04430','04530','04550','04720','04810','04820','04830','04840','04850','04860','04870') ;
-	INTO CURSOR tmp1
+	where Alltrim(tegev) In ('04110','04310','04320','04330','04340','04410','04420','04430','04530','04550','04720','04810','04820','04830','04840','04850','04860','04870') ;
+	INTO Cursor tmp1
 
-select eelarve_report_query 
-append FROM DBF('tmp1')
+Select eelarve_report_query
+Append From Dbf('tmp1')
 
-USE IN tmp1
+Use In tmp1
 
 * Keskkonnakaitse
 
-UPDATE eelarve_report_query  ;
+Update eelarve_report_query  ;
 	SET idx = '3.1.5', ;
 	sub_idx = 4 ;
-	WHERE ALLTRIM(idx) = '3.1' ;
-	AND ALLTRIM(tegev) in ('05100','05101','05200','05300','05400') 
+	WHERE Alltrim(idx) = '3.1' ;
+	AND Alltrim(tegev) In ('05100','05101','05200','05300','05400')
 
-SELECT 'S' as is_esita, ;
-	'3.1.5' as idx, 2 as sub_idx, gRekv as rekvid, space(20) as tegev, '' as artikkel, UPPER('Keskkonnakaitse') as nimetus, ;
-	sum(eelarve) as eelarve, sum(eelarve_kassa) as eelarve_kassa, ;
-	sum(eelarve_taps) as eelarve_taps, sum(eelarve_kassa_taps) as eelarve_kassa_taps, ;
-	sum(tegelik) as tegelik, sum(kassa) as kassa, sum(saldoandmik) as saldoandmik ;
+Select 'S' As is_esita, ;
+	'3.1.5' As idx, 2 As sub_idx, gRekv As rekvid, Space(20) As tegev, '' As artikkel, Upper('Keskkonnakaitse') As nimetus, ;
+	sum(eelarve) As eelarve, Sum(eelarve_kassa) As eelarve_kassa, ;
+	sum(eelarve_taps) As eelarve_taps, Sum(eelarve_kassa_taps) As eelarve_kassa_taps, ;
+	sum(tegelik) As tegelik, Sum(kassa) As kassa, Sum(saldoandmik) As saldoandmik ;
 	FROM qryReport ;
-	where alltrim(tegev) in ('05100','05200','05300','05400');
-	INTO CURSOR tmp1
+	where Alltrim(tegev) In ('05100','05101','05200','05300','05400');
+	INTO Cursor tmp1
 
-select eelarve_report_query 
-append FROM DBF('tmp1')
+Select eelarve_report_query
+Append From Dbf('tmp1')
 
-USE IN tmp1
+Use In tmp1
 
-* Muu keskkonnakaitse 
+* Muu keskkonnakaitse
 
-UPDATE eelarve_report_query  ;
+Update eelarve_report_query  ;
 	SET idx = '3.1.5', ;
 	sub_idx = 6, ;
 	is_esita = 'E' ;
-	WHERE ALLTRIM(idx) = '3.1' ;
-	AND ALLTRIM(tegev) in ('05500','05600') 
+	WHERE Alltrim(idx) = '3.1' ;
+	AND Alltrim(tegev) In ('05500','05600')
 
-SELECT 'S' as is_esita, ;
-	'3.1.5' as idx, 5 as sub_idx, gRekv as rekvid, space(20) as tegev, '' as artikkel, UPPER('Muu keskkonnakaitse') as nimetus, ;
-	sum(eelarve) as eelarve, sum(eelarve_kassa) as eelarve_kassa, ;
-	sum(eelarve_taps) as eelarve_taps, sum(eelarve_kassa_taps) as eelarve_kassa_taps, ;
-	sum(tegelik) as tegelik, sum(kassa) as kassa, sum(saldoandmik) as saldoandmik ;
+Select 'S' As is_esita, ;
+	'3.1.5' As idx, 5 As sub_idx, gRekv As rekvid, Space(20) As tegev, '' As artikkel, Upper('Muu keskkonnakaitse') As nimetus, ;
+	sum(eelarve) As eelarve, Sum(eelarve_kassa) As eelarve_kassa, ;
+	sum(eelarve_taps) As eelarve_taps, Sum(eelarve_kassa_taps) As eelarve_kassa_taps, ;
+	sum(tegelik) As tegelik, Sum(kassa) As kassa, Sum(saldoandmik) As saldoandmik ;
 	FROM qryReport ;
-	where alltrim(tegev) in ('05500','05600');
-	INTO CURSOR tmp1
+	where Alltrim(tegev) In ('05500','05600');
+	INTO Cursor tmp1
 
-select eelarve_report_query 
-append FROM DBF('tmp1')
+Select eelarve_report_query
+Append From Dbf('tmp1')
 
-USE IN tmp1
+Use In tmp1
 
 * Elamu- ja kommunaalmajandus
 
-UPDATE eelarve_report_query  ;
+Update eelarve_report_query  ;
 	SET idx = '3.1.6', ;
 	sub_idx = 4 ;
-	WHERE ALLTRIM(idx) = '3.1' ;
-	AND ALLTRIM(tegev) in ('06100','06200','06300','06400','06500','06605') 
+	WHERE Alltrim(idx) = '3.1' ;
+	AND Alltrim(tegev) In ('06100','06200','06300','06400','06500','06605')
 
-SELECT 'S' as is_esita, ;
-	'3.1.6' as idx, 2 as sub_idx, gRekv as rekvid, space(20) as tegev, '' as artikkel, UPPER('Elamu- ja kommunaalmajandus') as nimetus, ;
-	sum(eelarve) as eelarve, sum(eelarve_kassa) as eelarve_kassa, ;
-	sum(eelarve_taps) as eelarve_taps, sum(eelarve_kassa_taps) as eelarve_kassa_taps, ;
-	sum(tegelik) as tegelik, sum(kassa) as kassa, sum(saldoandmik) as saldoandmik ;
+Select 'S' As is_esita, ;
+	'3.1.6' As idx, 2 As sub_idx, gRekv As rekvid, Space(20) As tegev, '' As artikkel, Upper('Elamu- ja kommunaalmajandus') As nimetus, ;
+	sum(eelarve) As eelarve, Sum(eelarve_kassa) As eelarve_kassa, ;
+	sum(eelarve_taps) As eelarve_taps, Sum(eelarve_kassa_taps) As eelarve_kassa_taps, ;
+	sum(tegelik) As tegelik, Sum(kassa) As kassa, Sum(saldoandmik) As saldoandmik ;
 	FROM qryReport ;
-	where alltrim(tegev) in ('06100','06200','06300','06400','06500','06605') ;
-	INTO CURSOR tmp1
+	where Alltrim(tegev) In ('06100','06200','06300','06400','06500','06605') ;
+	INTO Cursor tmp1
 
-select eelarve_report_query 
-append FROM DBF('tmp1')
+Select eelarve_report_query
+Append From Dbf('tmp1')
 
-USE IN tmp1
+Use In tmp1
 
 * Tervishoid
 
-UPDATE eelarve_report_query  ;
+Update eelarve_report_query  ;
 	SET idx = '3.1.70', ;
 	sub_idx = 2, ;
-	is_esita = IIF((ALLTRIM(tegev) = '07110' OR ALLTRIM(tegev) = '07400' OR ALLTRIM(tegev) = '07600'),'','E') ;
-	WHERE ALLTRIM(idx) = '3.1' ;
-	AND ALLTRIM(LEFT(tegev,2)) =  '07' 
+	is_esita = Iif((Alltrim(tegev) = '07110' Or Alltrim(tegev) = '07400' Or Alltrim(tegev) = '07600'),'','E') ;
+	WHERE Alltrim(idx) = '3.1' ;
+	AND Alltrim(Left(tegev,2)) =  '07'
 
 * '07310','07340','07210','07220',
 
 
-SELECT 'S' as is_esita, ;
-	'3.1.7' as idx, 2 as sub_idx, gRekv as rekvid, space(20) as tegev, '' as artikkel, UPPER('Tervishoid') as nimetus, ;
-	sum(eelarve) as eelarve, sum(eelarve_kassa) as eelarve_kassa,  ;
-	sum(eelarve_taps) as eelarve_taps, sum(eelarve_kassa_taps) as eelarve_kassa_taps, ;	
-	sum(tegelik) as tegelik, sum(kassa) as kassa, sum(saldoandmik) as saldoandmik ;
+Select 'S' As is_esita, ;
+	'3.1.7' As idx, 2 As sub_idx, gRekv As rekvid, Space(20) As tegev, '' As artikkel, Upper('Tervishoid') As nimetus, ;
+	sum(eelarve) As eelarve, Sum(eelarve_kassa) As eelarve_kassa,  ;
+	sum(eelarve_taps) As eelarve_taps, Sum(eelarve_kassa_taps) As eelarve_kassa_taps, ;
+	sum(tegelik) As tegelik, Sum(kassa) As kassa, Sum(saldoandmik) As saldoandmik ;
 	FROM qryReport ;
-	where alltrim(tegev) in ('07110','07210','07220','07230','07240','07310','07320','07330','07340','07400','07600','07120','07130','07500') ;
-	INTO CURSOR tmp1
+	where Alltrim(tegev) In ('07110','07210','07220','07230','07240','07310','07320','07330','07340','07400','07600','07120','07130','07500') ;
+	INTO Cursor tmp1
 
-select eelarve_report_query 
-append FROM DBF('tmp1')
+Select eelarve_report_query
+Append From Dbf('tmp1')
 
-USE IN tmp1
+Use In tmp1
 
 * Ülalnimetamata tervishoid kokku
 
-UPDATE eelarve_report_query  ;
+Update eelarve_report_query  ;
 	SET idx = '3.1.71', ;
 	sub_idx = 4, ;
 	is_esita = 'E' ;
-	WHERE ALLTRIM(tegev) in ('07120','07130','07500') 
+	WHERE Alltrim(tegev) In ('07120','07130','07500')
 
-SELECT 'S' as is_esita, ;
-	'3.1.71' as idx, 3 as sub_idx, gRekv as rekvid, space(20) as tegev, '' as artikkel, UPPER('Ülalnimetamata tervishoid kokku') as nimetus, ;
-	sum(eelarve) as eelarve,sum(eelarve_kassa) as eelarve_kassa, ;
-	sum(eelarve_taps) as eelarve_taps, sum(eelarve_kassa_taps) as eelarve_kassa_taps, ;	
-	sum(tegelik) as tegelik, sum(kassa) as kassa, sum(saldoandmik) as saldoandmik ;
+Select 'S' As is_esita, ;
+	'3.1.71' As idx, 3 As sub_idx, gRekv As rekvid, Space(20) As tegev, '' As artikkel, Upper('Ülalnimetamata tervishoid kokku') As nimetus, ;
+	sum(eelarve) As eelarve,Sum(eelarve_kassa) As eelarve_kassa, ;
+	sum(eelarve_taps) As eelarve_taps, Sum(eelarve_kassa_taps) As eelarve_kassa_taps, ;
+	sum(tegelik) As tegelik, Sum(kassa) As kassa, Sum(saldoandmik) As saldoandmik ;
 	FROM qryReport ;
-	where alltrim(tegev) in ('07120','07130','07500')  ;
-	INTO CURSOR tmp1
+	where Alltrim(tegev) In ('07120','07130','07500')  ;
+	INTO Cursor tmp1
 
-select eelarve_report_query 
-append FROM DBF('tmp1')
+Select eelarve_report_query
+Append From Dbf('tmp1')
 
-USE IN tmp1
+Use In tmp1
+
 
 * Vaba aeg, kultuur ja religioon
 
+Create Cursor tmp_tegev (kood c(20))
+Insert Into tmp_tegev (kood) Values ('08102')
+Insert Into tmp_tegev (kood) Values ('08103')
+Insert Into tmp_tegev (kood) Values ('08105')
+Insert Into tmp_tegev (kood) Values ('08106')
+Insert Into tmp_tegev (kood) Values ('08107')
+Insert Into tmp_tegev (kood) Values ('08108')
+Insert Into tmp_tegev (kood) Values ('08109')
+Insert Into tmp_tegev (kood) Values ('08201')
+Insert Into tmp_tegev (kood) Values ('08202')
+Insert Into tmp_tegev (kood) Values ('08203')
+Insert Into tmp_tegev (kood) Values ('08204')
+Insert Into tmp_tegev (kood) Values ('08205')
+Insert Into tmp_tegev (kood) Values ('08206')
+Insert Into tmp_tegev (kood) Values ('08207')
+Insert Into tmp_tegev (kood) Values ('08208')
+Insert Into tmp_tegev (kood) Values ('08209')
+Insert Into tmp_tegev (kood) Values ('08210')
+Insert Into tmp_tegev (kood) Values ('08211')
+Insert Into tmp_tegev (kood) Values ('08212')
+Insert Into tmp_tegev (kood) Values ('08234')
+Insert Into tmp_tegev (kood) Values ('08236')
+Insert Into tmp_tegev (kood) Values ('08300')
+Insert Into tmp_tegev (kood) Values ('08400')
+Insert Into tmp_tegev (kood) Values ('08500')
+Insert Into tmp_tegev (kood) Values ('08600')
 
-UPDATE eelarve_report_query  ;
+Update eelarve_report_query  ;
 	SET idx = '3.1.8', ;
 	sub_idx = 4 ;
-	WHERE ALLTRIM(tegev) in ('08102','08103','08105','08106','08107','08108','08109','08201','08202','08203',;
-		'08204','08205','08206','08207','08208','08209','08210','08211','08212','08236','08300','08400','08500','08600') 
+	WHERE Alltrim(tegev) In (Select kood From tmp_tegev)
 
-SELECT 'S' as is_esita, ;
-	'3.1.8' as idx, 2 as sub_idx, gRekv as rekvid, space(20) as tegev, '' as artikkel, UPPER('Vaba aeg, kultuur ja religioon') as nimetus, ;
-	sum(eelarve) as eelarve, sum(eelarve_kassa) as eelarve_kassa, ;
-	sum(eelarve_taps) as eelarve_taps, sum(eelarve_kassa_taps) as eelarve_kassa_taps, ;	
-	sum(tegelik) as tegelik, sum(kassa) as kassa, sum(saldoandmik) as saldoandmik ;
+
+Select 'S' As is_esita, ;
+	'3.1.8' As idx, 2 As sub_idx, gRekv As rekvid, Space(20) As tegev, '' As artikkel, Upper('Vaba aeg, kultuur ja religioon') As nimetus, ;
+	sum(eelarve) As eelarve, Sum(eelarve_kassa) As eelarve_kassa, ;
+	sum(eelarve_taps) As eelarve_taps, Sum(eelarve_kassa_taps) As eelarve_kassa_taps, ;
+	sum(tegelik) As tegelik, Sum(kassa) As kassa, Sum(saldoandmik) As saldoandmik ;
 	FROM qryReport ;
-	where alltrim(tegev) in ('08102','08103','08105','08106','08107','08108','08109','08201','08202','08203',;
-		'08204','08205','08206','08207','08208','08209','08210','08211','08212','08236','08300','08400','08500','08600') ;
-	INTO CURSOR tmp1
+	WHERE Alltrim(tegev) In (Select kood From tmp_tegev);
+	INTO Cursor tmp1
 
-select eelarve_report_query 
-append FROM DBF('tmp1')
+Select eelarve_report_query
+Append From Dbf('tmp1')
 
-USE IN tmp1
+Use In tmp1
+Use In tmp_tegev
 
 * Haridus
 
-UPDATE eelarve_report_query  ;
+Update eelarve_report_query  ;
 	SET idx = '3.1.9', ;
 	sub_idx = 4 ;
-	WHERE ALLTRIM(tegev) in ('09110','09210','09211','09212','09213','09220','09221','09222','09400','09500','09510',;
-		'09600','09601','09602','09700','09800') 
+	WHERE Alltrim(tegev) In ('09110','09210','09211','09212','09213','09220','09221','09222','09400','09500','09510',;
+	'09600','09601','09602','09700','09800')
 
-SELECT 'S' as is_esita, ;
-	'3.1.9' as idx, 2 as sub_idx, gRekv as rekvid, space(20) as tegev, '' as artikkel, UPPER('Haridus') as nimetus, ;
-	sum(eelarve) as eelarve, sum(eelarve_kassa) as eelarve_kassa, ;
-	sum(eelarve_taps) as eelarve_taps, sum(eelarve_kassa_taps) as eelarve_kassa_taps, ;	
-	sum(tegelik) as tegelik, sum(kassa) as kassa, sum(saldoandmik) as saldoandmik ;
+Select 'S' As is_esita, ;
+	'3.1.9' As idx, 2 As sub_idx, gRekv As rekvid, Space(20) As tegev, '' As artikkel, Upper('Haridus') As nimetus, ;
+	sum(eelarve) As eelarve, Sum(eelarve_kassa) As eelarve_kassa, ;
+	sum(eelarve_taps) As eelarve_taps, Sum(eelarve_kassa_taps) As eelarve_kassa_taps, ;
+	sum(tegelik) As tegelik, Sum(kassa) As kassa, Sum(saldoandmik) As saldoandmik ;
 	FROM qryReport ;
-	where alltrim(tegev) in ('09110','09210','09211','09212','09213','09220','09221','09222','09400','09500','09510',;
-		'09600','09601','09602','09700','09800')  ;
-	INTO CURSOR tmp1
+	where Alltrim(tegev) In ('09110','09210','09211','09212','09213','09220','09221','09222','09400','09500','09510',;
+	'09600','09601','09602','09700','09800')  ;
+	INTO Cursor tmp1
 
-select eelarve_report_query 
-append FROM DBF('tmp1')
+Select eelarve_report_query
+Append From Dbf('tmp1')
 
-USE IN tmp1
+Use In tmp1
 
 * Sotsiaalne kaitse
 
 
-UPDATE eelarve_report_query  ;
+Update eelarve_report_query  ;
 	SET idx = '3.1.91', ;
 	sub_idx = 4 ;
-	WHERE ALLTRIM(tegev) in ('10110','10120','10121','10200','10201','10300','10400','10402','10500','10600',;	
-		'10700','10701','10702','10800','10900') 
+	WHERE Alltrim(tegev) In ('10110','10120','10121','10200','10201','10300','10400','10402','10500','10600',;
+	'10700','10701','10702','10800','10900')
 
-SELECT 'S' as is_esita, ;
-	'3.1.91' as idx, 2 as sub_idx, gRekv as rekvid, space(20) as tegev, '' as artikkel, UPPER('Sotsiaalne kaitse') as nimetus, ;
-	sum(eelarve) as eelarve, sum(eelarve_kassa) as eelarve_kassa, ;
-	sum(eelarve_taps) as eelarve_taps, sum(eelarve_kassa_taps) as eelarve_kassa_taps, ;	
-	sum(tegelik) as tegelik, sum(kassa) as kassa, sum(saldoandmik) as saldoandmik ;
+Select 'S' As is_esita, ;
+	'3.1.91' As idx, 2 As sub_idx, gRekv As rekvid, Space(20) As tegev, '' As artikkel, Upper('Sotsiaalne kaitse') As nimetus, ;
+	sum(eelarve) As eelarve, Sum(eelarve_kassa) As eelarve_kassa, ;
+	sum(eelarve_taps) As eelarve_taps, Sum(eelarve_kassa_taps) As eelarve_kassa_taps, ;
+	sum(tegelik) As tegelik, Sum(kassa) As kassa, Sum(saldoandmik) As saldoandmik ;
 	FROM qryReport ;
-	where alltrim(tegev) in ('10110','10120','10121','10200','10201','10300','10400','10402','10500','10600',;	
-		'10700','10701','10702','10800','10900');
-	INTO CURSOR tmp1
+	where Alltrim(tegev) In ('10110','10120','10121','10200','10201','10300','10400','10402','10500','10600',;
+	'10700','10701','10702','10800','10900');
+	INTO Cursor tmp1
 
-select eelarve_report_query 
-append FROM DBF('tmp1')
+Select eelarve_report_query
+Append From Dbf('tmp1')
 
-USE IN tmp1
+Use In tmp1
 * gruppid tegevusallad esimised 2 numberid
 
 
@@ -592,14 +646,14 @@ USE IN tmp1
 
 
 
-* MUUD NÄITAJAD 
+* MUUD NÄITAJAD
 
-INSERT into eelarve_report_query (idx , sub_idx, is_esita , rekvid, tegev, artikkel, nimetus ,;
+Insert Into eelarve_report_query (idx , sub_idx, is_esita , rekvid, tegev, artikkel, nimetus ,;
 	eelarve , eelarve_kassa, eelarve_taps , eelarve_kassa_taps, tegelik , kassa, saldoandmik ) ;
-VALUES ('8.1', 0, 'N', gRekv , space(20), '', UPPER('MUUD NÄITAJAD ') , ;
-	0,; 
+	VALUES ('8.1', 0, 'N', gRekv , Space(20), '', Upper('MUUD NÄITAJAD ') , ;
+	0,;
 	0, ;
-	0,; 
+	0,;
 	0, ;
 	0, ;
 	0, ;
@@ -607,11 +661,11 @@ VALUES ('8.1', 0, 'N', gRekv , space(20), '', UPPER('MUUD NÄITAJAD ') , ;
 
 * Aasta alguse seisuga
 
-INSERT into eelarve_report_query (idx , sub_idx, is_esita , rekvid, tegev, artikkel, nimetus ,;
+Insert Into eelarve_report_query (idx , sub_idx, is_esita , rekvid, tegev, artikkel, nimetus ,;
 	eelarve , eelarve_kassa, eelarve_taps , eelarve_kassa_taps, tegelik , kassa, saldoandmik ) ;
-VALUES ('8.10', 1, 'N', gRekv , space(20), '', UPPER('Aasta alguse seisuga') , ;
-	0,; 
-	0,; 
+	VALUES ('8.11', 0, 'N', gRekv , Space(20), '', Upper('Aasta alguse seisuga') , ;
+	0,;
+	0,;
 	0, ;
 	0, ;
 	0, ;
@@ -621,10 +675,10 @@ VALUES ('8.10', 1, 'N', gRekv , space(20), '', UPPER('Aasta alguse seisuga') , ;
 
 * Perioodi lõpu seisuga
 
-INSERT into eelarve_report_query (idx , sub_idx, is_esita , rekvid, tegev, artikkel, nimetus ,;
+Insert Into eelarve_report_query (idx , sub_idx, is_esita , rekvid, tegev, artikkel, nimetus ,;
 	eelarve , eelarve_kassa, eelarve_taps , eelarve_kassa_taps, tegelik , kassa, saldoandmik ) ;
-VALUES ('8.2', 1, 'N', gRekv , space(20), '', UPPER('Perioodi lõpu seisuga') , ;
-	0,; 
+	VALUES ('8.2', 1, 'N', gRekv , Space(20), '', Upper('Perioodi lõpu seisuga') , ;
+	0,;
 	0, ;
 	0, 0,;
 	0, ;
@@ -632,96 +686,228 @@ VALUES ('8.2', 1, 'N', gRekv , space(20), '', UPPER('Perioodi lõpu seisuga') , ;
 	0 )
 
 
-USE IN qryReport
+Use In qryReport
 
 *!*		order by idx, tegev, artikkel ;
-*!*		INTO CURSOR eelarve_report1 
+*!*		INTO CURSOR eelarve_report1
 
 
-
-* kontrol
-CREATE CURSOR kontrol_report (rea_1 c(254), rea_2 c(254), rea_3 c(254), rea_4 c(254), rea_5 c(254), summa_11 n(14,2), summa_12 n(14,2), summa_21 n(14,2), summa_22 n(14,2),;
- summa_31 n(14,2), summa_32 n(14,2), summa_41 n(14,2), summa_42 n(14,2),  summa_51 c(20), summa_52 c(20))
-
-SELECT kontrol_report 
-APPEND blank
+Select kontrol_report
+Append Blank
 
 * Kontroll: likviidsed varad
 *l_result_kassa =  get_kontrol ('8.10-5-1','','','kassa') + get_kontrol ('','100','','kassa') - get_kontrol ('','1001','','kassa')
 *l_result_saldo =  get_kontrol ('8.10-5-1','','','saldoandmik') + get_kontrol ('','100','','saldoandmik') - get_kontrol ('','1001','','saldoandmik')
 
-l_result_kassa =  get_kontrol ('','1000','','kassa') + get_kontrol ('','100','','kassa') - get_kontrol ('','1001','','kassa')
-l_result_saldo =  get_kontrol ('','1000','','saldoandmik') + get_kontrol ('','100','','saldoandmik') - get_kontrol ('','1001','','saldoandmik')
+
+l_field = 'eelarve_kassa_taps'
+l_result_eelarve_kassa_taps =  get_kontrol ('','1000','',l_field) + get_kontrol ('','100','',l_field) - get_kontrol ('','1001','',l_field)
+
+l_field = 'eelarve_kassa'
+l_result_eelarve_kassa =  get_kontrol ('','1000','',l_field) + get_kontrol ('','100','',l_field) - get_kontrol ('','1001','',l_field)
+
+l_field = 'eelarve'
+l_result_eelarve =  get_kontrol ('','1000','',l_field) + get_kontrol ('','100','',l_field) - get_kontrol ('','1001','',l_field)
+
+l_field = 'eelarve_taps'
+l_result_eelarve_taps =  get_kontrol ('','1000','',l_field) + get_kontrol ('','100','',l_field) - get_kontrol ('','1001','',l_field)
+
+l_field = 'kassa'
+l_result_kassa =  get_kontrol ('','1000','',l_field) + get_kontrol ('','100','',l_field) - get_kontrol ('','1001','',l_field)
+
+l_field = 'saldoandmik'
+l_result_saldo =  get_kontrol ('','1000','',l_field) + get_kontrol ('','100','',l_field) - get_kontrol ('','1001','',l_field)
 
 
-replace rea_1 WITH 'likviidsed varad', summa_11 WITH l_result_kassa, summa_12 WITH l_result_saldo  IN kontrol_report 
+If !Empty(l_result_kassa) Or  !Empty(l_result_saldo) Or !Empty(l_result_eelarve) Or !Empty(l_result_eelarve_taps) Or ;
+		!Empty(l_result_eelarve_kassa_taps ) Or !Empty(l_result_eelarve_kassa )
+
+	Replace rea_1 With 'Kontroll: likviidsed varad', ;
+		summa_11 With l_result_kassa,;
+		summa_12 With l_result_saldo,;
+		summa_13 With l_result_eelarve,;
+		summa_14 With l_result_eelarve_taps,;
+		summa_16 With l_result_eelarve_kassa_taps ,;
+		summa_15 With l_result_eelarve_kassa In kontrol_report
+Endif
 
 
-* majandusliku sisu ja tegevusalade võrdlus 
 
-l_result_kassa =  get_kontrol ('','50','','kassa') + get_kontrol ('','15','','kassa') + get_kontrol ('','4502','','kassa') + ;
-	get_kontrol ('','1501','','kassa') + get_kontrol ('','1511','','kassa') + get_kontrol ('','1531','','kassa')+  get_kontrol ('','650','','kassa') +;
-	get_kontrol ('3.1-5-0','','','kassa')
-	
-l_result_saldo =  get_kontrol ('','50','','saldoandmik') + get_kontrol ('','15','','saldoandmik') + get_kontrol ('','4502','','saldoandmik') + ;
-	get_kontrol ('','1501','','saldoandmik') + get_kontrol ('','1511','','saldoandmik') + get_kontrol ('','1531','','saldoandmik')+  get_kontrol ('','650','','saldoandmik') +;
-	get_kontrol ('3.1-5-0','','','saldoandmik')
+* majandusliku sisu ja tegevusalade võrdlus
+l_field = 'eelarve_kassa_taps'
+l_result_eelarve_kassa_taps =  get_kontrol ('2.11-4-2','','',l_field ) + get_kontrol ('','15','',l_field ) + ;
+	get_kontrol ('','4502','',l_field ) + ;
+	get_kontrol ('','1501','',l_field ) + get_kontrol ('','1511','',l_field ) + get_kontrol ('','1531','',l_field )+;
+	get_kontrol ('','650','',l_field ) +	get_kontrol ('3.1-5-0','','',l_field)
 
-replace rea_2 WITH ' majandusliku sisu ja tegevusalade võrdlus', summa_21 WITH l_result_kassa, summa_22 WITH l_result_saldo  IN kontrol_report 
+l_field = 'eelarve_kassa'
 
-* võlakohustused
-l_result_kassa =  get_kontrol ('2.4.6-5-2','','','kassa') + get_kontrol ('','2580','','kassa') - get_kontrol ('','2581','','kassa')
-l_result_saldo =  get_kontrol ('2.4.6-5-2','','','saldoandmik') + get_kontrol ('','2580','','saldoandmik') - get_kontrol ('','2581','','saldoandmik')
+l_result_eelarve_kassa_taps =  get_kontrol ('2.11-4-2','','',l_field ) + get_kontrol ('','15','',l_field ) + ;
+	get_kontrol ('','4502','',l_field ) + ;
+	get_kontrol ('','1501','',l_field ) + get_kontrol ('','1511','',l_field ) + get_kontrol ('','1531','',l_field )+;
+	get_kontrol ('','650','',l_field ) +	get_kontrol ('3.1-5-0','','',l_field)
 
-replace rea_3 WITH ' võlakohustused', summa_31 WITH l_result_kassa, summa_32 WITH l_result_saldo  IN kontrol_report 
+l_field = 'eelarve'
+l_result_eelarve_kassa_taps =  get_kontrol ('2.11-4-2','','',l_field ) + get_kontrol ('','15','',l_field ) + ;
+	get_kontrol ('','4502','',l_field ) + ;
+	get_kontrol ('','1501','',l_field ) + get_kontrol ('','1511','',l_field ) + get_kontrol ('','1531','',l_field )+;
+	get_kontrol ('','650','',l_field ) +	get_kontrol ('3.1-5-0','','',l_field)
+
+l_field = 'eelarve_taps'
+l_result_eelarve_kassa_taps =  get_kontrol ('2.11-4-2','','',l_field ) + get_kontrol ('','15','',l_field ) + ;
+	get_kontrol ('','4502','',l_field ) + ;
+	get_kontrol ('','1501','',l_field ) + get_kontrol ('','1511','',l_field ) + get_kontrol ('','1531','',l_field )+;
+	get_kontrol ('','650','',l_field ) +	get_kontrol ('3.1-5-0','','',l_field)
+
+l_field = 'kassa'
+l_result_eelarve_kassa_taps =  get_kontrol ('2.11-4-2','','',l_field ) + get_kontrol ('','15','',l_field ) + ;
+	get_kontrol ('','4502','',l_field ) + ;
+	get_kontrol ('','1501','',l_field ) + get_kontrol ('','1511','',l_field ) + get_kontrol ('','1531','',l_field )+;
+	get_kontrol ('','650','',l_field ) +	get_kontrol ('3.1-5-0','','',l_field)
+
+l_field = 'saldoandmik'
+l_result_eelarve_kassa_taps =  get_kontrol ('2.11-4-2','','',l_field ) + get_kontrol ('','15','',l_field ) + ;
+	get_kontrol ('','4502','',l_field ) + ;
+	get_kontrol ('','1501','',l_field ) + get_kontrol ('','1511','',l_field ) + get_kontrol ('','1531','',l_field )+;
+	get_kontrol ('','650','',l_field ) +	get_kontrol ('3.1-5-0','','',l_field)
+
+If !Empty(l_result_kassa) Or  !Empty(l_result_saldo) Or !Empty(l_result_eelarve) Or !Empty(l_result_eelarve_taps) Or ;
+		!Empty(l_result_eelarve_kassa_taps ) Or !Empty(l_result_eelarve_kassa )
+
+	Replace rea_2 With 'Kontroll: majandusliku sisu ja tegevusalade võrdlus',;
+		summa_21 With l_result_kassa,;
+		summa_22 With l_result_saldo,;
+		summa_23 With l_result_eelarve ,;
+		summa_25 With l_result_eelarve_kassa ,;
+		summa_26 With l_result_eelarve_kassa_taps,;
+		summa_24 With l_result_eelarve_taps In kontrol_report
+
+Endif
 
 * Tasakaalu kontroll
+l_field = 'eelarve_kassa_taps'
+l_result_eelarve_kassa_taps =  get_kontrol ('2.4.6-5-1','','',l_field) +  get_kontrol ('2.4.6-5-2','','',l_field) - ;
+	get_kontrol ('','100','',l_field) + get_kontrol ('2.4.8-5-2','','',l_field)
 
-l_result_kassa =  get_kontrol ('2.4.6-5-1','','','kassa') +  get_kontrol ('2.4.6-5-2','','','kassa') - get_kontrol ('','100','','kassa') + get_kontrol ('2.4.8-5-2','','','kassa') 
-l_result_saldo =  get_kontrol ('2.4.6-5-1','','','saldoandmik') +  get_kontrol ('2.4.6-5-2','','','saldoandmik') - get_kontrol ('','100','','saldoandmik') + get_kontrol ('2.4.8-5-2','','','saldoandmik') 
+l_field = 'eelarve_kassa'
+l_result_eelarve_kassa =  get_kontrol ('2.4.6-5-1','','',l_field) +  get_kontrol ('2.4.6-5-2','','',l_field) - ;
+	get_kontrol ('','100','',l_field) + get_kontrol ('2.4.8-5-2','','',l_field)
 
-replace rea_4 WITH ' Tasakaalu kontroll', summa_41 WITH l_result_kassa, summa_42 WITH l_result_saldo  IN kontrol_report 
+l_field = 'eelarve'
+l_result_eelarve =  get_kontrol ('2.4.6-5-1','','',l_field) +  get_kontrol ('2.4.6-5-2','','',l_field) - ;
+	get_kontrol ('','100','',l_field) + get_kontrol ('2.4.8-5-2','','',l_field)
+
+l_field = 'eelarve_taps'
+l_result_eelarve_taps =  get_kontrol ('2.4.6-5-1','','',l_field) +  get_kontrol ('2.4.6-5-2','','',l_field) - ;
+	get_kontrol ('','100','',l_field) + get_kontrol ('2.4.8-5-2','','',l_field)
+
+l_field = 'kassa'
+l_result_kassa =  get_kontrol ('2.4.6-5-1','','',l_field) +  get_kontrol ('2.4.6-5-2','','',l_field) - ;
+	get_kontrol ('','100','',l_field) + get_kontrol ('2.4.8-5-2','','',l_field)
+
+l_field = 'saldoandmik'
+l_result_saldo =  get_kontrol ('2.4.6-5-1','','',l_field) +  get_kontrol ('2.4.6-5-2','','',l_field) - ;
+	get_kontrol ('','100','',l_field) + get_kontrol ('2.4.8-5-2','','',l_field)
+
+If !Empty(l_result_kassa) Or  !Empty(l_result_saldo) Or !Empty(l_result_eelarve) Or !Empty(l_result_eelarve_taps) Or ;
+		!Empty(l_result_eelarve_kassa_taps ) Or !Empty(l_result_eelarve_kassa )
+
+	Replace rea_4 With ' Tasakaalu kontroll', ;
+		summa_41 With l_result_kassa, ;
+		summa_42 With l_result_saldo,;
+		summa_43 With l_result_eelarve , ;
+		summa_45 With l_result_eelarve_kassa , ;
+		summa_46 With l_result_eelarve_kassa_taps , ;
+		summa_44 With l_result_eelarve_taps In kontrol_report
+Endif
 
 
 * Art. 100 ja vaba jäägi võrdlus (read 162 ja 52)
-l_result_kassa =  IIF(get_kontrol ('','1000','','kassa') <  (-1 * get_kontrol ('','100','','kassa')), 'FALSE', 'OK') 
-l_result_saldo =  IIF(get_kontrol ('','1000','','saldoandmik') <  (-1 * get_kontrol ('','100','','saldoandmik')), 'FALSE', 'OK')
 
-replace rea_5 WITH 'Art. 100 ja vaba jäägi võrdlus ', summa_51 WITH l_result_kassa, summa_52 WITH l_result_saldo  IN kontrol_report 
+l_field = 'eelarve_kassa_taps'
+l_result_eelarve_kassa_taps =  Iif(get_kontrol ('','1000','',l_field ) <  (-1 * get_kontrol ('','100','',l_field )), 'FALSE', 'OK')
+
+l_field = 'eelarve_kassa'
+l_result_eelarve_kassa =  Iif(get_kontrol ('','1000','',l_field ) <  (-1 * get_kontrol ('','100','',l_field )), 'FALSE', 'OK')
+
+l_field = 'eelarve'
+l_result_eelarve =  Iif(get_kontrol ('','1000','',l_field ) <  (-1 * get_kontrol ('','100','',l_field )), 'FALSE', 'OK')
+
+l_field = 'eelarve_taps'
+l_result_eelarve_taps =  Iif(get_kontrol ('','1000','',l_field ) <  (-1 * get_kontrol ('','100','',l_field )), 'FALSE', 'OK')
+
+l_field = 'kassa'
+l_result_kassa =  Iif(get_kontrol ('','1000','',l_field ) <  (-1 * get_kontrol ('','100','',l_field )), 'FALSE', 'OK')
+
+l_field = 'saldoandmik'
+l_result_saldo =  Iif(get_kontrol ('','1000','',l_field ) <  (-1 * get_kontrol ('','100','',l_field )), 'FALSE', 'OK')
+
+If !Empty(l_result_kassa) Or  !Empty(l_result_saldo) Or !Empty(l_result_eelarve) Or !Empty(l_result_eelarve_taps) Or ;
+		!Empty(l_result_eelarve_kassa_taps ) Or !Empty(l_result_eelarve_kassa )
+
+	Replace rea_5 With 'Art. 100 ja vaba jäägi võrdlus ',;
+		summa_51 With l_result_kassa,;
+		summa_52 With l_result_saldo,;
+		summa_53 With l_result_eelarve ,;
+		summa_55 With l_result_eelarve_kassa ,;
+		summa_56 With l_result_eelarve_kassa_taps,;
+		summa_54 With l_result_eelarve_taps In kontrol_report
+Endif
 
 
-SELECT * from eelarve_report_query ORDER BY idx, tegev, artikkel,  sub_idx  INTO CURSOR eelarve_report1
-
-USE IN eelarve_report_query
-
-CLEAR
-
-SELECT eelarve_report1
+Select * From eelarve_report_query Order By idx, tegev, artikkel,  sub_idx  Into Cursor eelarve_report1
 
 
-FUNCTION get_kontrol 
-LPARAMETERS l_idx, l_art, l_tegev, l_column
-l_return = 0
 
-SELECT sum(kassa) as kassa, sum(saldoandmik) as saldoandmik ;
-FROM eelarve_report_query ;
-WHERE (ALLTRIM(idx)+'-'+STR(idx1,1)+'-'+STR(sub_idx,1) = IIF(!EMPTY(l_idx), l_idx, ALLTRIM(idx)+'-'+STR(idx1,1)+'-'+STR(sub_idx,1)) AND ;
-ALLTRIM(artikkel) = IIF(!EMPTY(l_art),l_art, artikkel) AND ;
-ALLTRIM(tegev) = IIF(!EMPTY(l_tegev),l_tegev, tegev)) ;
-INTO CURSOR tmp_formula
+Clear
 
-IF RECCOUNT('tmp_formula') = 0 
-	RETURN 0
+IF USED('eelarve_report_query')
+	Use In eelarve_report_query
 ENDIF
 
-IF l_column = 'kassa' 
-	l_return  = tmp_formula.kassa
-ENDIF
 
-IF l_column = 'saldoandmik' 
-	l_return  = tmp_formula.saldoandmik
-ENDIF
-RETURN l_return
+Select eelarve_report1
 
-ENDFUNC
+
+Function get_kontrol
+	Lparameters l_idx, l_art, l_tegev, l_column
+	l_return = 0
+
+	Select Sum(kassa) As kassa, Sum(saldoandmik) As saldoandmik, Sum(eelarve) As eelarve,  ;
+		sum(eelarve_kassa) As eelarve_kassa, Sum(eelarve_kassa_taps) As eelarve_kassa_taps,;
+		sum(eelarve_taps) As eelarve_taps ;
+		FROM eelarve_report_query ;
+		WHERE (Alltrim(idx)+'-'+Str(idx1,1)+'-'+Str(sub_idx,1) = Iif(!Empty(l_idx), l_idx, Alltrim(idx)+'-'+Str(idx1,1)+'-'+Str(sub_idx,1)) And ;
+		ALLTRIM(artikkel) = Iif(!Empty(l_art),l_art, artikkel) And ;
+		ALLTRIM(tegev) = Iif(!Empty(l_tegev),l_tegev, tegev)) ;
+		INTO Cursor tmp_formula
+
+	If Reccount('tmp_formula') = 0
+		Return 0
+	Endif
+
+	If l_column = 'kassa'
+		l_return  = tmp_formula.kassa
+	Endif
+
+	If l_column = 'saldoandmik'
+		l_return  = tmp_formula.saldoandmik
+	Endif
+
+	If l_column = 'eelarve'
+		l_return  = tmp_formula.eelarve
+	Endif
+	If l_column = 'eelarve_kassa'
+		l_return  = tmp_formula.eelarve_kassa
+	Endif
+	If l_column = 'eelarve_kassa_taps'
+		l_return  = tmp_formula.eelarve_kassa_taps
+	Endif
+	If l_column = 'eelarve_taps'
+		l_return  = tmp_formula.eelarve_taps
+	Endif
+
+	Return l_return
+
+Endfunc
 

@@ -138,6 +138,7 @@ TEXT TO lcFileString ADDITIVE NOSHOW textmerge
 ENDTEXT
 ENDIF
 
+TEXT TO lcFileString ADDITIVE NOSHOW textmerge
 <LegalAddress>
 <PostalAddress1><<Alltrim(convert_to_utf(la_ostja_Address))>></PostalAddress1>
 <City><<ALLTRIM(convert_to_utf(lc_ostja_City))>></City>

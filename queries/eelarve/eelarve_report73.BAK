@@ -4,6 +4,7 @@ Parameter cWhere
 TEXT TO lcWhere TEXTMERGE noshow
 	(EMPTY(<<fltrAruanne.asutusid>>) or rekv_id = <<fltrAruanne.asutusid>>)
 	and coalesce(artikkel,'') like '<<ALLTRIM(fltrAruanne.kood5)>>%'
+	and coalesce(tegev,'') like '<<ALLTRIM(fltrAruanne.kood1)>>%'
 ENDTEXT
 
 
@@ -23,4 +24,4 @@ Select tegev, artikkel, nimetus, Sum(eelarve) As eelarve, Sum(taitmine) As taitm
 
 Use In tmpReport
 Select eelarve_report2
-
+brow

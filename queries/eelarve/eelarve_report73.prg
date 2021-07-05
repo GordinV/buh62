@@ -24,4 +24,3 @@ Select tegev, artikkel, nimetus, Sum(eelarve) As eelarve, Sum(taitmine) As taitm
 
 Use In tmpReport
 Select eelarve_report2
-
