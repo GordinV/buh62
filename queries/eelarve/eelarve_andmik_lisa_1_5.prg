@@ -628,6 +628,9 @@ Select eelarve_report_query
 Append From Dbf('tmp1')
 
 Use In tmp1
+
+
+
 * gruppid tegevusallad esimised 2 numberid
 
 
@@ -845,8 +848,6 @@ Endif
 
 
 Select * From eelarve_report_query Order By idx, tegev, artikkel,  sub_idx  Into Cursor eelarve_report1
-
-
 
 Clear
 

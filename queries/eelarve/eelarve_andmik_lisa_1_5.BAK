@@ -46,18 +46,7 @@ Create Cursor kontrol_report (rea_1 c(254), rea_2 c(254), rea_3 c(254), rea_4 c(
 	summa_21 N(14,2), summa_22 N(14,2),summa_23 N(14,2),summa_24 N(14,2),summa_25 N(14,2),summa_26 N(14,2),;
 	summa_31 N(14,2), summa_32 N(14,2), summa_33 N(14,2), summa_34 N(14,2),summa_35 N(14,2),summa_36 N(14,2),;
 	summa_41 N(14,2), summa_42 N(14,2), summa_43 N(14,2),summa_44 N(14,2),summa_45 N(14,2),summa_46 N(14,2),;
-	summa_51 c(20), summa_52 c(20), summa_53 c(20), summa_54 c(20), summa_55 c(20), summa_56 c(20),;
-	summa_61 c(20), summa_62 c(20), summa_63 c(20), summa_64 c(20), summa_65 c(20), summa_66 c(20),;
-	summa_71 c(20), summa_72 c(20), summa_73 c(20), summa_74 c(20), summa_75 c(20), summa_76 c(20),;
-	summa_81 c(20), summa_82 c(20), summa_83 c(20), summa_84 c(20), summa_85 c(20), summa_86 c(20),;
-	summa_91 c(20), summa_92 c(20), summa_93 c(20), summa_94 c(20), summa_95 c(20), summa_96 c(20),;
-	summa_101 c(20), summa_102 c(20), summa_103 c(20), summa_104 c(20), summa_105 c(20), summa_106 c(20),;
-	summa_111 c(20), summa_112 c(20), summa_113 c(20), summa_114 c(20), summa_115 c(20), summa_116 c(20),;
-	summa_121 c(20), summa_122 c(20), summa_123 c(20), summa_124 c(20), summa_125 c(20), summa_126 c(20),;
-	summa_131 c(20), summa_132 c(20), summa_133 c(20), summa_134 c(20), summa_135 c(20), summa_136 c(20),;
-	summa_141 c(20), summa_142 c(20), summa_143 c(20), summa_144 c(20), summa_145 c(20), summa_146 c(20),;
-	summa_151 c(20), summa_152 c(20), summa_153 c(20), summa_154 c(20), summa_155 c(20), summa_156 c(20);
-	)
+	summa_51 c(20), summa_52 c(20), summa_53 c(20), summa_54 c(20), summa_55 c(20), summa_56 c(20))
 
 
 * 3000+3030+3044+3045+3047
@@ -639,6 +628,9 @@ Select eelarve_report_query
 Append From Dbf('tmp1')
 
 Use In tmp1
+
+
+
 * gruppid tegevusallad esimised 2 numberid
 
 
@@ -784,6 +776,7 @@ If !Empty(l_result_kassa) Or  !Empty(l_result_saldo) Or !Empty(l_result_eelarve)
 
 Endif
 
+SET STEP ON 
 * Tasakaalu kontroll
 l_field = 'eelarve_kassa_taps'
 l_result_eelarve_kassa_taps =  get_kontrol ('2.4.6-5-1','','',l_field) +  get_kontrol ('2.4.6-5-2','','',l_field) - ;
@@ -856,7 +849,7 @@ Endif
 
 
 Select * From eelarve_report_query Order By idx, tegev, artikkel,  sub_idx  Into Cursor eelarve_report1
-
+brow
 
 
 Clear

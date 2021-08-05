@@ -30,7 +30,7 @@ If !lError
 	Return .F.
 Endif
 
-Select sum(summa) as summa, konto, nimetus ;
+Select sum(summa) as summa, sum(eelmise_summa) as eelmise_summa, konto, nimetus ;
 	from tmpReport ;
 	GROUP By konto, nimetus ;	
 	ORDER By konto ;

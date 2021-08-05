@@ -34,10 +34,9 @@ Select allikas, tegev, artikkel, rahavoog, nimetus, tunnus,;
 	sum(tegelik) as tegelik, ;
 	sum(kassa) As kassa, ;
 	regkood, asutus ,;
-	parasutus, parregkood, ;
-	idx ;
+	parasutus, parregkood ;
 	from tmpReport ;
-	GROUP By allikas, tegev, idx, artikkel,rahavoog, nimetus, regkood, asutus, parasutus,parregkood, tunnus, idx ;
+	GROUP By allikas, tegev, idx, artikkel,rahavoog, nimetus, regkood, asutus, parasutus,parregkood, tunnus;
 	ORDER By parasutus,asutus, idx, artikkel, allikas, tegev, rahavoog,   tunnus ;
 	INTO Cursor eelarve_report2
 

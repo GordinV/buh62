@@ -26,6 +26,18 @@ If !lError
 	Return .F.
 Endif
 
+Select rekv_id,;
+	Sum(eelarve_kinni) As eelarve_kinni_kokku, ;	
+	Sum(eelarve_parandatud) As eelarve_parandatud_kokku, ;	
+	Sum(eelarve_kassa_kinni) As eelarve_kassa_kinni_kokku, ;	
+	Sum(eelarve_kassa_parandatud) As eelarve_kassa_parandatud_kokku, ;	
+	sum(tegelik) as tegelik_kokku, ;
+	sum(kassa) As kassa_kokku ;
+	from tmpReport ;
+	WHERE artikkel NOT in ('2585(A80)', '1,2,3,6', '3', '15, 3, 655');
+	group by rekv_id;
+	INTO Cursor report_kokku
+
 Select allikas, tegev, artikkel, rahavoog, nimetus, tunnus,;
 	Sum(eelarve_kinni) As eelarve_kinni, ;	
 	Sum(eelarve_parandatud) As eelarve_parandatud, ;	
@@ -34,11 +46,34 @@ Select allikas, tegev, artikkel, rahavoog, nimetus, tunnus,;
 	sum(tegelik) as tegelik, ;
 	sum(kassa) As kassa, ;
 	regkood, asutus ,;
-	parasutus, parregkood ;
-	from tmpReport ;
-	GROUP By allikas, tegev, idx, artikkel,rahavoog, nimetus, regkood, asutus, parasutus,parregkood, tunnus;
+	parasutus, parregkood, ;
+	sum(report_kokku.eelarve_kinni_kokku) as eelarve_kinni_kokku,;
+	sum(report_kokku.eelarve_parandatud_kokku) as eelarve_parandatud_kokku,;
+	sum(report_kokku.eelarve_kassa_kinni_kokku) as eelarve_kassa_kinni_kokku,;
+	sum(report_kokku.eelarve_kassa_parandatud_kokku) as eelarve_kassa_parandatud_kokku,;
+	sum(report_kokku.tegelik_kokku) as tegelik_kokku,;
+	sum(report_kokku.kassa_kokku) as kassa_kokku,;
+	report_kokku.rekv_id;
+	from tmpReport,  report_kokku;
+	WHERE tmpReport.rekv_id = report_kokku.rekv_id;
+	GROUP By allikas, tegev, idx, artikkel,rahavoog, nimetus, regkood, asutus, parasutus,parregkood, tunnus ,report_kokku.rekv_id;
 	ORDER By parasutus,asutus, idx, artikkel, allikas, tegev, rahavoog,   tunnus ;
 	INTO Cursor eelarve_report2
+
+
+*!*	Select allikas, tegev, artikkel, rahavoog, nimetus, tunnus,;
+*!*		Sum(eelarve_kinni) As eelarve_kinni, ;	
+*!*		Sum(eelarve_parandatud) As eelarve_parandatud, ;	
+*!*		Sum(eelarve_kassa_kinni) As eelarve_kassa_kinni, ;	
+*!*		Sum(eelarve_kassa_parandatud) As eelarve_kassa_parandatud, ;	
+*!*		sum(tegelik) as tegelik, ;
+*!*		sum(kassa) As kassa, ;
+*!*		regkood, asutus ,;
+*!*		parasutus, parregkood ;
+*!*		from tmpReport ;
+*!*		GROUP By allikas, tegev, idx, artikkel,rahavoog, nimetus, regkood, asutus, parasutus,parregkood, tunnus;
+*!*		ORDER By parasutus,asutus, idx, artikkel, allikas, tegev, rahavoog,   tunnus ;
+*!*		INTO Cursor eelarve_report2
 
 Use In tmpReport
 Select eelarve_report2

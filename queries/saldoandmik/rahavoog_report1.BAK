@@ -31,10 +31,10 @@ If !lError
 	Return .F.
 Endif
 
-Select sum(summa) as summa, konto, grupp, all_grupp, nimetus ;
+Select sum(summa) as summa, konto, grupp, all_grupp, nimetus, idx ;
 	from tmpReport ;
-	GROUP By konto, grupp, all_grupp, nimetus;	
-	ORDER By grupp, all_grupp, konto ;
+	GROUP By idx, konto, grupp, all_grupp, nimetus;	
+	ORDER By idx, konto, grupp, all_grupp ;
 	INTO Cursor bilanss_report1
 
 Use In tmpReport

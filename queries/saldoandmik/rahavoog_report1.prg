@@ -31,7 +31,7 @@ If !lError
 	Return .F.
 Endif
 
-Select sum(summa) as summa, konto, grupp, all_grupp, nimetus, idx ;
+Select sum(summa) as summa, sum(eelmise_summa) as eelmise_summa, konto, grupp, all_grupp, nimetus, idx ;
 	from tmpReport ;
 	GROUP By idx, konto, grupp, all_grupp, nimetus;	
 	ORDER By idx, konto, grupp, all_grupp ;

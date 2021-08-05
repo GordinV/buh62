@@ -18,7 +18,7 @@ ENDIF
 l_aasta = year(fltrAruanne.kpv2)
 
 
-lError = oDb.readFromModel('aruanned\eelarve\taitmine_allikas_artikkel', 'kulud_report', 'l_aasta,fltrAruanne.kpv2, gRekv, fltrAruanne.kond', 'tmpReport', lcWhere)
+lError = oDb.readFromModel('aruanned\eelarve\taitmine_allikas_artikkel', 'kulud_report', 'l_aasta,fltrAruanne.kpv1, fltrAruanne.kpv2, gRekv, fltrAruanne.kond', 'tmpReport', lcWhere)
 If !lError
 	Messagebox('Viga',0+16, 'Eelarve kulud')
 	Set Step On

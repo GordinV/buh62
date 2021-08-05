@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="d929205d-3ba4-4e9f-a7bc-dd6bae618f69" name="Default Changelist" comment="" />
+    <list default="true" id="d929205d-3ba4-4e9f-a7bc-dd6bae618f69" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -23,26 +25,7 @@
     <select />
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$APPLICATION_CONFIG_DIR$/consoles/db/086e3906-c253-4189-8a7f-fefe12c32476/console.sql">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="289">
-              <caret line="17" lean-forward="true" selection-start-line="17" selection-end-line="17" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$APPLICATION_CONFIG_DIR$/consoles/db/5e594526-e16c-4810-91b2-7d84fd317b33/console.sql">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="799">
-              <caret line="47" column="57" selection-start-line="47" selection-start-column="56" selection-end-line="47" selection-end-column="57" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300" />
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -107,7 +90,7 @@
     <property name="database.console.LAST_STATE" value="true" />
     <property name="enableYiiStorm" value="true" />
     <property name="langName" value="en" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../buh61" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="C:/Program Files/nodejs6/node" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="settings.editor.selected.configurable" value="database.main" />
@@ -170,6 +153,7 @@
       <workItem from="1607870112092" duration="643000" />
       <workItem from="1612691433838" duration="1133000" />
       <workItem from="1616075226879" duration="198000" />
+      <workItem from="1626020931090" duration="21000" />
     </task>
     <task id="LOCAL-00001" summary="PV ja PV aruanned fixed (V. Hrenova)">
       <created>1555938003657</created>
@@ -280,12 +264,12 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="28145000" />
+    <option name="totallyTimeSpent" value="28166000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1376" height="744" extended-state="6" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.3882979" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.3943769" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -380,7 +364,7 @@
     <entry file="file://$APPLICATION_CONFIG_DIR$/consoles/db/086e3906-c253-4189-8a7f-fefe12c32476/console.sql">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="289">
-          <caret line="17" lean-forward="true" selection-start-line="17" selection-end-line="17" />
+          <caret line="17" selection-start-line="17" selection-end-line="17" />
         </state>
       </provider>
     </entry>
