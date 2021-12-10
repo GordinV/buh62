@@ -9,6 +9,7 @@
                            (n.properties -&gt;&gt; 'konto')::TEXT    AS konto,
                            (n.properties -&gt;&gt; 'tunnus')::TEXT   AS tunnus,
                            n.hind,
+                           (n.properties -&gt;&gt; 'tyyp')::TEXT     AS tyyp,
                            (n.properties -&gt;&gt; 'valid')::DATE    AS valid
                     FROM libs.nomenklatuur n
                     WHERE (n.rekvId = $1 OR n.rekvid IS NULL)
@@ -22,22 +23,27 @@
                      n.dok::VARCHAR(20),
                      n.muud,
                      n.rekvid,
-                     $2::INTEGER                                                    AS userid,
-                     'NOMENCLATURE'                                                 AS doc_type_id,
-                     'EUR'                                                          AS valuuta,
-                     1                                                              AS kuurs,
-                     n.uhik                                                         AS uhik,
-                     n.hind                                                         AS hind,
-                     (n.properties::JSONB -&gt;&gt; 'vat')::VARCHAR(20)                   AS vat,
-                     (n.properties::JSONB -&gt;&gt; 'konto')::VARCHAR(20)                 AS konto,
-                     (n.properties::JSONB -&gt;&gt; 'projekt')::VARCHAR(20)               AS projekt,
-                     (n.properties::JSONB -&gt;&gt; 'tunnus')::VARCHAR(20)                AS tunnus,
-                     (n.properties::JSONB -&gt;&gt; 'tegev')::VARCHAR(20)                 AS tegev,
-                     (n.properties::JSONB -&gt;&gt; 'allikas')::VARCHAR(20)               AS allikas,
-                     (n.properties::JSONB -&gt;&gt; 'rahavoog')::VARCHAR(20)              AS rahavoog,
-                     (n.properties::JSONB -&gt;&gt; 'artikkel')::VARCHAR(20)              AS artikkel,
-                     coalesce((n.properties::JSONB -&gt;&gt; 'kas_inf3')::BOOLEAN, FALSE) AS kas_inf3,
-                     (n.properties::JSONB -&gt;&gt; 'valid')::DATE                        AS valid
+                     $2::INTEGER                                                              AS userid,
+                     'NOMENCLATURE'                                                           AS doc_type_id,
+                     'EUR'                                                                    AS valuuta,
+                     1                                                                        AS kuurs,
+                     n.uhik                                                                   AS uhik,
+                     n.hind                                                                   AS hind,
+                     (n.properties::JSONB -&gt;&gt; 'vat')::VARCHAR(20)                             AS vat,
+                     (n.properties::JSONB -&gt;&gt; 'konto')::VARCHAR(20)                           AS konto,
+                     (n.properties::JSONB -&gt;&gt; 'projekt')::VARCHAR(20)                         AS projekt,
+                     (n.properties::JSONB -&gt;&gt; 'tunnus')::VARCHAR(20)                          AS tunnus,
+                     (n.properties::JSONB -&gt;&gt; 'tegev')::VARCHAR(20)                           AS tegev,
+                     (n.properties::JSONB -&gt;&gt; 'allikas')::VARCHAR(20)                         AS allikas,
+                     (n.properties::JSONB -&gt;&gt; 'rahavoog')::VARCHAR(20)                        AS rahavoog,
+                     (n.properties::JSONB -&gt;&gt; 'artikkel')::VARCHAR(20)                        AS artikkel,
+                     coalesce((n.properties::JSONB -&gt;&gt; 'kas_inf3')::BOOLEAN, FALSE)           AS kas_inf3,
+                     (n.properties::JSONB -&gt;&gt; 'valid')::DATE                                  AS valid,
+                     (n.properties::JSONB -&gt;&gt; 'tyyp')::TEXT                                   AS tyyp,
+                     coalesce((n.properties::JSONB -&gt;&gt; 'kas_inf3')::BOOLEAN, FALSE)         AS kas_inf3,
+                     coalesce((n.properties::JSONB -&gt;&gt; 'oppe_tyyp')::TEXT, 'Põhiõpe')::TEXT AS oppe_tyyp,
+                     coalesce((n.properties::JSONB -&gt;&gt; 'algoritm')::TEXT, 'konstantne')::TEXT AS algoritm
+
               FROM libs.nomenklatuur n
               WHERE n.id = $1</sql>
     <sqlAsNew>select  $1::integer as id , $2::integer as userid, 'NOMENCLATURE' as doc_type_id,
@@ -63,7 +69,9 @@
             null::varchar(20) as allikas,
             null::varchar(20) as rahavoog,
             null::varchar(20) as artikkel,
-            null::date as valid</sqlAsNew>
+            null::date as valid,
+            'konstantne'::text as algoritm,                      
+            null::text as tyyp</sqlAsNew>
     <query />
     <multiple>false</multiple>
     <alias>row</alias>
@@ -71,7 +79,7 @@
   <select>
     <sql>SELECT *
                   FROM jsonb_to_recordset(
-                               fnc_check_libs($2::JSON, $3::date, $1::INTEGER))
+                               fnc_check_libs($2::JSON, $3::DATE, $1::INTEGER))
                            AS x (error_message TEXT)
                   WHERE error_message IS NOT NULL
             </sql>
@@ -82,7 +90,7 @@
   <select>
     <sql>SELECT *
                   FROM jsonb_to_recordset(
-                               get_nom_kasutus($2::INTEGER, $3::date,
+                               get_nom_kasutus($2::INTEGER, $3::DATE,
                                                $1::INTEGER)
                            ) AS x (error_message TEXT, error_code INTEGER)
                   WHERE error_message IS NOT NULL
@@ -95,7 +103,7 @@
     <sql>SELECT *
                    FROM com_nomenclature
                    WHERE (rekvid = $1 OR rekvid IS NULL)
-                       ORDER BY kood</sql>
+                   ORDER BY kood</sql>
     <alias>selectAsLibs</alias>
   </selectAsLibs>
   <saveDoc>
@@ -138,4 +146,8 @@
     <view>noms_register</view>
     <params>sqlWhere</params>
   </print>
+  <getLog>
+    <sql />
+    <alias />
+  </getLog>
 </VFPData>

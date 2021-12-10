@@ -81,7 +81,6 @@ ENDWITH
 
 SELECT v_xml_arv
 
-
 Return l_found_kokku
 Endfunc
 

@@ -5,7 +5,7 @@ lcWhere = Iif(Empty(fltrAruanne.kond),' qry.rekv_id = ' + Str(gRekv), '')
 TEXT TO lcWhere ADDITIVE TEXTMERGE noshow
 	<<IIF(LEN(lcWhere) > 0, 'and', '')>> ( konto in ('103701','103950','103009','203900','200060') or left(ltrim(rtrim(konto)),3) = ('201'))
 ENDTEXT
-
+SET STEP on
 l_konto = null
 lError = oDb.readFromModel('aruanned\raamatupidamine\kontosaldoandmik', 'kontosaldoandmik_report', 'l_konto,fltrAruanne.asutusid, fltrAruanne.kpv2, gRekv', 'tmpReport', lcWhere)
 If !lError
@@ -16,12 +16,19 @@ If !lError
 Endif
 
 
-Select sum(r.saldo), asutus, regkood, aadress   ;
+Select sum(r.saldo) as saldo, asutus_id;
 	From tmpReport r;
-	ORDER By asutus, regkood, aadress ;
-	GROUP BY asutus, regkood, aadress ;
+	GROUP BY asutus_id;
+	INTO Cursor tmpKaibed
+
+
+Select r.saldo, a.nimetus as asutus, a.regkood, a.aadress   ;
+	From tmpKaibed r;
+	INNER JOIN comAsutusRemote a ON a.id = r.asutus_id;
+	ORDER By a.nimetus, a.regkood ;
 	INTO Cursor KaibeAsutusAndmik_report1
 	
 Use In tmpReport
+USE IN tmpKaibed
 
 Select kaibeAsutusandmik_report1

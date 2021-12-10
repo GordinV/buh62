@@ -7,7 +7,6 @@ IF !EMPTY(fltrAruanne.OsakondId)
 		osakondid = <<fltrAruanne.OsakondId>>
 	ENDTEXT
 ENDIF
-
  
 lError = oDb.readFromModel('aruanned\palk\palk_lausend', 'palk_lausend', 'fltrAruanne.kpv1,fltrAruanne.kpv2, gRekv,fltrAruanne.kond', 'tmpReport', l_where)
 

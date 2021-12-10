@@ -16,12 +16,19 @@ If !lError
 Endif
 
 
-Select sum(r.saldo) as saldo, asutus, regkood, aadress   ;
+Select sum(r.saldo) as saldo, asutus_id;
 	From tmpReport r;
-	ORDER By asutus, regkood, aadress ;
-	GROUP BY asutus, regkood, aadress ;
+	GROUP BY asutus_id;
+	INTO Cursor tmpKaibed
+
+
+Select r.saldo, a.nimetus as asutus, a.regkood, a.aadress   ;
+	From tmpKaibed r;
+	INNER JOIN comAsutusRemote a ON a.id = r.asutus_id;
+	ORDER By a.nimetus, a.regkood ;
 	INTO Cursor KaibeAsutusAndmik_report1
 	
 Use In tmpReport
+USE IN tmpKaibed
 
 Select kaibeAsutusandmik_report1

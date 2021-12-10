@@ -12,6 +12,7 @@ LPARAMETERS tcParams
 
 TEXT TO lcWhere TEXTMERGE noshow
 	(EMPTY(<<fltrAruanne.asutusid>>) or rekv_id = <<fltrAruanne.asutusid>>)
+	and coalesce(artikkel,'') like '<<ALLTRIM(fltrAruanne.kood4)>>%'
 	and coalesce(artikkel,'') like '<<ALLTRIM(fltrAruanne.kood5)>>%'
 	and coalesce(tegev,'') like '<<ALLTRIM(fltrAruanne.kood1)>>%'
 	and summa >= <<fltrAruanne.summa>>

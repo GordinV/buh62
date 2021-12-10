@@ -12,7 +12,14 @@ If Found() And !Empty(curMenuRemote.Proc)
 		Deactivate POPUP (menu_name)
 		Release Popups (menu_name)
 	Endif
-Else
+ELSE
+	IF tnId = 9999 
+		WAIT WINDOW 'test menu Ok'
+	ELSE	
 	Messagebox('Not found')
-Endif
+	ENDIF
+	
+ENDIF
+
+
 Return lError

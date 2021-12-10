@@ -6,15 +6,12 @@ tnId = cWhere
 
 If !Used('v_korder1')
 	lError = oDb.readFromModel('raamatupidamine\sorder', 'row', 'tnId, guserid', 'v_korder1')
-	lError = oDb.readFromModel('raamatupidamine\sorder', 'details', 'tnId, guserid', 'v_korder2')
+*	lError = oDb.readFromModel('raamatupidamine\sorder', 'details', 'tnId, guserid', 'v_korder2')
 Endif
 
 Select v_korder1.Id, v_korder1.Number, v_korder1.kpv, v_korder1.nimi,  v_korder1.aadress, v_korder1.dokument, v_korder1.alus, ;
-	v_Korder2.nimetus,  v_Korder2.Summa,  v_korder1.kassa As aa, v_korder1.kokku, ;
-	v_Korder2.kood1,  v_Korder2.kood2, v_Korder2.kood3, v_Korder2.kood4, v_Korder2.kood5, ;
-	v_Korder2.tunnus;
-	FROM  v_korder1, v_Korder2 ;
-	ORDER By v_Korder2.nimetus ;
+	 v_korder1.kassa As aa, v_korder1.kokku ;
+	FROM  v_korder1 ;
 	INTO Cursor sorder_report1
 
 tnId = v_korder1.journalid

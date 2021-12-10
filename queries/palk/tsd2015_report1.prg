@@ -55,8 +55,7 @@ if RECCOUNT('tsd_1b') > 0
 	l_lisa1b_117 = tsd_1b.c117
 ENDIF
 
-
-lnMaksud = 	(qryTsd.tm - l_lisa1b_110)+ (qryTsd.sm - l_lisa1b_115) + ;
+lnMaksud = 	(qryTsd.tm - l_lisa1b_110)+ (qryTsd.sm) + ;
 	(qryTsd.tki + qryTsd.tka - l_lisa1b_116) + ;
 	(qryTsd.pm - l_lisa1b_117) + qryTsd.eri_tm + qryTsd.eri_sm
 
@@ -65,9 +64,9 @@ lnMaksud = 	(qryTsd.tm - l_lisa1b_110)+ (qryTsd.sm - l_lisa1b_115) + ;
 Select tsd_report
 Insert Into tsd_report (reanr, reanimi, Summa ) Values ('110', 'Kinnipeetud tulumaks',qryTsd.tm - l_lisa1b_110 )
 Insert Into tsd_report (reanr, reanimi, Summa ) Values ('114', 'Erijuhtude tulumaks',qryTsd.eri_tm)
-Insert Into tsd_report (reanr, reanimi, Summa ) Values ('115', 'Sotsiaalmaks',qryTsd.sm + qryTsd.eri_sm - l_lisa1b_115)
-Insert Into tsd_report (reanr, reanimi, Summa ) Values ('116', 'Töötuskindlustusmakse',qryTsd.tki + qryTsd.tka - l_lisa1b_116)
-Insert Into tsd_report (reanr, reanimi, Summa ) Values ('117', 'Kohustusliku kogumispensioni makse',qryTsd.pm - l_lisa1b_117 )
+Insert Into tsd_report (reanr, reanimi, Summa ) Values ('115', 'Sotsiaalmaks',qryTsd.sm + qryTsd.eri_sm)
+Insert Into tsd_report (reanr, reanimi, Summa ) Values ('116', 'Töötuskindlustusmakse',qryTsd.tki + qryTsd.tka - l_lisa1b_116 )
+Insert Into tsd_report (reanr, reanimi, Summa ) Values ('117', 'Kohustusliku kogumispensioni makse',qryTsd.pm - l_lisa1b_117  )
 Insert Into tsd_report (reanr, reanimi, Summa ) Values ('118', 'Maksukohustus kokku',Iif(lnMaksud >= 0, lnMaksud, 0))
 Insert Into tsd_report (reanr, reanimi, Summa ) Values ('119', 'Kuulub tagastamisele',Iif(lnMaksud < 0, lnMaksud, 0))
 

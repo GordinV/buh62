@@ -1,15 +1,17 @@
 Parameter cWhere
 
-IF !USED('curJournal')
-	RETURN .f.
-ENDIF
+If !Used('curJournal')
+	Return .F.
+Endif
 
-SELECT * from curJournal INTO CURSOR journal_report1
+Create Cursor journal_report1 (Id Int, kpv d, asutusid Int Null,  deebet c(20), kreedit c(20), lisa_d c(20)Null, lisa_k c(20) Null,;
+	kood1 c(20) Null, kood2 c(20) Null, kood3 c(20) Null, kood4 c(20) Null, kood5 c(20) Null, Summa N(14,2), selg c(254) Null,;
+	dok c(120) Null, asutus c(254) Null, tunnus c(20) Null, Proj c(20) Null, summa_kokku N(14,2), valuuta c(20) Default 'EUR', read_kokku Int, Number Int)
 
-SELECT journal_report1
+
 Index On Id Tag Id
 Index On kpv Tag kpv Additive
-Index On number Tag Number Additive
+Index On Number Tag Number Additive
 Index On deebet Tag deebet Additive
 Index On kreedit Tag kreedit Additive
 Index On kood1 Tag kood1 Additive
@@ -22,8 +24,9 @@ Index On lisa_k Tag lisa_k Additive
 Index On Summa Tag Summa Additive
 Index On Left(Upper(selg),40) Tag selg Additive
 Index On Left(Upper(dok),40) Tag dok Additive
+Index On Left(Upper(valuuta),40) Tag valuuta Additive
 Index On Left(Upper(asutus),40) Tag asutus Additive
-Index On TUNNUS Tag TUNNUS Additive
+Index On tunnus Tag tunnus Additive
 
 l_order = 'id'
 
@@ -32,5 +35,10 @@ If Used('curJournal')
 Endif
 Select journal_report1
 Set Order To (l_order )
-RETURN .t.
+
+Append From Dbf('curJournal')
+
+COPY TO c:/temp/journal.dbf
+
+Return .T.
 

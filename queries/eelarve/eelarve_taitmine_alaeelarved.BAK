@@ -20,9 +20,9 @@ TEXT TO lcWhere ADDITIVE TEXTMERGE noshow
 ENDTEXT
 Endif
 l_aasta = Year(fltrAruanne.kpv2)
+l_kpv = DATE(l_aasta,01,01)
 
-
-lError = oDb.readFromModel('aruanned\eelarve\taitmine_allikas_artikkel', 'kulud_report', 'l_aasta,DATE(l_aasta,01,01), fltrAruanne.kpv2, gRekv, fltrAruanne.kond', 'tmpReport', lcWhere)
+lError = oDb.readFromModel('aruanned\eelarve\taitmine_allikas_artikkel', 'kulud_report', 'l_aasta,l_kpv,fltrAruanne.kpv2, gRekv, fltrAruanne.kond', 'tmpReport', lcWhere)
 If !lError
 	Messagebox('Viga',0+16, 'Eelarve kulud')
 	Set Step On

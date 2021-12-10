@@ -14,7 +14,7 @@ If !lError
 	Return .F.
 Endif
 
-SELECT * from tmpReport ORDER BY isik INTO CURSOR palk_kaart_report1
+SELECT * from tmpReport ORDER BY isik, amet, liik, idx INTO CURSOR palk_kaart_report1
 USE IN tmpReport
 
 SELECT palk_kaart_report1

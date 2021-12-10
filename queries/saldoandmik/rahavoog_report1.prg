@@ -31,12 +31,15 @@ If !lError
 	Return .F.
 Endif
 
-Select sum(summa) as summa, sum(eelmise_summa) as eelmise_summa, konto, grupp, all_grupp, nimetus, idx ;
+Select sum(summa) as summa, sum(eelmise_summa) as eelmise_summa, konto, nimetus, idx ;
 	from tmpReport ;
 	GROUP By idx, konto, grupp, all_grupp, nimetus;	
 	ORDER By idx, konto, grupp, all_grupp ;
 	INTO Cursor bilanss_report1
 
 Use In tmpReport
+
 Select bilanss_report1
+
+
 

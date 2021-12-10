@@ -35,15 +35,14 @@ IF !EMPTY(fltrAruanne.asutusid)
 	SELECT comTootajadLeping
 	LOCATE FOR id = fltrAruanne.asutusid
 	IF FOUND()
-TEXT TO lcWhere TEXTMERGE NOSHOW additive
-		and isikukood = '<<ALLTRIM(comTootajadLeping.isikukood)>>'
-ENDTEXT
+		TEXT TO lcWhere TEXTMERGE NOSHOW additive
+				and isikukood = '<<ALLTRIM(comTootajadLeping.isikukood)>>'
+		ENDTEXT
 		
 	ENDIF
-	
 ENDIF
 
-
+	
 lError = oDb.readFromModel('aruanned\palk\tsd_lisa1', 'tsd_lisa1', 'tdKpv1,tdKpv2, gRekv,tnKond', 'tmpReport',lcWhere)
 If !lError
 	Messagebox('Viga',0+16, 'TSD')
@@ -52,33 +51,6 @@ If !lError
 	Return .F.
 ENDIF
 
-TEXT TO lcWhere TEXTMERGE noshow
-		c_1300 is not null
-ENDTEXT
-
-IF !EMPTY(fltrAruanne.asutusid)
-TEXT TO lcWhere TEXTMERGE NOSHOW 
-		c_1300 = '<<ALLTRIM(comTootajadLeping.isikukood)>>'
-ENDTEXT
-	
-ENDIF
-
-
-lError = oDb.readFromModel('aruanned\palk\tsd_lisa1b', 'tsd_lisa1b', 'tdKpv1,tdKpv2, gRekv,tnKond', 'tsd_1b_report', lcWhere)
-If !lError
-	Messagebox('Viga',0+16, 'TSD')
-	Set Step On
-	Select 0
-	Return .F.
-Endif
-
-
-* calender days
-lnPaevadKuus = Day(Gomonth(Date(Year(tdKpv2), Month(tdKpv2), 1)  ,1) - 1)
-
-
-l_last_isikukood = ''
-
 Select isikukood, isik, Sum(Summa) As Summa, Sum(puhkused) As puhkused, Sum(haigused) As haigused, Sum(tm) As tm, Sum(sm) As sm, Sum(tki) As tki, Sum(tka) As tka,;
 	sum(pm) As pm, Sum(tulubaas) As tulubaas, tululiik, '' as riik, sm_arv, tk_arv, ;
 	max(v1040) As v1040, Sum(puhkus) As puhkus, Max(lopp) As lopp, Max(tmpReport.arv_min_sots) As arv_min_sots, ;
@@ -86,8 +58,18 @@ Select isikukood, isik, Sum(Summa) As Summa, Sum(puhkused) As puhkused, Sum(haig
 	FROM tmpReport ;
 	WHERE (!Isnull(tmpReport.tululiik) And  tmpReport.tululiik <> '') ;
 	GROUP By isikukood, isik, tululiik, riik, sm_arv, tk_arv ;
-	ORDER By isikukood, tululiik;
-	INTO Cursor curTSD
+	INTO Cursor curTSD_
+
+SELECT * from curTsd_ ORDER By isikukood, tululiik, summa DESC INTO CURSOR curTSD
+USE IN curTsd_
+		
+
+* calender days
+lnPaevadKuus = Day(Gomonth(Date(Year(tdKpv2), Month(tdKpv2), 1)  ,1) - 1)
+
+
+l_last_isikukood = ''
+
 Select curTSD
 
 Scan
@@ -112,19 +94,26 @@ Scan
 
 	l_1090 = 0
 	
-	If (Isnull(curTSD.arv_min_sots) AND curTSD.arv_min_sots <> 0) AND  1090 = .F.
-			SELECT curTSD 
+	If !Isnull(curTSD.arv_min_sots) AND !EMPTY(curTSD.arv_min_sots) And l_used_1090 = .F. ;
+		and Alltrim(curTSD.tululiik) <> ('17') ;
+		and Alltrim(curTSD.tululiik) <> ('16') ;
+		and Alltrim(curTSD.tululiik) <> ('24') ;
+		and Alltrim(curTSD.tululiik) <> ('55') 
+	
 		l_1090 = curTSD.min_sots_alus
 		* kui sm vaiksem kui sots maks min palgast, siis kasutame min.sots
-		IF curTSD.sm < curTSD.arv_min_sots  AND curTSD.sm > 0 
-			* vana
-			l_sm = curTSD.arv_min_sots
+*!*			IF curTSD.sm < curTSD.arv_min_sots  AND curTSD.sm > 0 
+*!*				* vana
+*!*				l_sm = curTSD.arv_min_sots
 
-		ELSE
+*!*			ELSE
+*!*				* uus lisa SM
+*!*				l_sm = curTSD.sm + curTSD.arv_min_sots
+*!*			ENDIF
 			* uus lisa SM
-			l_sm = curTSD.sm + curTSD.arv_min_sots
-		ENDIF
-				
+		l_sm = curTSD.sm + curTSD.arv_min_sots
+		
+		
 		l_used_1090 = .T.
 	Endif
 
@@ -200,6 +189,25 @@ Endif
 
 
 * Lisa 1b 
+
+TEXT TO lcWhere TEXTMERGE noshow
+		c_1300 is not null
+ENDTEXT
+
+IF !EMPTY(fltrAruanne.asutusid)
+TEXT TO lcWhere TEXTMERGE NOSHOW 
+		c_1300 = '<<ALLTRIM(comTootajadLeping.isikukood)>>'
+ENDTEXT
+
+
+lError = oDb.readFromModel('aruanned\palk\tsd_lisa1b', 'tsd_lisa1b', 'tdKpv1,tdKpv2, gRekv,tnKond', 'tsd_1b_report', lcWhere)
+If !lError
+	Messagebox('Viga',0+16, 'TSD')
+	Set Step On
+	Select 0
+	Return .F.
+Endif
+
 SELECT tsd_1b_report
 
 SCAN

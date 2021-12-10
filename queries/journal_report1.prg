@@ -4,9 +4,9 @@ If !Used('curJournal')
 	Return .F.
 Endif
 
-Create Cursor journal_report1 (Id Int, kpv d, asutusid Int Null, Number Int, deebet c(20), kreedit c(20), lisa_d c(20)Null, lisa_k c(20) Null,;
+Create Cursor journal_report1 (Id Int, kpv d, asutusid Int Null,  deebet c(20), kreedit c(20), lisa_d c(20)Null, lisa_k c(20) Null,;
 	kood1 c(20) Null, kood2 c(20) Null, kood3 c(20) Null, kood4 c(20) Null, kood5 c(20) Null, Summa N(14,2), selg c(254) Null,;
-	dok c(120) Null, asutus c(254) Null, tunnus c(20) Null, Proj c(20) Null, summa_kokku N(14,2), valuuta c(20) Default 'EUR', read_kokku Int)
+	dok c(120) Null, asutus c(254) Null, tunnus c(20) Null, Proj c(20) Null, summa_kokku N(14,2), valuuta c(20) Default 'EUR', read_kokku Int, Number Int)
 
 
 Index On Id Tag Id

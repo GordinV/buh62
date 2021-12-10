@@ -126,14 +126,16 @@ Scan
 	
 		l_1090 = curTSD.min_sots_alus
 		* kui sm vaiksem kui sots maks min palgast, siis kasutame min.sots
-		IF curTSD.sm < curTSD.arv_min_sots  AND curTSD.sm > 0 
-			* vana
-			l_sm = curTSD.arv_min_sots
+*!*			IF curTSD.sm < curTSD.arv_min_sots  AND curTSD.sm > 0 
+*!*				* vana
+*!*				l_sm = curTSD.arv_min_sots
 
-		ELSE
+*!*			ELSE
+*!*				* uus lisa SM
+*!*				l_sm = curTSD.sm + curTSD.arv_min_sots
+*!*			ENDIF
 			* uus lisa SM
-			l_sm = curTSD.sm + curTSD.arv_min_sots
-		ENDIF
+		l_sm = curTSD.sm + curTSD.arv_min_sots
 		
 		
 		l_used_1090 = .T.
@@ -194,6 +196,7 @@ Select * From tmpReport Where isikukood Not In ;
 	INTO Cursor qryKoormusLisa
 
 Select qryKoormusLisa
+brow
 Scan
 	Insert Into tsd_report (isikukood, nimi, v1020, v1040, v1090, v1100) ;
 		VALUES (qryKoormusLisa.isikukood,  qryKoormusLisa.isik,'10',qryKoormusLisa.v1040, qryKoormusLisa.min_sots_alus,qryKoormusLisa.arv_min_sots )

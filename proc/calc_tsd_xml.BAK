@@ -183,12 +183,12 @@ ENDTEXT
 TEXT TO lcString NOSHOW additive
 
 </tsd_L1_B_Vm>
+</vmList>
 
 ENDTEXT
 
 	Endscan
 TEXT TO lcString NOSHOW additive
-</vmList>
 </tsd_L1_B_Isik>
 
 ENDTEXT
@@ -241,6 +241,9 @@ Function get_tululiik_kood
 		INTO Cursor qryTSDtululiik
 
 	Select qryTSDtululiik
+	IF tcIsikukood = '46112297010'
+		brow
+	ENDIF
 
 	Scan
 		lc1160 = ''

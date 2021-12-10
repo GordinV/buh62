@@ -32,13 +32,29 @@ IF USED('tmp_period')
 ENDIF
 
 
-If  .Not. Used('curSource')
-	Create Cursor curSource (Id Int, koOd C (20), niMetus C (120))
-Endif
-If  .Not. Used('curValitud')
-	Create Cursor curValitud (Id Int, koOd C (20), niMetus C (120))
-Endif
+If  Used('curSource')
+	USE IN 'curSource'
+ENDIF
+
+Create Cursor curSource (Id Int, koOd C (20), niMetus C (120))
+
+If  Used('curValitud')
+	USE IN curValitud
+ENDIF
+
+Create Cursor curValitud (Id Int, koOd C (20), niMetus C (120))
+
+IF USED('curResult')
+	USE IN curResult 
+ENDIF
 Create Cursor curResult (Id Int, osAkonnaid Int, paLklibid Int, lepingid int)
+
+IF USED('curOsakonnad')
+	USE IN curOsakonnad 
+ENDIF
+
+CREATE CURSOR curOsakonnad (osAkonnaid Int)
+
 lnStep = 1
 If Used('v_dokprop')
 	Use In v_dokprop
@@ -49,9 +65,8 @@ if EMPTY(l_dokprop)
 	l_dokprop = getdokpropId('PALK_OPER', 'libs\libraries\dokprops')
 ENDIF
 
-
 l_error = fnc_load_tootajad()
-if EMPTY(l_error)
+if EMPTY(l_error) OR !USED('qryTootajad') OR RECCOUNT('qryTootajad') = 0
 	MESSAGEBOX('Tekkis viga',0+16,'Töötajate nimekirja')
 	RETURN .f.
 ENDIF
@@ -65,7 +80,12 @@ Do While lnStep>0
 			SELECT OSAKONDID From qryTootajad Where Id = tnIsikid
 			 
 		Insert Into curResult (Id) Values (tnIsikid) 
-
+		
+		* kui on osakonna filter
+		IF !EMPTY(fltrPalkOper.osakondId) 
+			INSERT INTO curOsakonnad (osAkonnaid) VALUES (fltrPalkOper.osakondId)
+		ENDIF
+		
 		lnStep = 3
 		tnIsikid = 0
 	Endif
@@ -112,23 +132,32 @@ function arVutus
 		EMPTY(curResult.paLklibid) Into Cursor ValPalkLib
 
 	Select ValPalkLib
-	Scan
+	SCAN FOR !ISNULL(ValPalkLib.Id) AND ValPalkLib.Id > 0
 		l_lib_ids = l_lib_ids + Iif(Len(l_lib_ids)> 0,',','') + Alltrim(Str(ValPalkLib.Id))
 	Endscan
 	Use In 	ValPalkLib
 
+
+		Select Distinct Id From curResult Where  Not Empty(curResult.Id)  ;
+			INTO Cursor recalc1
+
 * osakond_ids
-	Select Distinct Id From curResult Where  Not Empty(curResult.Id)  ;
-		INTO Cursor recalc1
+	IF USED('curOsakonnad') AND RECCOUNT('curOsakonnad') > 0 
+		SELECT curOsakonnad
+		Scan FOR !ISNULL(osAkonnaid) AND osAkonnaid > 0	
+			l_osakond_ids = l_osakond_ids + Iif(Len(l_osakond_ids)>0,',','') +  Alltrim(Str(curOsakonnad.osAkonnaid))
+		Endscan
+	else
 
-	Select curResult
-	Scan For osAkonnaid > 0
-		l_osakond_ids = l_osakond_ids + Iif(Len(l_osakond_ids)>0,',','') +  Alltrim(Str(curResult.osAkonnaid))
-	Endscan
+		Select curResult
+		Scan FOR !ISNULL(osAkonnaid) AND osAkonnaid > 0	
+			l_osakond_ids = l_osakond_ids + Iif(Len(l_osakond_ids)>0,',','') +  Alltrim(Str(curResult.osAkonnaid))
+		Endscan
 
+	ENDif;
 * isik_ids
 	Select recalc1
-	Scan
+	SCAN FOR !ISNULL(recalc1.Id) 
 		l_isik_ids = l_isik_ids + Iif(Len(l_isik_ids)>0,',','') +  Alltrim(Str(recalc1.Id))
 	Endscan
 
@@ -144,7 +173,8 @@ TEXT TO lcJson TEXTMERGE noshow
 ENDTEXT
 * sql proc
 	task = 'palk.gen_palkoper'
-	leRror = odB.readFromModel('palk\palk_oper', 'executeTask', 'guserid,lcJson,task', 'qryResult')
+	_cliptext = lcJson
+*	leRror = odB.readFromModel('palk\palk_oper', 'executeTask', 'guserid,lcJson,task', 'qryResult')
 	Do Form taitmine_raport With 'qryResult' 
 	
 	Return leRror
@@ -169,7 +199,14 @@ Procedure geT_isiku_list
 	Select curSource
 	If Reccount('curSource')>0
 		Zap
-	Endif
+	ENDIF
+	
+	SELECT qryTootajad 
+	BROWSE
+	
+	SELECT curResult
+	BROWSE 
+	
 	Select isikukood As koOd, niMetus, Id From qryTootajad Where OSAKONDID In(Select  ;
 		osAkonnaid From curResult) Into Cursor query1
 	Select curSource
@@ -249,21 +286,18 @@ Endproc
 
 
 Function fnc_load_tootajad
-	tcIsik = '%'
-	tnOsakondid1 = 0
-	tnOsakondid2 = 999999999
 	lcSqlWhere = ''
-	lcAlias = 'curTootajad'
 * parameters
 
 TEXT TO lcSqlWhere textmerge	noshow
-	nimetus ilike ?tcIsik
-	and (osakondid >= ?tnOsakondid1 or osakondid is null)
-	and (osakondId <= ?tnOsakondid2 or osakondid is null)
-	and (algab <= ?gdKpv or algab is null)
+	(algab <= ?gdKpv or algab is null)
 	and (lopp >= ?gdKpv or lopp is null)
 	order by nimetus
 ENDTEXT
+IF USED('qryTootajad')
+	USE IN qryTootajad
+ENDIF
+
 
 	leRror = odB.readFromModel('palk\tootaja', 'curTootajad', 'gRekv, guserid', 'qryTootajad', lcSqlWhere)
 	IF lError AND !USED('qryTootajad')
@@ -297,6 +331,7 @@ Procedure geT_osakonna_list
 		Select query1
 		Scan
 			Insert Into curResult (osAkonnaid) Values (query1.Id)
+			INSERT INTO curOsakonnad  (osAkonnaid) Values (query1.Id)
 		Endscan
 		Use In query1
 		Select curValitud

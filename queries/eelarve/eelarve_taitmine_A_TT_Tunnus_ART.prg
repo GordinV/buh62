@@ -3,11 +3,15 @@ Parameter cWhere
 
 TEXT TO lcWhere TEXTMERGE noshow
 	(EMPTY(<<fltrAruanne.asutusid>>) or rekv_id = <<fltrAruanne.asutusid>>)
-	and coalesce(artikkel,'') like '<<ALLTRIM(fltrAruanne.kood5)>>%'
-	and coalesce(tegev,'') like '<<ALLTRIM(fltrAruanne.kood1)>>%'
-	and coalesce(allikas,'') ilike '<<ALLTRIM(fltrAruanne.kood2)>>%'
-	and coalesce(rahavoog,'') like '<<ALLTRIM(fltrAruanne.kood3)>>%'
-	and coalesce(tunnus,'') ilike '<<ALLTRIM(fltrAruanne.tunnus)>>%'
+ENDTEXT
+
+
+TEXT TO lcJson TEXTMERGE noshow
+		{"artikkel": "<<ALLTRIM(fltrAruanne.kood5)>>",
+		"tegev": "<<ALLTRIM(fltrAruanne.kood1)>>",
+		"allikas": "<<ALLTRIM(fltrAruanne.kood2)>>",
+		"rahavoog": "<<ALLTRIM(fltrAruanne.kood3)>>",
+		"tunnus": "<<ALLTRIM(fltrAruanne.tunnus)>>"}
 ENDTEXT
 
 If Empty(fltrAruanne.kond)
@@ -18,7 +22,7 @@ ENDIF
 l_aasta = year(fltrAruanne.kpv2)
 
 
-lError = oDb.readFromModel('aruanned\eelarve\taitmine_allikas_artikkel', 'kulud_report', 'l_aasta,fltrAruanne.kpv1, fltrAruanne.kpv2, gRekv, fltrAruanne.kond', 'tmpReport', lcWhere)
+lError = oDb.readFromModel('aruanned\eelarve\taitmine_allikas_artikkel', 'kulud_report', 'l_aasta,fltrAruanne.kpv1, fltrAruanne.kpv2, gRekv, fltrAruanne.kond,lcJson', 'tmpReport', lcWhere)
 If !lError
 	Messagebox('Viga',0+16, 'Eelarve kulud')
 	Set Step On
@@ -34,9 +38,11 @@ Select rekv_id,;
 	sum(tegelik) as tegelik_kokku, ;
 	sum(kassa) As kassa_kokku ;
 	from tmpReport ;
-	WHERE artikkel NOT in ('2585(A80)', '1,2,3,6', '3', '15, 3, 655');
+	WHERE artikkel NOT in ('2585(A80)','2586(A80)', '1,2,3,6', '3', '15, 3, 655','15,2586,4,5,6');
 	group by rekv_id;
 	INTO Cursor report_kokku
+* 15,2586,4,5,6
+
 
 Select allikas, tegev, artikkel, nimetus, tunnus,;
 	Sum(eelarve_kinni) As eelarve_kinni, ;	

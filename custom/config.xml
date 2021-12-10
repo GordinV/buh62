@@ -16,6 +16,6 @@
 		<name>test1_narva</name>
 		<description>test1_narva_server</description>
 		<type>connection</type>
-		<conn_str>DRIVER=PostgreSQL Unicode;DATABASE=narvalv;server=dbarch.narva.ee;PORT=5436;MaxVarcharSize=254;</conn_str>
+		<conn_str>DRIVER=PostgreSQL Unicode;DATABASE=narvalv;server=dbarh.narva.ee;PORT=5436;MaxVarcharSize=254;</conn_str>
 	</connection>
 </VFPData>
