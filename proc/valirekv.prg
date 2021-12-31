@@ -14,7 +14,12 @@ If !Empty(gRekv)
 
 	Select comrekvremote
 	Locate For Id = gRekv
-	_Screen.Caption = 'Raamatupidamine 6.2 ' + Alltrim(comrekvremote.nimetus)
+
+	l_caption = 'Raamatupidamine 7.0 '
+	IF type('v_config.app_name') = 'C' 
+		l_caption  = v_config.app_name
+	endif
+	_Screen.Caption = l_caption + ' ' + Alltrim(comrekvremote.nimetus)
 
 	Do open_lib With 1
 * refresh toolbar

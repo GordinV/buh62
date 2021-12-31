@@ -1,0 +1,82 @@
+<?xml version = "1.0" encoding="Windows-1252" standalone="yes"?>
+<VFPData>
+  <grid>
+    <sql>SELECT (ltrim(rtrim(CASE
+                                            WHEN p.id = r.id THEN ''
+                                            WHEN r.id = 999999 THEN ''
+                                            ELSE coalesce(p.nimetus, '') END)) || ' ' ||
+                            ltrim(rtrim(r.nimetus)))::VARCHAR(254)                 AS asutus,
+                           qryReport.tunnus,
+                           qryReport.tegev,
+                           coalesce(t.nimetus, '')::VARCHAR(254)                   AS tegev_nimetus,
+                           qryReport.artikkel,
+                           a.nimetus,
+                           qryReport.aasta_1_tekke_taitmine,
+                           qryReport.eelarve_tekkepohine_kinnitatud,
+                           qryReport.eelarve_tekkepohine_tapsustatud,
+                           qryReport.aasta_2_tekke_taitmine,
+                           qryReport.aasta_3_eelnou,
+                           qryReport.aasta_3_prognoos,
+                           qryReport.selg                                          AS selg
+                    FROM eelarve.tulud_eelnou($1::DATE, $2::INTEGER, $3::INTEGER) qryReport
+                             INNER JOIN (SELECT id, parentid, regkood, nimetus
+                                         FROM ou.rekv
+                                         WHERE parentid &lt; 999
+                                         UNION ALL
+                                         SELECT 999999, 0, '' AS regkood, 'Kond' AS nimetus
+                                         WHERE $3::INTEGER = 1
+                    ) r
+                                        ON r.id = qryReport.rekv_id
+                             LEFT OUTER JOIN ou.rekv p ON r.parentid = p.id
+                             INNER JOIN libs.library a
+                                        ON a.kood = qryReport.artikkel
+                                            AND a.library = 'TULUDEALLIKAD' AND a.status &lt; 3
+                             LEFT OUTER JOIN libs.library t ON t.kood = qryReport.tegev
+                        AND t.library = 'TEGEV' AND a.status &lt; 3
+
+                    ORDER BY r.id DESC, r.parentid, qryReport.rekv_id, qryReport.idx,
+                             qryReport.tegev, qryReport.artikkel, qryReport.tunnus</sql>
+    <alias>tulud_eelnou</alias>
+  </grid>
+  <select></select>
+  <selectAsLibs>
+    <sql></sql>
+    <alias>selectAsLibs</alias>
+  </selectAsLibs>
+  <saveDoc>
+    <sql></sql>
+    <alias>saveDoc</alias>
+  </saveDoc>
+  <deleteDoc>
+    <sql></sql>
+    <alias>deleteDoc</alias>
+  </deleteDoc>
+  <requiredFields>
+    <validate></validate>
+  </requiredFields>
+  <executeSql>
+    <sql></sql>
+    <alias></alias>
+  </executeSql>
+  <executeCommand>
+    <sql></sql>
+    <alias></alias>
+  </executeCommand>
+  <register>
+    <sql></sql>
+    <alias></alias>
+  </register>
+  <endProcess>
+    <sql />
+    <alias />
+  </endProcess>
+  <generateJournal>
+    <sql />
+    <alias />
+  </generateJournal>
+  <print></print>
+  <getLog>
+    <sql />
+    <alias />
+  </getLog>
+</VFPData>

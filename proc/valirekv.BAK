@@ -2,6 +2,9 @@ Local lnRekvid
 
 Do Form valirekv To gRekv
 If !Empty(gRekv)
+
+	=close_opened_cursors()
+
 	Select comrekvremote
 	Locate For Id = gRekv
 	Wait Window ' Oodake, käivitan '+ Left(Alltrim(comrekvremote.nimetus),40) Nowait
@@ -11,7 +14,12 @@ If !Empty(gRekv)
 
 	Select comrekvremote
 	Locate For Id = gRekv
-	_Screen.Caption = 'Raamatupidamine 6.2 ' + Alltrim(comrekvremote.nimetus)
+
+	l_caption = 'Raamatupidamine 7.0 '
+	IF FSIZE('v_config.app_name') > 0 
+		l_caption  = v_config.app_name
+	endif
+	_Screen.Caption = v_config.app_name + ' ' + Alltrim(comrekvremote.nimetus)
 
 	Do open_lib With 1
 * refresh toolbar
@@ -22,3 +30,11 @@ If !Empty(gRekv)
 
 	Messagebox('Ok',0,'Vali asutus')
 Endif
+
+
+FUNCTION close_opened_cursors
+	IF USED('comOsakondRemote')
+		USE IN comOsakondRemote
+	ENDIF
+
+ENDFUNC

@@ -129,8 +129,6 @@ TEXT TO lcJson TEXTMERGE noshow
 ENDTEXT
 
 _cliptext = lcJson 
-SET STEP ON
-
 * sql proc
 	task = 'palk.gen_palk_dok'
 	leRror = oDb.readFromModel('palk\palk_oper', 'executeTask', 'guserid,lcJson,task', 'qryResult')

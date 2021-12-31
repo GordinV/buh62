@@ -4,5 +4,9 @@
 	<name>test_server</name>			 
 	<description>test_server 1</description>			 
 	<type>odbc</type>			 
+	<app_name>
+  		Raamatupidamine 7.0
+  	</app_name>
   </connection>
+  
 </VFPData>

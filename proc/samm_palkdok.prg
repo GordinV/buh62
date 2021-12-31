@@ -128,7 +128,6 @@ TEXT TO lcJson TEXTMERGE noshow
 		"lib_ids":[<<l_lib_ids>>],"kpv":<<DTOC(gdKpv,1)>>}
 ENDTEXT
 
-
 * sql proc
 	task = 'palk.gen_palk_dok'
 	leRror = oDb.readFromModel('palk\palk_oper', 'executeTask', 'guserid,lcJson,task', 'qryResult')
