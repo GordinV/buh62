@@ -12,15 +12,15 @@ Select v_pv_oper
 Scan
 	cLiik = ''
 	do case
-		case print_pv_oper.liik = 1
+		case v_pv_oper.liik = 1
 			cLiik = 'PAIGUTUS'
-		case print_pv_oper.liik = 2
+		case v_pv_oper.liik = 2
 			cLiik = 'KULUM'
-		case print_pv_oper.liik = 3
+		case v_pv_oper.liik = 3
 			cLiik = 'PARANDAMINE (PLUUS)'
-		case print_pv_oper.liik = 4
+		case v_pv_oper.liik = 4
 			cLiik = 'PARANDAMINE (MINUUS)'
-		case print_pv_oper.liik = 5
+		case v_pv_oper.liik = 5
 			cLiik = 'MAHAKANDMINE'
 	endcase
 	select pvoper_report1

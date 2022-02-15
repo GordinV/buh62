@@ -1,9 +1,16 @@
 Parameters tnid
+l_osakond = ''
+IF !EMPTY(fltrPalkOper.osakondId)
+	SELECT comOsakondPalkOper
+	LOCATE FOR id = fltrPalkOper.osakondId
+	l_osakond  = ALLTRIM(comOsakondPalkOper.kood)
+ENDIF
+
 
 TEXT TO lcWhere TEXTMERGE noshow
 	isik ilike '%<<ALLTRIM(fltrPalkOper.isik)>>%'
+	and osakonna_kood ilike '%<<l_osakond>>%'
 ENDTEXT
-
 
 l_kond = 1
 lError = oDb.readFromModel('aruanned\palk\palk_kaart', 'palk_kaart', 'fltrPalkOper.kpv1,fltrPalkOper.kpv2, gRekv, l_kond', 'tmpReport', lcWhere)

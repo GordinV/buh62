@@ -19,7 +19,6 @@ TEXT TO lcJson TEXTMERGE noshow
 		"tunnus": "<<ALLTRIM(fltrAruanne.tunnus)>>"}
 ENDTEXT
 
-
 lError = oDb.readFromModel('aruanned\eelarve\tulud_allikas_artikkel', 'tulud_report', 'l_aasta,fltrAruanne.kpv1, fltrAruanne.kpv2, gRekv, fltrAruanne.kond, lcJson', 'tmpReport', lcWhere)
 If !lError
 	Messagebox('Viga',0+16, 'Eelarve kulud')
@@ -28,19 +27,20 @@ If !lError
 	Return .F.
 ENDIF
 
-Select rekv_id,;
+Select r.rekv_id,;
 	Sum(eelarve_kinni) As eelarve_kinni_kokku, ;	
 	Sum(eelarve_parandatud) As eelarve_parandatud_kokku, ;	
 	Sum(eelarve_kassa_kinni) As eelarve_kassa_kinni_kokku, ;	
 	Sum(eelarve_kassa_parandatud) As eelarve_kassa_parandatud_kokku, ;	
 	sum(tegelik) as tegelik_kokku, ;
 	sum(kassa) As kassa_kokku ;
-	from tmpReport ;
-	WHERE artikkel NOT in ('2585(A80)', '1,2,3,6', '3', '15, 3, 655');
-	group by rekv_id;
+	from tmpReport r;
+	WHERE ALLTRIM(artikkel) NOT in ('2585(A80)', '1,2,3,6', '3', '15, 3, 655');
+	group by r.rekv_id;
 	INTO Cursor report_kokku
 
-Select allikas, tegev, artikkel, nimetus,;
+
+Select idx, allikas, tegev, artikkel, nimetus,;
 	Sum(eelarve_kinni) As eelarve_kinni, ;	
 	Sum(eelarve_parandatud) As eelarve_parandatud, ;	
 	Sum(eelarve_kassa_kinni) As eelarve_kassa_kinni, ;	
@@ -48,35 +48,37 @@ Select allikas, tegev, artikkel, nimetus,;
 	sum(tegelik) as tegelik, ;
 	sum(kassa) As kassa, ;
 	regkood, asutus ,;
+	tmpReport.rekv_id ,;
+	parasutus, parregkood ;
+	from tmpReport;
+	GROUP By allikas, tegev, idx, artikkel,nimetus, regkood, asutus, parasutus,parregkood, rekv_id;
+	ORDER By parasutus,asutus, idx, artikkel, allikas, tegev  ;
+	INTO Cursor eelarve_report
+
+
+
+Select allikas, tegev, artikkel, nimetus,;
+	(eelarve_kinni) As eelarve_kinni, ;	
+	(eelarve_parandatud) As eelarve_parandatud, ;	
+	(eelarve_kassa_kinni) As eelarve_kassa_kinni, ;	
+	(eelarve_kassa_parandatud) As eelarve_kassa_parandatud, ;	
+	(tegelik) as tegelik, ;
+	(kassa) As kassa, ;
+	regkood, asutus ,;
 	parasutus, parregkood, ;
-	sum(report_kokku.eelarve_kinni_kokku) as eelarve_kinni_kokku,;
-	sum(report_kokku.eelarve_parandatud_kokku) as eelarve_parandatud_kokku,;
-	sum(report_kokku.eelarve_kassa_kinni_kokku) as eelarve_kassa_kinni_kokku,;
-	sum(report_kokku.eelarve_kassa_parandatud_kokku) as eelarve_kassa_parandatud_kokku,;
-	sum(report_kokku.tegelik_kokku) as tegelik_kokku,;
-	sum(report_kokku.kassa_kokku) as kassa_kokku,;
+	(report_kokku.eelarve_kinni_kokku) as eelarve_kinni_kokku,;
+	(report_kokku.eelarve_parandatud_kokku) as eelarve_parandatud_kokku,;
+	(report_kokku.eelarve_kassa_kinni_kokku) as eelarve_kassa_kinni_kokku,;
+	(report_kokku.eelarve_kassa_parandatud_kokku) as eelarve_kassa_parandatud_kokku,;
+	(report_kokku.tegelik_kokku) as tegelik_kokku,;
+	(report_kokku.kassa_kokku) as kassa_kokku,;
 	report_kokku.rekv_id;
-	from tmpReport,  report_kokku;
-	WHERE tmpReport.rekv_id = report_kokku.rekv_id;
-	GROUP By allikas, tegev, idx, artikkel,nimetus, regkood, asutus, parasutus,parregkood, report_kokku.rekv_id;
+	from eelarve_report,  report_kokku;
+	WHERE eelarve_report.rekv_id = report_kokku.rekv_id;
 	ORDER By parasutus,asutus, idx, artikkel, allikas, tegev  ;
 	INTO Cursor eelarve_report2
 
-
-*!*	Select allikas, tegev, artikkel, nimetus,;
-*!*		Sum(eelarve_kinni) As eelarve_kinni, ;	
-*!*		Sum(eelarve_parandatud) As eelarve_parandatud, ;	
-*!*		Sum(eelarve_kassa_kinni) As eelarve_kassa_kinni, ;	
-*!*		Sum(eelarve_kassa_parandatud) As eelarve_kassa_parandatud, ;	
-*!*		sum(tegelik) as tegelik, ;
-*!*		sum(kassa) As kassa, ;
-*!*		regkood, asutus ,;
-*!*		parasutus, parregkood ;
-*!*		from tmpReport ;
-*!*		GROUP By allikas, tegev, idx, artikkel,nimetus, regkood, asutus, parasutus,parregkood;
-*!*		ORDER By parasutus,asutus, idx, artikkel, allikas, tegev ;
-*!*		INTO Cursor eelarve_report2
-
 Use In tmpReport
+USE IN eelarve_report
 Select eelarve_report2
 

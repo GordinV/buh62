@@ -1,6 +1,9 @@
 Parameter tcWhere
+kas_xml = 'false'
+IF !EMPTY(tcWhere) AND tcWhere = 'xml'
+	kas_xml = 'true'
+ENDIF
 
-SET STEP ON
 IF !EMPTY(fltrAruanne.arvestus)
 	TEXT TO l_params TEXTMERGE NOSHOW 
 		{"kpv":"<<DTOC(fltrAruanne.kpv2,1)>>","tyyp":1,"kond":<<fltrAruanne.kond>>,"rekvid":<<gRekv>>}
@@ -30,7 +33,7 @@ l_subTotals  = ' sum (deebet) OVER()  as dbKokku, sum (kreedit) OVER()  as krKok
 l_kpv2 = fltrAruanne.kpv2
 l_rekv = IIF(fltrAruanne.kond = 1 and gRekv = 63,999, gRekv)
 
-lError = oDb.readFromModel('aruanned\eelarve\kond_saldoandmik', 'kond_saldoandmik_report', 'l_kpv2, l_rekv, fltrAruanne.kond', 'tmpReport', lcWhere,l_subTotals)
+lError = oDb.readFromModel('aruanned\eelarve\kond_saldoandmik', 'kond_saldoandmik_report', 'l_kpv2, l_rekv, fltrAruanne.kond,kas_xml', 'tmpReport', lcWhere,l_subTotals)
 If !lError
 	Messagebox('Viga',0+16, 'Eelarve kondsaldoandmik')
 	Set Step On

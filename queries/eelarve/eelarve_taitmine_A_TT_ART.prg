@@ -29,7 +29,6 @@ If !lError
 	Return .F.
 Endif
 
-
 Select rekv_id,;
 	Sum(eelarve_kinni) As eelarve_kinni_kokku, ;	
 	Sum(eelarve_parandatud) As eelarve_parandatud_kokku, ;	

@@ -153,8 +153,8 @@ TEXT TO lcWhere ADDITIVE TEXTMERGE noshow
 			and gruppid in (<<l_grupp_ids>>)
 ENDTEXT
 	Endif
-
-	lError = odB.readFromModel('libs\libraries\pv_kaart', 'curPohivara', 'gRekv', 'qryPohivara',lcWhere)
+	lSelg = null
+	lError = odB.readFromModel('libs\libraries\pv_kaart', 'curPohivara', 'gRekv,guserid,lSelg', 'qryPohivara',lcWhere)
 
 	Select curSource
 	If Reccount('curSource') > 0

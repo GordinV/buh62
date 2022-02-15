@@ -7,7 +7,7 @@ ENDIF
 
 Create cursor pvoper_report1 (pvkood c(20) DEFAULT v_pv_kaart.kood, pvnimetus c(120) DEFAULT v_pv_kaart.nimetus,; 
 	soetmaks y DEFAULT v_pv_kaart.soetmaks, jaak y DEFAULT v_pv_kaart.jaak, kulum y DEFAULT v_pv_kaart.kulum,;
-	kood c(20), nimetus c(254), kpv d, summa y, liik c(40))
+	kood c(20) null, nimetus c(254) null, kpv d, summa y, liik c(40))
 Select v_pv_oper
 Scan
 	cLiik = ''
@@ -22,11 +22,13 @@ Scan
 			cLiik = 'PARANDAMINE (MINUUS)'
 		case v_pv_oper.liik = 5
 			cLiik = 'MAHAKANDMINE'
+		case v_pv_oper.liik = 6
+			cLiik = 'ÜMBERKLASSIFITSEERIMINE'
 	endcase
 	select pvoper_report1
 	Append blank
-	Replace kood with v_pv_oper.kood,;
-		nimetus with v_pv_oper.nimetus,;
+	Replace kood with IIF(ISNULL(v_pv_oper.kood),'',v_pv_oper.kood);
+		nimetus with IIF(ISNULL(v_pv_oper.nimetus),'',v_pv_oper.nimetus),;
 		summa with v_pv_oper.summa,;
 		kpv with v_pv_oper.kpv,;
 		liik with cLiik in pvoper_report1

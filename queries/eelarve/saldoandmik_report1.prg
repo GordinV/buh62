@@ -1,4 +1,5 @@
  PARAMETER tcWhere
+  
 
 TEXT TO lcWhere TEXTMERGE noshow
 	(EMPTY(<<fltrAruanne.asutusid>>) or rekv_id = <<fltrAruanne.asutusid>>)

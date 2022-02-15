@@ -36,7 +36,7 @@ If !lError
 Endif
 
 SELECT id, kood, nimetus, konto, grupp, soetmaks, soetkpv as soetkpv, kulum, eluiga,; 
-	(soetmaks - kulum ) as jaak, mahakantud, vastisik, rentnik ;
+	(soetmaks - kulum ) as jaak, mahakantud, vastisik, rentnik, aadress ;
 from tmpReport ;
 ORDER BY grupp, konto, kood;
 INTO CURSOR varadearuanne_report1

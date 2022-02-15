@@ -1,10 +1,19 @@
 Parameter tcWhere
-lcWhere = ''
-lcWhere = Iif(Empty(fltrAruanne.kond),' qry.rekv_id = ' + Str(gRekv), '')
+lcWhere = '1 = 1'
+lcWhere = lcWhere  + Iif(Empty(fltrAruanne.kond),' AND qry.rekv_id = ' + Str(gRekv), '')
 
 TEXT TO lcWhere ADDITIVE TEXTMERGE noshow
-	<<IIF(LEN(lcWhere) > 0, 'and', '')>> ( konto in ('103701','103950','103009','203900','200060') or left(ltrim(rtrim(konto)),3) = ('201'))
+	AND LEFT(konto,6) in ('102060','102070','102081','102090','102095','103000','103010',
+	'201000','201010','203900','203910','203990') 
 ENDTEXT
+
+IF !EMPTY(fltrAruanne.konto) 
+TEXT TO lcWhere ADDITIVE TEXTMERGE noshow
+	and konto ilike '<<ALLTRIM(fltrAruanne.konto)>>%'
+ENDTEXT
+ENDIF
+
+
 
 l_konto = null
 lError = oDb.readFromModel('aruanned\raamatupidamine\kontosaldoandmik', 'kontosaldoandmik_report', 'l_konto,fltrAruanne.asutusid, fltrAruanne.kpv2, gRekv', 'tmpReport', lcWhere)
