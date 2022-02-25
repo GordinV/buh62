@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="d929205d-3ba4-4e9f-a7bc-dd6bae618f69" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-    </list>
+    <list default="true" id="d929205d-3ba4-4e9f-a7bc-dd6bae618f69" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -164,6 +162,7 @@
       <workItem from="1635858170943" duration="162000" />
       <workItem from="1640940793049" duration="965000" />
       <workItem from="1641201336151" duration="49000" />
+      <workItem from="1644937852159" duration="253000" />
     </task>
     <task id="LOCAL-00001" summary="PV ja PV aruanned fixed (V. Hrenova)">
       <created>1555938003657</created>
@@ -284,16 +283,23 @@
       <option name="project" value="LOCAL" />
       <updated>1640941107006</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="backup">
+      <created>1644937913858</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1644937913858</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="29551000" />
+    <option name="totallyTimeSpent" value="29804000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1376" height="744" extended-state="6" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.4262918" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.4331307" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -335,7 +341,8 @@
     <MESSAGE value="backup 18.03.2021" />
     <MESSAGE value="backup 05.08.2021" />
     <MESSAGE value="backup 31.12.2021" />
-    <option name="LAST_COMMIT_MESSAGE" value="backup 31.12.2021" />
+    <MESSAGE value="backup" />
+    <option name="LAST_COMMIT_MESSAGE" value="backup" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://C:/temp/test2.xml">

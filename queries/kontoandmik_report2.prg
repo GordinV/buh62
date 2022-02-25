@@ -3,6 +3,31 @@ If isdigit(alltrim(cWhere))
 	cWhere = val(alltrim(cWhere))
 ENDIF
 
+l_params  = ''
+TEXT TO l_params TEXTMERGE noshow
+	<<IIF(!EMPTY(fltrAruanne.konto),'Konto=','')>> <<ALLTRIM(fltrAruanne.konto)>> <<IIF(!EMPTY(fltrAruanne.konto),'%','')>> 
+ENDTEXT
+
+TEXT TO l_params TEXTMERGE NOSHOW additive
+	<<IIF(!EMPTY(fltrAruanne.tunnus),IIF(LEN(l_params)> 0 ,', ','') + 'Tunnus=','')>> <<ALLTRIM(fltrAruanne.tunnus)>> <<IIF(!EMPTY(fltrAruanne.tunnus),'%','')>> 
+ENDTEXT
+TEXT TO l_params TEXTMERGE NOSHOW additive	
+	<<IIF(!EMPTY(fltrAruanne.proj),IIF(LEN(l_params)> 0 ,', ','') + 'Projekt=','')>> <<ALLTRIM(fltrAruanne.proj)>> <<IIF(!EMPTY(fltrAruanne.proj),'%','')>> 
+ENDTEXT
+TEXT TO l_params TEXTMERGE NOSHOW additive		
+	<<IIF(!EMPTY(fltrAruanne.uritus),IIF(LEN(l_params)> 0 ,', ','') + 'Üritus=','')>> <<ALLTRIM(fltrAruanne.uritus)>> <<IIF(!EMPTY(fltrAruanne.uritus),'%','')>> 
+ENDTEXT
+
+
+IF !USED('fltrParametid')
+	CREATE CURSOR fltrParametid (params m)
+	APPEND BLANK
+ENDIF
+
+replace fltrParametid.params WITH l_params IN fltrParametid
+
+
+
 Create cursor kontoandmik_report1 (id int, konto c(20), alg_saldo n(12,2), deebet n(12,2), kreedit n(12,2), lopp_saldo n(12,2),;
 	db_kokku n(14,2), kr_kokku n(14,2), selg m null,;
 	kpv d, nimetus c(120), asutus c(120), dok c(120), korr_konto c(20), ;
@@ -20,9 +45,22 @@ IF EMPTY(fltrAruanne.kond)
 	
 ENDIF
 
+
+TEXT TO l_params TEXTMERGE noshow
+	{
+		"tunnus":"<<ALLTRIM(fltrAruanne.tunnus)>>",
+		"konto":"<<ALLTRIM(fltrAruanne.konto)>>",
+		"proj":"<<ALLTRIM(fltrAruanne.proj)>>",
+		"uritus":"<<ALLTRIM(fltrAruanne.uritus)>>"
+	}
+ENDTEXT
+
+
+
+
 SELECT qryKontod
 SCAN
-		lError = oDb.readFromModel('aruanned\raamatupidamine\kontoandmik', 'kontoandmik_report', 'alltrim(qryKontod.kood), fltrAruanne.kpv1,fltrAruanne.kpv2, gRekv, ALLTRIM(fltrAruanne.tunnus)', 'tmpReport')	
+		lError = oDb.readFromModel('aruanned\raamatupidamine\kontoandmik', 'kontoandmik_report', 'alltrim(qryKontod.kood), fltrAruanne.kpv1,fltrAruanne.kpv2, gRekv, ALLTRIM(fltrAruanne.tunnus),l_params ', 'tmpReport')	
 		IF !lError
 			MESSAGEBOX('Viga',0+16, 'Kontoandmik')
 			SET STEP ON 

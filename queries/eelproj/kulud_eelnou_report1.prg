@@ -6,19 +6,39 @@ TEXT TO lcWhere TEXTMERGE noshow
 	coalesce(artikkel,'') like '<<ALLTRIM(fltrAruanne.kood5)>>%'
 ENDTEXT
 
+l_params = null
+IF !EMPTY(fltrAruanne.kood2)
+	TEXT TO l_params TEXTMERGE noshow
+	l_params = '{"allikas":"<<ALLTRIM(fltrAruanne.kood2)>>"}'
+	ENDTEXT	
+ENDIF
 
-TEXT TO lcAllikas TEXTMERGE noshow
-	{"allikas":"LE-P"}
-ENDTEXT
+lError = oDb.readFromModel('aruanned\eelarve\kulud_eelnou', 'kulud_eelnou', 'fltrAruanne.kpv2, gRekv,fltrAruanne.kond,l_params', 'tmp_eelnou_report',lcWhere )
 
-
-lError = oDb.readFromModel('aruanned\eelarve\kulud_eelnou', 'kulud_eelnou', 'fltrAruanne.kpv2, gRekv,fltrAruanne.kond,lcAllikas ', 'tulud_eelnou_report1',lcWhere )
-
-If !lError OR !USED('tulud_eelnou_report1')
+If !lError OR !USED('tmp_eelnou_report')
 	Messagebox('Viga',0+16, 'Kulud eelarve eelnõu')
 	Set Step On
 	Select 0
 	Return .F.
 ENDIF
+
+CREATE CURSOR tulud_eelnou_report1(parent_asutus c(254), asutus c(254),   ;
+artikkel c(20), nimetus c(254),;
+aasta_1_tekke_taitmine n(12,2), ;
+eelarve_tekkepohine_kinnitatud n(12,2), ;
+eelarve_tekkepohine_tapsustatud n(12,2), ;
+aasta_2_tekke_taitmine n(12,2),;
+aasta_3_oodatav n(12,2) ,;
+aasta_3_eelnou n(12,2),;
+aasta_3_prognoos n(12,2),;
+selg m DEFAULT ' ')
+
+
+
+SELECT tulud_eelnou_report1
+APPEND FROM DBF('tmp_eelnou_report')
+
+USE IN tmp_eelnou_report
+
 
 SELECT tulud_eelnou_report1

@@ -14,7 +14,7 @@
                        qryReport.aasta_3_eelnou,
                        qryReport.aasta_3_prognoos,
                        qryReport.selg AS selg
-                FROM eelarve.kulud_eelnou($1::DATE, $2::INTEGER, $3::INTEGER) qryReport
+                FROM eelarve.kulud_eelnou($1::DATE, $2::INTEGER, $3::INTEGER, $4::jsonb) qryReport
                 WHERE artikkel &lt;&gt; ''
             ),
                  TegevKond AS (

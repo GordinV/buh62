@@ -4,19 +4,46 @@ IF USED('tmpReport')
 	USE IN tmpReport
 ENDIF
 
-
-
-TEXT TO lcWhere ADDITIVE TEXTMERGE noshow
-	<<IIF(LEN(lcWhere) > 0, 'and', '')>> konto ilike '<<ALLTRIM(fltrAruanne.konto)>>%'
+l_params  = ''
+TEXT TO l_params TEXTMERGE noshow
+	<<IIF(!EMPTY(fltrAruanne.konto),'Konto=','')>> <<ALLTRIM(fltrAruanne.konto)>> <<IIF(!EMPTY(fltrAruanne.konto),'%','')>> 
 ENDTEXT
 
-l_tunnus = '%'
-l_kond = fltrAruanne.kond
-IF (!EMPTY(fltrAruanne.tunnus)
-	l_tunnus = ALLTRIM(fltrAruanne.tunnus) + '%'
+TEXT TO l_params TEXTMERGE NOSHOW additive
+	<<IIF(!EMPTY(fltrAruanne.tunnus),IIF(LEN(l_params)> 0 ,', ','') + 'Tunnus=','')>> <<ALLTRIM(fltrAruanne.tunnus)>> <<IIF(!EMPTY(fltrAruanne.tunnus),'%','')>> 
+ENDTEXT
+TEXT TO l_params TEXTMERGE NOSHOW additive	
+	<<IIF(!EMPTY(fltrAruanne.proj),IIF(LEN(l_params)> 0 ,', ','') + 'Projekt=','')>> <<ALLTRIM(fltrAruanne.proj)>> <<IIF(!EMPTY(fltrAruanne.proj),'%','')>> 
+ENDTEXT
+TEXT TO l_params TEXTMERGE NOSHOW additive		
+	<<IIF(!EMPTY(fltrAruanne.uritus),IIF(LEN(l_params)> 0 ,', ','') + 'Üritus=','')>> <<ALLTRIM(fltrAruanne.uritus)>> <<IIF(!EMPTY(fltrAruanne.uritus),'%','')>> 
+ENDTEXT
+
+
+IF !USED('fltrParametid')
+	CREATE CURSOR fltrParametid (params m)
+	APPEND BLANK
 ENDIF
 
-lError = oDb.readFromModel('aruanned\raamatupidamine\kaibeandmik', 'kaibeandmik_report', 'fltrAruanne.kpv1,fltrAruanne.kpv2, gRekv,l_kond,l_tunnus', 'tmpReport', lcWhere)
+replace fltrParametid.params WITH l_params IN fltrParametid
+
+
+* rohkem ei kasuta
+l_tunnus = null
+
+l_kond = fltrAruanne.kond
+
+TEXT TO l_params TEXTMERGE noshow
+	{
+		"tunnus":"<<ALLTRIM(fltrAruanne.tunnus)>>",
+		"konto":"<<ALLTRIM(fltrAruanne.konto)>>",
+		"proj":"<<ALLTRIM(fltrAruanne.proj)>>",
+		"uritus":"<<ALLTRIM(fltrAruanne.uritus)>>"
+	}
+ENDTEXT
+
+
+lError = oDb.readFromModel('aruanned\raamatupidamine\kaibeandmik', 'kaibeandmik_report', 'fltrAruanne.kpv1,fltrAruanne.kpv2, gRekv,l_kond,l_tunnus,l_params', 'tmpReport')
 If !lError
 	Messagebox('Viga',0+16, 'Kaibeandmik')
 	Set Step On

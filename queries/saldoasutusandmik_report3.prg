@@ -2,14 +2,44 @@ Parameter tcWhere
 lcWhere = ' 1=1 '
 lcWhere = lcWhere  + Iif(Empty(fltrAruanne.kond),' and qry.rekv_id = ' + Str(gRekv), '')
 
+l_params  = ''
+TEXT TO l_params TEXTMERGE noshow
+	<<IIF(!EMPTY(fltrAruanne.konto),'Konto=','')>> <<ALLTRIM(fltrAruanne.konto)>> <<IIF(!EMPTY(fltrAruanne.konto),'%','')>> 
+ENDTEXT
 
-TEXT TO lcWhere ADDITIVE TEXTMERGE noshow
-	and konto ilike '<<ALLTRIM(fltrAruanne.konto)>>%'
-	and tunnus ilike '<<ALLTRIM(fltrAruanne.tunnus)>>%'
+TEXT TO l_params TEXTMERGE NOSHOW additive
+	<<IIF(!EMPTY(fltrAruanne.tunnus),IIF(LEN(l_params)> 0 ,', ','') + 'Tunnus=','')>> <<ALLTRIM(fltrAruanne.tunnus)>> <<IIF(!EMPTY(fltrAruanne.tunnus),'%','')>> 
+ENDTEXT
+TEXT TO l_params TEXTMERGE NOSHOW additive	
+	<<IIF(!EMPTY(fltrAruanne.proj),IIF(LEN(l_params)> 0 ,', ','') + 'Projekt=','')>> <<ALLTRIM(fltrAruanne.proj)>> <<IIF(!EMPTY(fltrAruanne.proj),'%','')>> 
+ENDTEXT
+TEXT TO l_params TEXTMERGE NOSHOW additive		
+	<<IIF(!EMPTY(fltrAruanne.uritus),IIF(LEN(l_params)> 0 ,', ','') + 'Üritus=','')>> <<ALLTRIM(fltrAruanne.uritus)>> <<IIF(!EMPTY(fltrAruanne.uritus),'%','')>> 
+ENDTEXT
+TEXT TO l_params TEXTMERGE NOSHOW additive		
+	<<IIF(!EMPTY(fltrAruanne.kood1),IIF(LEN(l_params)> 0 ,', ','') + 'Tegevus=','')>> <<ALLTRIM(fltrAruanne.kood1)>> <<IIF(!EMPTY(fltrAruanne.kood1),'%','')>> 
 ENDTEXT
 
 
-lError = oDb.readFromModel('aruanned\raamatupidamine\kontosaldoandmik_tunnus_tt', 'kontosaldoandmik_report', 'alltrim(fltrAruanne.konto),fltrAruanne.asutusid, fltrAruanne.kpv2, gRekv', 'tmpReport', lcWhere)
+IF !USED('fltrParametid')
+	CREATE CURSOR fltrParametid (params m)
+	APPEND BLANK
+ENDIF
+
+replace fltrParametid.params WITH l_params IN fltrParametid
+
+TEXT TO l_params TEXTMERGE noshow
+	{
+		"tunnus":"<<ALLTRIM(fltrAruanne.tunnus)>>",
+		"konto":"<<ALLTRIM(fltrAruanne.konto)>>",
+		"proj":"<<ALLTRIM(fltrAruanne.proj)>>",
+		"uritus":"<<ALLTRIM(fltrAruanne.uritus)>>",
+		"tegevus":"<<ALLTRIM(fltrAruanne.kood1)>>"
+	}
+ENDTEXT
+
+
+lError = oDb.readFromModel('aruanned\raamatupidamine\kontosaldoandmik_tunnus_tt', 'kontosaldoandmik_report', 'alltrim(fltrAruanne.konto),fltrAruanne.asutusid, fltrAruanne.kpv2, gRekv, l_params', 'tmpReport', lcWhere)
 If !lError
 	Messagebox('Viga',0+16, 'Konto saldoandmik')
 	Set Step On

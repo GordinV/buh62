@@ -19,7 +19,7 @@ IF EMPTY(fltrAruanne.kond)
 	ENDTEXT
 	
 ENDIF
-SET STEP on
+
 SELECT qryKontod
 SCAN
 		lError = oDb.readFromModel('aruanned\raamatupidamine\kontoandmik', 'kontoandmik_report', 'alltrim(qryKontod.kood), fltrAruanne.kpv1,fltrAruanne.kpv2, gRekv, ALLTRIM(fltrAruanne.tunnus)', 'tmpReport')	
