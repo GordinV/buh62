@@ -12,6 +12,7 @@ Public gnHandle,gnHandleAsync, gcWindow, gRekv, gUserId, oPrintform2, oFinder, g
 	oTpr, oRahavoodid, oMenu, oEditMenu, oConnect, oKorderID, gcKey, oVanemtasu, gcAmetnik, oLahetuskulud, oLapsed,;
 	oEeltaotlus, oEelVariandid,oDokumendid,;
 	oReklmaksud, oReklVolgnik, oReklSaadetud, gMailParool,;
+	oHooLepingud,;
 	oProjektid, oUritused, tcProj, tcUritus, tcgrupp, glMvt
 
 #Define TM 4

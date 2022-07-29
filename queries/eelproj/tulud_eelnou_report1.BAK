@@ -6,20 +6,13 @@ TEXT TO lcWhere TEXTMERGE noshow
 	coalesce(artikkel,'') like '<<ALLTRIM(fltrAruanne.kood5)>>%'
 ENDTEXT
 
-lError = oDb.readFromModel('aruanned\eelarve\tulud_eelnou', 'tulud_eelnou', 'fltrAruanne.kpv2, gRekv,fltrAruanne.kond', 'tmp_eelnou_report',lcWhere )
+lError = oDb.readFromModel('aruanned\eelarve\tulud_eelnou', 'tulud_eelnou', 'fltrAruanne.kpv2, gRekv,fltrAruanne.kond', 'tulud_eelnou_report1',lcWhere )
 
-If !lError OR !USED('tmp_eelnou_report')
+If !lError OR !USED('tulud_eelnou_report1')
 	Messagebox('Viga',0+16, 'Tulud eelarve eelnõu')
 	Set Step On
 	Select 0
 	Return .F.
 ENDIF
 
-CREATE CURSOR tulud_eelnou_report1(asutus c(254), tunnus c(20) null, tegev c(20) null, tegev_nimetus c(254) null, artikkel c(20), nimetus c(254),;
-aasta_1_tekke_taitmine n(12,2), eelarve_tekkepohine_kinnitatud n(12,2), eelarve_tekkepohine_tapsustatud n(12,2), aasta_2_tekke_taitmine n(12,2),;
-aasta_3_eelnou n(12,2), aasta_3_prognoos n(12,2), selg m null)
-
 SELECT tulud_eelnou_report1
-APPEND FROM DBF('tmp_eelnou_report')
-
-USE IN tmp_eelnou_report

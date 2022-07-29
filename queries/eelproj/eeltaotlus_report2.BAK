@@ -3,15 +3,15 @@ If isdigit(alltrim(cWhere))
 	cWhere = val(alltrim(cWhere))
 Endif
 
-l_cursor = 'curAmetid'
-l_local_cursor = 'v_library'
-l_output_cursor = 'ametid_report1'
+l_cursor = 'curTaotlus'
+*l_local_cursor = 'v_library'
+l_output_cursor = 'taotlused_report1'
 
 IF EMPTY(cWhere) AND USED(l_cursor)
 	cWhere = EVALUATE(l_cursor + '.id')
 ENDIF
 
-l_cursor = IIF(USED(l_cursor),l_cursor,l_local_cursor)
+*l_cursor = IIF(USED(l_cursor),l_cursor,l_local_cursor)
 
 IF !USED(l_cursor)
 	SELECT 0
@@ -21,7 +21,7 @@ ENDIF
 TEXT TO lcSql TEXTMERGE noshow
 	SELECT * from <<l_cursor>> where id = <<cWhere>> INTO CURSOR <<l_output_cursor>>
 ENDTEXT
-
+SET STEP ON 
 &lcSql
-
+brow
 SELECT(l_output_cursor)

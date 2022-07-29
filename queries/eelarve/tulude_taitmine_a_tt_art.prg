@@ -57,7 +57,7 @@ Select idx, allikas, tegev, artikkel, nimetus,;
 
 
 
-Select allikas, tegev, artikkel, nimetus,;
+Select idx,allikas, tegev, artikkel, nimetus,;
 	(eelarve_kinni) As eelarve_kinni, ;	
 	(eelarve_parandatud) As eelarve_parandatud, ;	
 	(eelarve_kassa_kinni) As eelarve_kassa_kinni, ;	
@@ -76,7 +76,16 @@ Select allikas, tegev, artikkel, nimetus,;
 	from eelarve_report,  report_kokku;
 	WHERE eelarve_report.rekv_id = report_kokku.rekv_id;
 	ORDER By parasutus,asutus, idx, artikkel, allikas, tegev  ;
-	INTO Cursor eelarve_report2
+	INTO Cursor eelarve_report21
+
+	SELECT * from eelarve_report21;
+	WHERE eelarve_kinni <> 0 OR eelarve_parandatud <> 0 OR eelarve_kassa_kinni <> 0 OR eelarve_kassa_parandatud <> 0 OR tegelik <> 0 OR kassa <> 0;
+	ORDER By parasutus,asutus, idx, artikkel, allikas, tegev  ;
+	INTO CURSOR eelarve_report2
+	
+	USE IN eelarve_report21
+
+
 
 Use In tmpReport
 USE IN eelarve_report

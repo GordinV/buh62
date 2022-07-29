@@ -5,27 +5,40 @@
 		<description>uus narvalv db</description>
 		<type>connection</type>
 		<conn_str>DRIVER=PostgreSQL Unicode;DATABASE=db;server=80.235.127.119;PORT=5438;MaxVarcharSize=254;</conn_str>
-		<app_name>
-	  		Raamatupidamine 7.0 narvalv
-	  	</app_name>
-
 	</connection>
 	<connection>
-		<name>test2_narva</name>
+		<name>local</name>
 		<description>local_server</description>
 		<type>connection</type>
-		<conn_str>DRIVER=PostgreSQL Unicode;DATABASE=test2;server=dbarch.narva.ee;PORT=5436;MaxVarcharSize=254;</conn_str>
+		<conn_str>DRIVER=PostgreSQL Unicode;DATABASE=narvalv;server=localhost;PORT=5432;MaxVarcharSize=254;</conn_str>
 		<app_name>
 	  		Raamatupidamine 7.0 local
 	  	</app_name>
+    <ssl>true</ssl>
+	<sslaccess>http://localhost:3000/get_access_code</sslaccess>
+    <sslcert>c:/temp/buh60/client.crt</sslcert>
+    <sslkey>c:/temp/buh60/server.key</sslkey>
+    <sslmode>verify-ca</sslmode>		
 	</connection>
+	<connection>
+		<name>docker_local</name>
+		<description>local_docker_server</description>
+		<type>connection</type>
+		<conn_str>DRIVER=PostgreSQL Unicode;DATABASE=narvalv;server=localhost;PORT=5434;MaxVarcharSize=254;</conn_str>
+		<app_name>
+	  		Raamatupidamine 7.0 local
+	  	</app_name>
+    <ssl>false</ssl>
+	<sslaccess>http://localhost:3000/get_access_code</sslaccess>
+    <sslcert>c:/temp/buh60/client.crt</sslcert>
+    <sslkey>c:/temp/buh60/server.key</sslkey>
+    <sslmode>verify-ca</sslmode>		
+	</connection>
+
 	<connection>
 		<name>test1_narva</name>
 		<description>test1_narva_server</description>
 		<type>connection</type>
 		<conn_str>DRIVER=PostgreSQL Unicode;DATABASE=narvalv;server=dbarh.narva.ee;PORT=5436;MaxVarcharSize=254;</conn_str>
-		<app_name>
-	  		Raamatupidamine 7.0 test
-	  	</app_name>
 	</connection>
 </VFPData>

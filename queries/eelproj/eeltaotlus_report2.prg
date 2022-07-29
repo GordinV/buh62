@@ -23,5 +23,4 @@ TEXT TO lcSql TEXTMERGE noshow
 ENDTEXT
 
 &lcSql
-
 SELECT(l_output_cursor)

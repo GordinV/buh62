@@ -80,7 +80,6 @@ With loXMLHTTP
 ENDWITH
 
 SELECT v_xml_arv
-brow
 
 Return l_found_kokku
 Endfunc
@@ -265,9 +264,6 @@ Function parce_invoice
 		If 	Type('v_xml_invoice_detail.itemtotal') = 'C' Or Type('v_xml_invoice_detail.itemtotal') = 'N'
 			l_itemtotal = Iif(Type('v_xml_invoice_detail.itemtotal') = 'C',Val(v_xml_invoice_detail.itemtotal),v_xml_invoice_detail.itemtotal)
 		Endif
-*!*			IF v_xml_invoice_detail.Description $ 'kaup2'
-*!*				SET STEP ON
-*!*			ENDIF
 
 		l_itemAmount = 1
 		If 	Type('v_xml_invoice_detail.itemamount') = 'C' Or Type('v_xml_invoice_detail.itemamount') = 'N'
@@ -464,19 +460,28 @@ Function parce_invoice
 
 	Xmltocursor(l_parced_xml,'v_xml_invoice_parties',0)
 	Select v_xml_invoice_parties
-	
-*!*		Locate For Alltrim(Str(v_xml_invoice_parties.regnumber)) <> Alltrim(qryRekv.regkood);
-*!*			and (ALLTRIM(v_xml_invoice_parties.regnumber)) <> 'ERAISIK'	
-
-	SELECT * from v_xml_invoice_parties ;
+		 
+	SELECT IIF(VARTYPE(v_xml_invoice_parties.regnumber) = 'C',ALLTRIM(v_xml_invoice_parties.regnumber),ALLTRIM(Str(v_xml_invoice_parties.regnumber,12))) as regnumber,;
+		v_xml_invoice_parties.name;
+	 from v_xml_invoice_parties ;
 		WHERE Alltrim(IIF(VARTYPE(v_xml_invoice_parties.regnumber) = 'C',v_xml_invoice_parties.regnumber,Str(v_xml_invoice_parties.regnumber))) NOT in ('ERAISIK', Alltrim(qryRekv.regkood)) ;
 		INTO CURSOR qryAsutus
 
-	SELECT qryAsutus
 	
 	IF USED('qryAsutus') AND RECCOUNT('qryAsutus') > 0 
-		Replace v_xml_arv.asutus With qryAsutus.Name, regkood With Alltrim(Str(qryAsutus.regnumber, 12)) In v_xml_arv
+		SELECT qryAsutus
+		GO top
+		SELECT v_xml_arv
+		Replace v_xml_arv.asutus With qryAsutus.Name, regkood With Alltrim(qryAsutus.regnumber) In v_xml_arv
+		
+		IF EMPTY(v_xml_arv.regkood)
+			SELECT qryAsutus
+			BROWSE
+			SET STEP ON 
+		ENDIF
+		
 	ENDIF
+	
 	
 	Use In v_xml_invoice_parties
 

@@ -24,9 +24,10 @@ aasta_1_tekke_taitmine n(12,2) DEFAULT 0, ;
 eelarve_tekkepohine_kinnitatud n(12,2) DEFAULT 0, ;
 eelarve_tekkepohine_tapsustatud n(12,2) DEFAULT 0, ;
 aasta_2_tekke_taitmine n(12,2) DEFAULT 0,;
-aasta_3_oodatav n(12,2) DEFAULT 0,;
-aasta_3_prognoos n(12,2) DEFAULT 0,;
+aasta_2_oodatav_taitmine n(12,2) DEFAULT 0,;
 aasta_3_eelnou n(12,2) DEFAULT 0,;
+AASTA_3_OODATAV n(12,2) DEFAULT 0,;
+aasta_3_prognoos  n(12,2) DEFAULT 0,;
 selg m DEFAULT '')
 
 SELECT tulud_eelnou_report1

@@ -9,7 +9,7 @@ ENDTEXT
 l_params = null
 IF !EMPTY(fltrAruanne.kood2)
 	TEXT TO l_params TEXTMERGE noshow
-	l_params = '{"allikas":"<<ALLTRIM(fltrAruanne.kood2)>>"}'
+	{"allikas":"<<ALLTRIM(fltrAruanne.kood2)>>"}
 	ENDTEXT	
 ENDIF
 
@@ -22,7 +22,7 @@ If !lError OR !USED('tmp_eelnou_report')
 	Return .F.
 ENDIF
 
-CREATE CURSOR tulud_eelnou_report1(parent_asutus c(254), asutus c(254),   ;
+CREATE CURSOR tulud_eelnou_report1(asutus c(254), hallava_asutus c(254),   ;
 artikkel c(20), nimetus c(254),;
 aasta_1_tekke_taitmine n(12,2), ;
 eelarve_tekkepohine_kinnitatud n(12,2), ;

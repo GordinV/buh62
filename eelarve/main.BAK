@@ -125,7 +125,7 @@ If lQuit = .F.
 	oTools = Createobject('Toolseelarve')
 
 	oTools.translate()
-	On Error Do err With Program(), Lineno(1)
+*	On Error Do err With Program(), Lineno(1)
 
 	Read Events
 Endif

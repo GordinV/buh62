@@ -196,10 +196,23 @@ Select * From tmpReport Where isikukood Not In ;
 	INTO Cursor qryKoormusLisa
 
 Select qryKoormusLisa
-brow
-Scan
+SCAN
+	IF (qryKoormusLisa.isikukood = '47711263713') 
+		SET STEP ON 
+	ENDIF
+	
+	l_arv_min_sots = qryKoormusLisa.arv_min_sots
+	l_alus_min_sots = qryKoormusLisa.min_sots_alus
+	
+	IF EMPTY(l_arv_min_sots) AND !EMPTY(qryKoormusLisa.lisa_sm_arvestatud)
+		* kui sotsmaks arvestatud, aga tulud ei ole. lisatud 26.07.2022
+		l_arv_min_sots = qryKoormusLisa.lisa_sm_arvestatud
+		l_alus_min_sots  = qryKoormusLisa.alus_sm_arvestatud
+	ENDIF
+	 
+	
 	Insert Into tsd_report (isikukood, nimi, v1020, v1040, v1090, v1100) ;
-		VALUES (qryKoormusLisa.isikukood,  qryKoormusLisa.isik,'10',qryKoormusLisa.v1040, qryKoormusLisa.min_sots_alus,qryKoormusLisa.arv_min_sots )
+		VALUES (qryKoormusLisa.isikukood,  qryKoormusLisa.isik,'10',qryKoormusLisa.v1040, l_alus_min_sots,l_arv_min_sots  )
 Endscan
 
 

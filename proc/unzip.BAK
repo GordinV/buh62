@@ -1,0 +1,28 @@
+Parameters l_file, l_dest
+*!*	Local LNRETVAL, LCOPERATION
+*!*	LCOPERATION = "Open"
+*!*	Declare Integer ShellExecute In SHELL32.Dll ;
+*!*		INTEGER handle,;
+*!*		STRING @sFile,;
+*!*		STRING @lp,;
+*!*		STRING @Dir,;
+*!*		STRING @dir1,;
+*!*		INTEGER ncmd
+*!*	LNRETVAL = ShellExecute(0, LCOPERATION, "Winzip",;
+*!*		"-min -e "+l_file+" "+l_dest, "", 1)
+*!*	Return(.F.)
+
+
+*!*	o=CREATEOBJECT("shell.application")
+*!*	FOR EACH ofile IN o.NameSpace(l_dest).items
+*!*	    o.NameSpace(l_dest).copyhere(ofile, 0x14)
+*!*	ENDFOR
+
+l_dest= ADDBS(['c:\trythis\data\'])
+lnOption = 1024
+
+oShell = Createobject("shell.application")
+oZip = oShell.NameSpace( l_file)
+oDestination = oShell.NameSpace( l_dest)
+
+oDestination.Copyhere (oZip.items, lnOption)

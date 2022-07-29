@@ -41,7 +41,7 @@ Select rekv_id,;
 	group by rekv_id;
 	INTO Cursor report_kokku
 
-Select allikas, tegev, artikkel, nimetus, tunnus,;
+Select idx, allikas, tegev, artikkel, nimetus, tunnus,;
 	Sum(eelarve_kinni) As eelarve_kinni, ;	
 	Sum(eelarve_parandatud) As eelarve_parandatud, ;	
 	Sum(eelarve_kassa_kinni) As eelarve_kassa_kinni, ;	
@@ -59,9 +59,17 @@ Select allikas, tegev, artikkel, nimetus, tunnus,;
 	report_kokku.rekv_id;
 	from tmpReport,  report_kokku;
 	WHERE tmpReport.rekv_id = report_kokku.rekv_id;
+	AND (eelarve_kinni <> 0 OR eelarve_parandatud <> 0 OR eelarve_kassa_kinni <> 0 OR eelarve_kassa_parandatud <> 0 OR tegelik <> 0 OR kassa <> 0);
 	GROUP By allikas, tegev, idx, artikkel, tunnus, nimetus, regkood, asutus, parasutus,parregkood,report_kokku.rekv_id;
 	ORDER By parasutus,asutus, idx, artikkel, allikas, tegev, tunnus ;
-	INTO Cursor eelarve_report2
+	INTO Cursor eelarve_report21
+	
+	SELECT * from eelarve_report21;
+	WHERE eelarve_kinni <> 0 OR eelarve_parandatud <> 0 OR eelarve_kassa_kinni <> 0 OR eelarve_kassa_parandatud <> 0 OR tegelik <> 0 OR kassa <> 0;
+	ORDER By parasutus,asutus, idx, artikkel, allikas, tegev, tunnus ;
+	INTO CURSOR eelarve_report2
+	
+	USE IN eelarve_report21
 
 
 *!*	Select allikas, tegev, artikkel, nimetus, tunnus,;

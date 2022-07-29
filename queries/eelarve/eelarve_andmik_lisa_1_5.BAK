@@ -270,8 +270,8 @@ Select 'S' As is_esita, ;
 	sum(eelarve_taps) As eelarve_taps, Sum(eelarve_kassa_taps) As eelarve_kassa_taps,;
 	sum(tegelik) As tegelik, Sum(kassa) As kassa, Sum(saldoandmik) As saldoandmik ;
 	FROM qryReport ;
-	where Alltrim(tegev) In ('01111', '01112','01114','01600','01700',;
-	'01110','01120','01130','01210','01220','01310','01320','01330','01400','01500','01800') ;
+	where Alltrim(tegev) In ('01111', '01112','01114','01600','01700','01800',;
+	'01110','01120','01130','01210','01220','01310','01320','01330','01400') ;
 	INTO Cursor tmp1
 
 Select eelarve_report_query
@@ -554,12 +554,14 @@ Insert Into tmp_tegev (kood) Values ('08209')
 Insert Into tmp_tegev (kood) Values ('08210')
 Insert Into tmp_tegev (kood) Values ('08211')
 Insert Into tmp_tegev (kood) Values ('08212')
+Insert Into tmp_tegev (kood) Values ('08232')
 Insert Into tmp_tegev (kood) Values ('08234')
 Insert Into tmp_tegev (kood) Values ('08236')
 Insert Into tmp_tegev (kood) Values ('08300')
 Insert Into tmp_tegev (kood) Values ('08400')
 Insert Into tmp_tegev (kood) Values ('08500')
 Insert Into tmp_tegev (kood) Values ('08600')
+
 
 Update eelarve_report_query  ;
 	SET idx = '3.1.8', ;
@@ -724,8 +726,8 @@ If !Empty(l_result_kassa) Or  !Empty(l_result_saldo) Or !Empty(l_result_eelarve)
 Endif
 
 
-
 * majandusliku sisu ja tegevusalade võrdlus
+
 l_field = 'eelarve_kassa_taps'
 l_result_eelarve_kassa_taps =  get_kontrol ('2.11-4-2','','',l_field ) + get_kontrol ('','15','',l_field ) + ;
 	get_kontrol ('','4502','',l_field ) + ;
@@ -751,6 +753,8 @@ l_result_eelarve_kassa_taps =  get_kontrol ('2.11-4-2','','',l_field ) + get_kon
 	get_kontrol ('','1501','',l_field ) + get_kontrol ('','1511','',l_field ) + get_kontrol ('','1531','',l_field )+;
 	get_kontrol ('','650','',l_field ) +	get_kontrol ('3.1-5-0','','',l_field)
 
+
+
 l_field = 'kassa'
 l_result_eelarve_kassa_taps =  get_kontrol ('2.11-4-2','','',l_field ) + get_kontrol ('','15','',l_field ) + ;
 	get_kontrol ('','4502','',l_field ) + ;
@@ -758,6 +762,19 @@ l_result_eelarve_kassa_taps =  get_kontrol ('2.11-4-2','','',l_field ) + get_kon
 	get_kontrol ('','650','',l_field ) +	get_kontrol ('3.1-5-0','','',l_field)
 
 l_field = 'saldoandmik'
+
+SET STEP ON 
+
+l_kulu = get_kontrol ('2.11-4-2','','',l_field )
+l_15 = get_kontrol ('','15','',l_field )
+l_4502 = get_kontrol ('','4502','',l_field )
+l_1501 = get_kontrol ('','1501','',l_field )
+l_1511 = get_kontrol ('','1511','',l_field )
+l_1531 = get_kontrol ('','1531','',l_field )
+l_650 = get_kontrol ('','650','',l_field )
+l_VALJA = get_kontrol ('3.1-5-0','','',l_field)
+
+
 l_result_eelarve_kassa_taps =  get_kontrol ('2.11-4-2','','',l_field ) + get_kontrol ('','15','',l_field ) + ;
 	get_kontrol ('','4502','',l_field ) + ;
 	get_kontrol ('','1501','',l_field ) + get_kontrol ('','1511','',l_field ) + get_kontrol ('','1531','',l_field )+;
@@ -776,7 +793,6 @@ If !Empty(l_result_kassa) Or  !Empty(l_result_saldo) Or !Empty(l_result_eelarve)
 
 Endif
 
-SET STEP ON 
 * Tasakaalu kontroll
 l_field = 'eelarve_kassa_taps'
 l_result_eelarve_kassa_taps =  get_kontrol ('2.4.6-5-1','','',l_field) +  get_kontrol ('2.4.6-5-2','','',l_field) - ;
@@ -849,8 +865,6 @@ Endif
 
 
 Select * From eelarve_report_query Order By idx, tegev, artikkel,  sub_idx  Into Cursor eelarve_report1
-brow
-
 
 Clear
 
