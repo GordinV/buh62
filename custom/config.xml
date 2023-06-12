@@ -7,6 +7,13 @@
 		<conn_str>DRIVER=PostgreSQL Unicode;DATABASE=db;server=80.235.127.119;PORT=5438;MaxVarcharSize=254;</conn_str>
 	</connection>
 	<connection>
+		<name>transservis</name>
+		<description>transServis N</description>
+		<type>connection</type>
+		<conn_str>DRIVER=PostgreSQL Unicode;DATABASE=db;server=ots.digiline.ee;PORT=5432;MaxVarcharSize=254;</conn_str>
+	</connection>
+	
+	<connection>
 		<name>local</name>
 		<description>local_server</description>
 		<type>connection</type>

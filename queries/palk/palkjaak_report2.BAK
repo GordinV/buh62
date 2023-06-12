@@ -2,6 +2,8 @@ Parameter tcWhere
 
 If Used('fltrPalkJaak')
 	tcNimetus = '%'+Rtrim(Ltrim(fltrPalkJaak.nimetus))+'%'
+	tcProj = ALLTRIM(fltrPalkJaak.proj)+'%'
+
 Else
 	If !Empty (fltrAruanne.asutusid)
 		Select comAsutusRemote
@@ -15,16 +17,16 @@ Else
 		tnParent = 3
 	Else
 		tnParent = 1
-	Endif
-
+	ENDIF
+	tcProj = '%'
 Endif
-SET  STEP on
+
 If !Used('curPalkJaak')
 TEXT TO lcSqlWhere TEXTMERGE noshow
 		nimetus ilike '<<tcNimetus>>'
 ENDTEXT
 
-	lError = oDb.readFromModel('palk\palk_jaak', 'curPalkJaak', 'gRekv, guserid', 'tmpTaabel1', lcSqlWhere)
+	lError = oDb.readFromModel('palk\palk_jaak', 'curPalkJaak', 'gRekv, guserid,tcProj', 'tmpTaabel1', lcSqlWhere)
 Else
 	Select * From curPalkJaak Into Cursor tmpPalkJaak
 Endif

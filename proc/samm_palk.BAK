@@ -172,9 +172,10 @@ TEXT TO lcJson TEXTMERGE noshow
 				}
 ENDTEXT
 * sql proc
-	task = 'palk.gen_palkoper'
 	_cliptext = lcJson
-*	leRror = odB.readFromModel('palk\palk_oper', 'executeTask', 'guserid,lcJson,task', 'qryResult')
+	SET STEP ON
+	task = 'palk.gen_palkoper'
+	leRror = odB.readFromModel('palk\palk_oper', 'executeTask', 'guserid,lcJson,task', 'qryResult')
 	Do Form taitmine_raport With 'qryResult' 
 	
 	Return leRror
@@ -201,11 +202,6 @@ Procedure geT_isiku_list
 		Zap
 	ENDIF
 	
-	SELECT qryTootajad 
-	BROWSE
-	
-	SELECT curResult
-	BROWSE 
 	
 	Select isikukood As koOd, niMetus, Id From qryTootajad Where OSAKONDID In(Select  ;
 		osAkonnaid From curResult) Into Cursor query1

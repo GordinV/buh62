@@ -7,7 +7,19 @@
     <alias>curAsutused</alias>
   </grid>
   <select>
-    <sql>SELECT *,
+    <sql>SELECT id,
+                     regkood,
+                     nimetus,
+                     omvorm,
+                     aadress,
+                     kontakt,
+                     tel,
+                     faks,
+                     email,
+                     muud,
+                     tp,
+                     staatus,
+                     mark,
                      $2::INTEGER                                     AS userid,
                      'HOOISIK'                                       AS doc_type_id,
                      (properties -&gt;&gt; 'pank')::VARCHAR(20)            AS pank,
@@ -77,7 +89,7 @@
                          $2 :: INTEGER                       AS userid
                   FROM hooldekodu.hooTeenused ht
                            INNER JOIN libs.nomenklatuur nom ON nom.id = ht.nomid
-                  WHERE ht.lepingid IN (SELECT id FROM hooldekodu.hooleping WHERE isikid = $1)
+                  WHERE ht.lepingid IN (SELECT id FROM hooldekodu.hooleping hl WHERE hl.isikid = $1 and hl.status &lt; 3)
                     AND nom.rekvid IN (SELECT rekvid FROM ou.userid WHERE id = $2)</sql>
     <query />
     <multiple>true</multiple>
@@ -103,24 +115,50 @@
     <alias>hooldajad</alias>
   </select>
   <select>
-    <sql>SELECT year(htab.kpv)                        AS aasta,
-                         month(htab.kpv)                       AS kuu,
+    <sql>with qryTab as (
+                    SELECT year(htab.kpv)                          AS aasta,
+                         month(htab.kpv)                         AS kuu,
+                         htab.id,
+                         htab.kpv,
                          htab.nomid,
                          nom.kood,
-                         sum(htab.kogus)                       AS kogus,
-                         sum(htab.summa)                       AS summa,
+                         (htab.kogus)                            AS kogus,
+                         (htab.summa)                            AS arv_summa,
                          htab.arvid,
-                         coalesce(arv.number, '')::VARCHAR(20) AS number,
+                         coalesce(arv.number, '')::VARCHAR(20)   AS number,
                          htab.rekvid,
                          htab.isikid,
-                         $2                                    AS user_id
+                         coalesce((htab.properties-&gt;&gt;'umardamine')::numeric,0) as umardamine,
+                         $2                                      AS user_id,
+                         coalesce(arv.allikas_85,0) as allikas_85,
+                         coalesce(arv.allikas_muud,0) as allikas_muud,
+                         coalesce(arv.allikas_vara,0) as allikas_vara,
+                         coalesce(arv.omavalitsuse_osa,0) as omavalitsus_osa,
+                         coalesce(arv.sugulane_osa,0) as sugulane_osa
                   FROM hooldekodu.hootaabel htab
                            INNER JOIN libs.nomenklatuur nom ON htab.nomid = nom.id
-                           LEFT OUTER JOIN cur_arved arv ON arv.id = htab.arvid
-                  WHERE htab.rekvid = $1
-                  GROUP BY year(htab.kpv), month(htab.kpv), htab.nomid, nom.kood, htab.arvid, arv.number, htab.isikid,
-                           htab.rekvid
-            </sql>
+                       LEFT OUTER JOIN (
+                          SELECT d.id,
+                                 a.number,
+                                 sum(coalesce((a1.properties -&gt;&gt; 'allikas_85')::NUMERIC, 0))   AS allikas_85,
+                                 sum(coalesce((a1.properties -&gt;&gt; 'allikas_muud')::NUMERIC, 0)) AS allikas_muud,
+                                 sum(coalesce((a1.properties -&gt;&gt; 'allikas_vara')::NUMERIC, 0)) AS allikas_vara,
+                                 sum(coalesce((a1.properties -&gt;&gt; 'omavalitsuse_osa')::NUMERIC, 0)) AS omavalitsuse_osa,
+                                 sum(coalesce((a1.properties -&gt;&gt; 'sugulane_osa')::NUMERIC, 0))     AS sugulane_osa                             
+                          FROM docs.doc d
+                                   INNER JOIN docs.arv a ON d.id = a.parentid
+                                   LEFT JOIN docs.arv1 a1 ON a1.parentid = a.id
+                          WHERE a.properties -&gt;&gt; 'tyyp' = 'HOOLDEKODU_ISIKU_OSA'
+                            AND d.rekvid  = $1
+                            and d.status &lt; 3
+                          GROUP BY d.id, a.number
+                      ) arv ON arv.id = htab.arvid
+                  WHERE htab.rekvid  = $1
+                    AND htab.status &lt; 3)
+                    select qryTab.*, 
+                    arv_summa + umardamine as summa
+                    from qryTab
+                    </sql>
     <query />
     <multiple>true</multiple>
     <alias>curHooTaabel</alias>
@@ -145,11 +183,29 @@
   <select>
     <sql>SELECT *,
                          $2 AS user_id
-                  FROM hooldekodu.hoojaak h
+                  FROM hooldekodu.cur_hoojaak h
                   WHERE h.isikid = $1</sql>
     <query />
     <multiple>true</multiple>
     <alias>hoojaak</alias>
+  </select>
+  <select>
+    <sql>SELECT *,
+                         $2 AS user_id
+                  FROM hooldekodu.cur_hoojaak h
+                  WHERE h.isikid = $1</sql>
+    <query />
+    <multiple>true</multiple>
+    <alias>hoojaagid</alias>
+  </select>
+  <select>
+    <sql>SELECT *,
+                         $2 AS user_id
+                  FROM hooldekodu.cur_hoojaak h
+                  WHERE h.isikid in (SELECT isikid FROM hooldekodu.hooleping hl WHERE rekvid = $1 AND status &lt; 3)</sql>
+    <query />
+    <multiple>true</multiple>
+    <alias>print_hoojaagid</alias>
   </select>
   <select>
     <sql>SELECT *
@@ -163,6 +219,51 @@
     <multiple>true</multiple>
     <alias>validate_lib_usage</alias>
     <not_initial_load>true</not_initial_load>
+  </select>
+  <select>
+    <sql>SELECT hooldekodu.set_dead($1::INTEGER, $2::INTEGER, $3::DATE) as result</sql>
+    <query />
+    <multuple>false</multuple>
+    <not_initial_load>true</not_initial_load>
+    <alias>setDead</alias>
+  </select>
+  <select>
+    <sql>SELECT row_number() OVER ()                                          AS id,
+                         tulemus -&gt; 'result'                                           AS result,
+                         tulemus -&gt; 'error_code'                                       AS error_code,
+                         coalesce((tulemus -&gt;&gt; 'error_code')::INTEGER, 0)::INTEGER &gt; 0 AS kas_vigane,
+                         tulemus -&gt; 'error_message'                                    AS error_message
+                  FROM (
+                           SELECT to_jsonb(
+                                          hooldekodu.koosta_hoo_taabelid($2::INTEGER, id::INTEGER,
+                                                                         $3::DATE)) tulemus
+                           FROM libs.asutus
+                           WHERE id IN (
+                               SELECT unnest(string_to_array($1::TEXT, ','::TEXT))::INTEGER
+                           )) qry</sql>
+    <query />
+    <multuple>false</multuple>
+    <not_initial_load>true</not_initial_load>
+    <alias>koostaTaabel</alias>
+  </select>
+  <select>
+    <sql>SELECT row_number() OVER ()                                          AS id,
+                         tulemus -&gt; 'result'                                           AS result,
+                         tulemus -&gt; 'error_code'                                       AS error_code,
+                         coalesce((tulemus -&gt;&gt; 'error_code')::INTEGER, 0)::INTEGER &gt; 0 AS kas_vigane,
+                         tulemus -&gt; 'error_message'                                    AS error_message
+                  FROM (
+                           SELECT to_jsonb(
+                                          hooldekodu.koosta_arve_hootaabeli_alusel($2::INTEGER, id::INTEGER,
+                                                                                   $3::DATE)) tulemus
+                           FROM libs.asutus
+                           WHERE id IN (
+                               SELECT unnest(string_to_array($1::TEXT, ','::TEXT))::INTEGER
+                           )) qry</sql>
+    <query />
+    <multuple>false</multuple>
+    <not_initial_load>true</not_initial_load>
+    <alias>koostaArved</alias>
   </select>
   <selectAsLibs>
     <sql>SELECT id,

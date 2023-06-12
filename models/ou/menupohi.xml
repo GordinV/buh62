@@ -31,6 +31,7 @@
                      (m.properties -&gt; 'modules') @&gt; to_jsonb('LADU' :: TEXT)               AS is_ladu,
                      (m.properties -&gt; 'modules') @&gt; to_jsonb('HOOLDEKODU' :: TEXT)         AS is_hooldekodu,
                      (m.properties -&gt; 'modules') @&gt; to_jsonb('REKLMAKS' :: TEXT)           AS is_reklmaks,
+                     (m.properties -&gt; 'modules') @&gt; to_jsonb('HOOLDEKODU' :: TEXT)         AS is_hooldekodu,
                      (m.properties -&gt; 'groups') @&gt; to_jsonb('KASUTAJA' :: TEXT)            AS is_kasutaja,
                      (m.properties -&gt; 'groups') @&gt; to_jsonb('PEAKASUTAJA' :: TEXT)         AS is_peakasutaja,
                      (m.properties -&gt; 'groups') @&gt; to_jsonb('ADMIN' :: TEXT)               AS is_admin,

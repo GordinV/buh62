@@ -8,9 +8,9 @@ If !Used('tsd_report')
 	Return .F.
 Endif
 
-Select Distinct isikukood As v1000, nimi As v1010, v1020 , v1030, v1040, v1050, v1060, ;
+Select Distinct isikukood As v1000, nimi As v1010, kas_pensionar, v1020 , v1030, v1040, v1050, v1060, ;
 	v1070, v1080, v1090,v1100, v1110,	v1120, v1130, v1140,v1170, ;
-	v1160_610,	v1160_620, v1160_630, v1160_640 ;
+	v1160_610,	v1160_620, v1160_630, v1160_640, v1160_650 ;
 	from tsd_report ;
 	ORDER By isikukood ;
 	into Cursor qryTSD
@@ -246,16 +246,17 @@ Function get_tululiik_kood
 		lc1160 = ''
 *	v1160_610,	v1160_620, v1160_630, v1160_640
 
-		If qryTSDtululiik.v1160_610 + qryTSDtululiik.v1160_620 +  qryTSDtululiik.v1160_630 +  qryTSDtululiik.v1160_640 > 0
+		If qryTSDtululiik.v1160_610 + qryTSDtululiik.v1160_620 +  qryTSDtululiik.v1160_630 +  qryTSDtululiik.v1160_640 + qryTSDtululiik.v1160_650 > 0
 TEXT TO lc1160 NOSHOW
 <mvtList>
 
 ENDTEXT
 
 			If qryTSDtululiik.v1160_610 > 0
+			l_liik = '610'
 TEXT TO lc1160 NOSHOW ADDITIVE
 <tsd_L1_A_Mvt>
-<c1150_TuliKood>610</c1150_TuliKood>
+<c1150_TuliKood><<l_liik>></c1150_TuliKood>
 <c1160_Summa><<IIF(ISNULL(qryTSDtululiik.v1160_610),0,qryTSDtululiik.v1160_610)>></c1160_Summa>
 </tsd_L1_A_Mvt>
 
@@ -289,6 +290,16 @@ TEXT TO lc1160 NOSHOW ADDITIVE
 </tsd_L1_A_Mvt>
 ENDTEXT
 			Endif
+			If qryTSDtululiik.v1160_650 > 0
+TEXT TO lc1160 NOSHOW ADDITIVE
+
+<tsd_L1_A_Mvt>
+<c1150_TuliKood>650</c1150_TuliKood>
+<c1160_Summa><<ROUND(IIF(ISNULL(qryTSDtululiik.v1160_650),0,qryTSDtululiik.v1160_650),2)>></c1160_Summa>
+</tsd_L1_A_Mvt>
+ENDTEXT
+			Endif
+
 TEXT TO lc1160 NOSHOW ADDITIVE
 
 </mvtList>

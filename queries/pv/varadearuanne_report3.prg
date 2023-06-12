@@ -27,7 +27,7 @@ IF !EMPTY(fltrAruanne.asutusid)
 ENDIF
 
 
-lError = oDb.readFromModel('aruanned\pv\pv_inventuur', 'pv_inventuur_report', 'fltrAruanne.kpv2, gRekv', 'tmpReport', lcWhere)
+lError = oDb.readFromModel('aruanned\pv\pv_inventuur', 'pv_inventuur_report', 'fltrAruanne.kpv2, gRekv,fltrAruanne.kond', 'tmpReport', lcWhere)
 If !lError
 	Messagebox('Viga',0+16, 'Varadearuanne')
 	Set Step On
@@ -35,8 +35,8 @@ If !lError
 	RETURN .f.
 Endif
 
-SELECT id, kood, nimetus, konto, grupp, soetmaks, soetkpv as soetkpv, kulum, eluiga,; 
-	(soetmaks - kulum ) as jaak, mahakantud, vastisik, rentnik, aadress ;
+SELECT id, kood, nimetus, konto, grupp, soetmaks, soetkpv as soetkpv, arv_kulum, kulum, eluiga,; 
+	(soetmaks - arv_kulum ) as jaak, mahakantud, vastisik, rentnik, aadress, asutus, SPACE(10) as tegelik, SPACE(10) as puudujaak, SPACE(10) as ulejaak ;
 from tmpReport ;
 ORDER BY grupp, konto, kood;
 INTO CURSOR varadearuanne_report1

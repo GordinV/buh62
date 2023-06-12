@@ -4,70 +4,28 @@ Parameter tcWhere
 Local lcString, l_parent, l_sm
 l_sm = 0
 
-ltest = .f.
-
-If (ltest)
-
-	tdKpv1 = Date(2019,09,01)
-	tdKpv2 = Date(2019,10,30)
-	l_parent = 0
-	gRekv = 125
-	guserid = 2477
-	tnId = 0
-	gdKpv = Date()
-
-	gcProgNimi = 'EELARVE'
-
-	Set Classlib To classes\Classlib
-	gVersia = 'PG'
-	oDb = Createobject('db')
-
-* palk_oper, rekvid = 63
-	l_dokprop = 1716
-
-* test_server
-	gnHandle = SQLConnect('test_server', 'vlad','Vlad490710')
-*	gnHandle = SQLConnect('localPg', 'vlad','123')
-	gnHandleAsync = gnHandle
-
-	If gnHandle < 0
-		Messagebox('Connection error',0+48,'Error')
-		Return .T.
-	Endif
-	tdKpv = Date()
-* Vlad Gordin, rekvid = 63
-	tnIsikid = 29518
-	tnKond = 1
-
-	If !Used('qryRekv')
-		lError = oDb.readFromModel('ou\rekv', 'row', 'gRekv, guserid', 'qryRekv')
-
-	Endif
-*	Set Step On
-
-Else
-	tdKpv1 = fltrAruanne.kpv1
-	tdKpv2 = fltrAruanne.kpv2
-	l_parent = Iif(Empty(fltrAruanne.kond),999999,gRekv)
-	tnKond = Iif(!Empty(fltrAruanne.kond),Null,1)
+ltest = .F.
 
 
-Endif
+tdKpv1 = fltrAruanne.kpv1
+tdKpv2 = fltrAruanne.kpv2
+l_parent = Iif(Empty(fltrAruanne.kond),999999,gRekv)
+tnKond = Iif(!Empty(fltrAruanne.kond),Null,1)
 
-Create Cursor v_mvt(isikukood c(11), Summa N(14,4), mvt N(14,4), tm N(14,4), tki N(14,4), pm N(14,4), tululiik c(2))
+Create Cursor v_mvt(isikukood c(11), Summa N(14,4), mvt N(14,4), tm N(14,4), tki N(14,4), pm N(14,4), tululiik c(2), kas_pensionar i)
 Index On isikukood Tag kood
 Set Order To kood
 
-Create Cursor tsd_report (isikukood c(20), nimi c(254), v1020 c(20), v1030 N(14,2) Null , v1040 N(14,2) Null,;
-	v1050 c(100) DEFAULT '', v1060 N(14,2) Null , v1070 N(14,2) Null , v1080 N(14,2) Null, v1090 N(14,2) Null , ;
+Create Cursor tsd_report (isikukood c(20), nimi c(254), kas_pensionar int, v1020 c(20), v1030 N(14,2) Null , v1040 N(14,2) Null,;
+	v1050 c(100) Default '', v1060 N(14,2) Null , v1070 N(14,2) Null , v1080 N(14,2) Null, v1090 N(14,2) Null , ;
 	v1100 N(14,2) Null, v1110 N(14,2) Null ,	v1120 N(14,2) Null , v1130 N(14,2) Null , v1140 N(14,2) Null , ;
-	v1150 c(20),	v1160 N(14,2) Null , v1160_610 N(14,2) Null, v1160_620 N(14,2) Null, v1160_630 N(14,2) Null, v1160_640 N(14,2) Null,;
+	v1150 c(20),	v1160 N(14,2) Null , v1160_610 N(14,2) Null, v1160_620 N(14,2) Null, v1160_630 N(14,2) Null, v1160_640 N(14,2) Null,v1160_650 N(14,2) Null,;
 	v1170 N(14,2) Null , v1200 N(14,2) Null , v1210 N(14,2) Null, v1220 N(14,2) Null ,;
 	v1230 N(14,2) Null , v1240 N(14,2) Null , v1250 N(14,2) Null )
 
 
 
-	TEXT TO lcWhere TEXTMERGE noshow
+TEXT TO lcWhere TEXTMERGE noshow
 		isikukood is not null
 ENDTEXT
 
@@ -87,15 +45,16 @@ lnPaevadKuus = Day(Gomonth(Date(Year(tdKpv2), Month(tdKpv2), 1)  ,1) - 1)
 l_last_isikukood = ''
 
 Select isikukood, isik, Sum(Summa) As Summa, Sum(puhkused) As puhkused, Sum(haigused) As haigused, Sum(tm) As tm, Sum(sm) As sm, Sum(tki) As tki, Sum(tka) As tka,;
-	sum(pm) As pm, Sum(tulubaas) As tulubaas, tululiik, '' as riik, sm_arv, tk_arv, ;
+	sum(pm) As pm, Sum(tulubaas) As tulubaas, tululiik, '' As riik, sm_arv, tk_arv, ;
 	max(v1040) As v1040, Sum(puhkus) As puhkus, Max(lopp) As lopp, Max(tmpReport.arv_min_sots) As arv_min_sots, ;
-	max(tmpReport.min_sots_alus) As min_sots_alus;
+	max(tmpReport.min_sots_alus) As min_sots_alus, kas_pensionar ;
 	FROM tmpReport ;
 	WHERE (!Isnull(tmpReport.tululiik) And  tmpReport.tululiik <> '') ;
-	GROUP By isikukood, isik, tululiik, riik, sm_arv, tk_arv ;
+	GROUP By isikukood, isik, tululiik, riik, sm_arv, tk_arv, kas_pensionar  ;
 	ORDER By isikukood, tululiik;
 	INTO Cursor curTSD
 Select curTSD
+
 Scan
 * 1090
 
@@ -107,26 +66,26 @@ Scan
 
 	Endif
 
-	l_sm = curTSD.sm 
-	
+	l_sm = curTSD.sm
+
 	Select Sum(tmpReport.sm) As sm, Max(minsots)As minsots, Max(minpalk) As minpalk, Sum(tmpReport.Summa) As Summa, ;
 		sum((tmpReport.Summa - tmpReport.puhkused - tmpReport.haigused) * tmpReport.sm_arv) As sm_alus_summa, Max(lopp) As lopp ;
 		From tmpReport ;
 		Where isikukood = curTSD.isikukood ;
-		 Into Cursor tmpMaksud
+		Into Cursor tmpMaksud
 
 
 	l_1090 = 0
-	
-	If !Isnull(curTSD.arv_min_sots) AND !EMPTY(curTSD.arv_min_sots) And l_used_1090 = .F. ;
-		and Alltrim(curTSD.tululiik) <> ('17') ;
-		and Alltrim(curTSD.tululiik) <> ('16') ;
-		and Alltrim(curTSD.tululiik) <> ('24') ;
-		and Alltrim(curTSD.tululiik) <> ('55') 
-	
+
+	If !Isnull(curTSD.arv_min_sots) And !Empty(curTSD.arv_min_sots) And l_used_1090 = .F. ;
+			and Alltrim(curTSD.tululiik) <> ('17') ;
+			and Alltrim(curTSD.tululiik) <> ('16') ;
+			and Alltrim(curTSD.tululiik) <> ('24') ;
+			and Alltrim(curTSD.tululiik) <> ('55')
+
 		l_1090 = curTSD.min_sots_alus
-		* kui sm vaiksem kui sots maks min palgast, siis kasutame min.sots
-*!*			IF curTSD.sm < curTSD.arv_min_sots  AND curTSD.sm > 0 
+* kui sm vaiksem kui sots maks min palgast, siis kasutame min.sots
+*!*			IF curTSD.sm < curTSD.arv_min_sots  AND curTSD.sm > 0
 *!*				* vana
 *!*				l_sm = curTSD.arv_min_sots
 
@@ -134,10 +93,10 @@ Scan
 *!*				* uus lisa SM
 *!*				l_sm = curTSD.sm + curTSD.arv_min_sots
 *!*			ENDIF
-			* uus lisa SM
+* uus lisa SM
 		l_sm = curTSD.sm + curTSD.arv_min_sots
-		
-		
+
+
 		l_used_1090 = .T.
 	Endif
 
@@ -173,14 +132,14 @@ Scan
 		FROM tmpReport ;
 		Where tmpReport.liik = 1 And isikukood = curTSD.isikukood Into Cursor tmpMaksud
 
-	Insert Into tsd_report (isikukood, nimi, v1020, v1030, v1040, v1050, v1060, v1070, v1080, v1090, ;
+	Insert Into tsd_report (isikukood, nimi, kas_pensionar, v1020, v1030, v1040, v1050, v1060, v1070, v1080, v1090, ;
 		v1100, v1110, v1120, v1130, v1140, v1150, v1160, ;
-		v1160_610, v1160_620, v1160_630,v1160_640,	;
+		v1160_610, v1160_620, v1160_630,v1160_640,v1160_650,	;
 		v1170 ,v1200, v1210, v1220, v1230, v1240, v1250 ) ;
-		values (curTSD.isikukood, curTSD.isik, curTSD.tululiik, (curTSD.Summa) , l_v1040, '',;
+		values (curTSD.isikukood, curTSD.isik, curTSD.kas_pensionar, curTSD.tululiik, (curTSD.Summa) , l_v1040, '',;
 		(curTSD.Summa) * curTSD.sm_arv, 0,0, l_1090,;
 		(l_sm ), curTSD.pm,(curTSD.Summa) * curTSD.tk_arv,curTSD.tki, curTSD.tka, ;
-		'610', l_mvt, l_mvt,0,0,0, ;
+		IIF(!EMPTY(curTSD.kas_pensionar),'650', '610'), l_mvt, IIF(EMPTY(curTSD.kas_pensionar),l_mvt,0),0,0,0,IIF(!EMPTY(curTSD.kas_pensionar),l_mvt,0), ;
 		l_tm, tmpMaksud.Summa, tmpMaksud.sm, tmpMaksud.pm, tmpMaksud.tki, tmpMaksud.tka, l_tm)
 
 Endscan
@@ -192,24 +151,23 @@ Update tsd_report Set v1040 = 1 Where v1040 > 1
 Select * From tmpReport Where isikukood Not In ;
 	(Select Distinct isikukood From tsd_report ;
 	WHERE (!Empty(v1040) Or ;
-	v1020 In ('10','17'))) ;
+	v1020 In ('10','17','33'))) ;
 	INTO Cursor qryKoormusLisa
 
 Select qryKoormusLisa
-SCAN
-	
+Scan
+
 	l_arv_min_sots = qryKoormusLisa.arv_min_sots
 	l_alus_min_sots = qryKoormusLisa.min_sots_alus
-	
-	IF EMPTY(l_arv_min_sots) AND !EMPTY(qryKoormusLisa.lisa_sm_arvestatud)
-		* kui sotsmaks arvestatud, aga tulud ei ole. lisatud 26.07.2022
+
+	If Empty(l_arv_min_sots) And !Empty(qryKoormusLisa.lisa_sm_arvestatud)
+* kui sotsmaks arvestatud, aga tulud ei ole. lisatud 26.07.2022
 		l_arv_min_sots = qryKoormusLisa.lisa_sm_arvestatud
 		l_alus_min_sots  = qryKoormusLisa.alus_sm_arvestatud
-	ENDIF
-	 
-	
-	Insert Into tsd_report (isikukood, nimi, v1020, v1040, v1090, v1100) ;
-		VALUES (qryKoormusLisa.isikukood,  qryKoormusLisa.isik,'10',qryKoormusLisa.v1040, l_alus_min_sots,l_arv_min_sots  )
+	Endif
+
+	Insert Into tsd_report (isikukood, nimi, kas_pensionar, v1020, v1040, v1090, v1100) ;
+		VALUES (qryKoormusLisa.isikukood,  qryKoormusLisa.isik, qryKoormusLisa.kas_pensionar, '10',qryKoormusLisa.v1040, l_alus_min_sots,l_arv_min_sots  )
 Endscan
 
 

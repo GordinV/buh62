@@ -23,7 +23,9 @@
                      coalesce((u.properties -&gt;&gt; 'pass')::VARCHAR(100))::VARCHAR(100)   AS pass,
                      coalesce((u.properties -&gt;&gt; 'email')::VARCHAR(254))::VARCHAR(254)  AS email,
                      coalesce((c.properties -&gt;&gt; 'earved')::VARCHAR(254))::VARCHAR(254) AS earved,
-                     c.tahtpaev
+                     c.tahtpaev,
+                     coalesce((c.properties -&gt;&gt; 'pdf')::VARCHAR(254))::VARCHAR(254)    AS pdf
+
               FROM ou.config c,
                    ou.userid u
               WHERE c.rekvid = $1
@@ -42,7 +44,8 @@
                       ''::varchar(254) as pass,
                       ''::varchar(254) as email,
                       ''::varchar(254) as earved,
-                      5::integer as tahtpaev</sqlAsNew>
+                      5::integer as tahtpaev,
+                      ''::::VARCHAR(254) as pdf</sqlAsNew>
     <query />
     <multiple>false</multiple>
     <alias>row</alias>
@@ -83,4 +86,8 @@
     <alias />
   </generateJournal>
   <print></print>
+  <getLog>
+    <sql />
+    <alias />
+  </getLog>
 </VFPData>

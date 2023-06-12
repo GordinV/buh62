@@ -2,6 +2,9 @@ Lparameters tnId
 Local lError
 Set Textmerge On
 
+* Kalle 15.02.2023
+select id, IIF(LEFT(regkood,8) = '75024260' OR regkood = '75024260-18510139', '75024260',  regkood) as regkood, nimetus, aadress, email, tel  FROM comAsutusRemote a INTO CURSOR qryAsutused
+   
 
 If !Empty(tnId)
 	If !Used('curArved')
@@ -12,16 +15,16 @@ If !Empty(tnId)
 	Select a.*,;
 		IIF(a.liik = 0,Iif(!Isnull(qryRekv.muud),qryRekv.muud,qryRekv.nimetus), Alltrim(a.asutus) )  As muuja,;
 		IIF(a.liik = 1 ,Iif(!Isnull(qryRekv.muud),qryRekv.muud,qryRekv.nimetus),Alltrim(a.asutus) ) As ostja,;
-		IIF(a.liik = 1, qryRekv.regkood,Alltrim(asutus.regkood)) As ostja_regkood,;
+		IIF(a.liik = 1, LEFT(qryRekv.regkood,15),LEFT(Alltrim(asutus.regkood),15)) As ostja_regkood,;
 		IIF(a.liik = 1, qryRekv.aadress,asutus.aadress) As ostja_aadress,;
 		IIF(a.liik = 1, qryRekv.email,Alltrim(asutus.email)) As ostja_email,;
-		IIF(a.liik = 0, qryRekv.regkood,Alltrim(asutus.regkood)) As muuja_regkood,;
+		IIF(a.liik = 0, LEFT(qryRekv.regkood,15),LEFT(Alltrim(asutus.regkood),15)) As muuja_regkood,;
 		IIF(a.liik = 0, qryRekv.aadress, Alltrim(asutus.aadress)) As muuja_aadress,;
 		IIF(a.liik = 0 , qryRekv.email , Alltrim(asutus.email)) As muuja_email,;
 		IIF(a.liik = 0, qryRekv.tel, Alltrim(asutus.tel)) As muuja_tel,;
 		a.markused As muud, a.aa As arve ;
 		from curArved a;
-		inner Join comAsutusRemote asutus On asutus.Id = curArved.asutusId;
+		inner Join qryAsutused asutus On asutus.Id = curArved.asutusId;
 		Where a.Id = tnId ;
 		INTO Cursor qryeArved
 
@@ -30,8 +33,8 @@ Else
 		Select a.*,;
 			IIF(a.liik = 0,Iif(!Isnull(qryRekv.muud),qryRekv.muud,qryRekv.nimetus), Alltrim(a.asutus) )  As muuja,;
 			IIF(a.liik = 1 ,Iif(!Isnull(qryRekv.muud),qryRekv.muud,qryRekv.nimetus),Alltrim(a.asutus) ) As ostja,;
-			IIF(a.liik = 0, qryRekv.regkood,Alltrim(a.regkood)) As muuja_regkood,;
-			IIF(a.liik = 1, qryRekv.regkood,Alltrim(a.regkood)) As ostja_regkood,;
+			IIF(a.liik = 0, LEFT(qryRekv.regkood,15),LEFT(Alltrim(a.regkood),15)) As muuja_regkood,;
+			IIF(a.liik = 1, LEFT(qryRekv.regkood,15),LEFT(Alltrim(a.regkood),15)) As ostja_regkood,;
 			IIF(a.liik = 1, qryRekv.aadress,asutus.aadress) As ostja_aadress,;
 			IIF(a.liik = 1, qryRekv.email,Alltrim(asutus.email)) As ostja_email,;
 			IIF(a.liik = 0, qryRekv.aadress, Alltrim(asutus.aadress)) As muuja_aadress,;
@@ -39,7 +42,7 @@ Else
 			IIF(a.liik = 0, qryRekv.tel, Alltrim(asutus.tel)) As muuja_tel,;
 			a.markused As muud, a.aa As arve;
 			From curArved a;
-			inner Join comAsutusRemote asutus On asutus.Id = a.asutusId;
+			inner Join qryAsutused asutus On asutus.Id = a.asutusId;
 			Where !Empty(valitud);
 			INTO Cursor qryeArved
 	Endif
@@ -49,7 +52,10 @@ Endif
 
 l_xml=execute()
 
-
+IF USED('qryAsutused')
+	USE IN qryAsutused
+ENDIF
+	
 Return l_xml
 
 
@@ -100,7 +106,7 @@ ENDTEXT
 
 TEXT TO lcFileString ADDITIVE NOSHOW
 
-<Invoice invoiceId="<<Alltrim(convert_to_utf(qryeArved.Number))>>" regNumber="<<Alltrim(qryeArved.regkood)>>">
+<Invoice invoiceId="<<Alltrim(convert_to_utf(qryeArved.Number))>>" regNumber="<<Alltrim(IIF(LEFT(qryeArved.regkood,8)='75024260','75024260',ALLTRIM(qryeArved.regkood)))>>">
 <InvoiceParties>
 <SellerParty>
 <Name><<Alltrim(convert_to_utf(qryeArved.muuja))>></Name>

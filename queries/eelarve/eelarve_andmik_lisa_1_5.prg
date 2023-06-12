@@ -225,7 +225,7 @@ Append From Dbf('finants_tegenus')
 
 
 Select 'S' As is_esita, ;
-	'2.4.8' As idx, 2 As sub_idx, gRekv As rekvid, Space(20) As tegev, '' As artikkel, Upper('NÕUETE JA KOHUSTUSTE SALDODE MUUTUS (tekkepõhise e/a korral) (+/-)') As nimetus, ;
+	'2.4.8' As idx, 2 As sub_idx, gRekv As rekvid, Space(20) As tegev, '' As artikkel, Upper('NÕUETE JA KOHUSTISTE SALDODE MUUTUS (tekkepõhise e/a korral) (+/-)') As nimetus, ;
 	qryReport.eelarve - ((tmp_tulud_kokku.eelarve + tmp_kulud_kokku.eelarve) + investeerimis_tegevus.eelarve) - finants_tegenus.eelarve As eelarve, ;
 	qryReport.eelarve_kassa - ((tmp_tulud_kokku.eelarve_kassa + tmp_kulud_kokku.eelarve_kassa) + investeerimis_tegevus.eelarve_kassa) - finants_tegenus.eelarve_kassa As eelarve_kassa, ;
 	qryReport.eelarve_taps - ((tmp_tulud_kokku.eelarve_taps + tmp_kulud_kokku.eelarve_taps) + investeerimis_tegevus.eelarve_taps) - ;
@@ -252,13 +252,17 @@ Select 'S' As is_esita, ;
 	sum(eelarve_taps) As eelarve_taps, Sum(eelarve_kassa_taps) As eelarve_kassa_taps, ;
 	sum(tegelik) As tegelik, Sum(kassa) As kassa, Sum(saldoandmik) As saldoandmik ;
 	FROM qryReport;
-	where !Empty(tegev);
+	where (!Empty(tegev) OR (tegev = '     ' AND idx = '3.1.099'));
 	INTO Cursor tegev_kokku
 
 Select eelarve_report_query
 Append From Dbf('tegev_kokku')
 
 Use In tegev_kokku
+
+* 01112
+* +DK6012+DK6015+DK608000+DK101900RV01+DK1032RV01+DK1532RV01+DK1RV24
+
 
 
 * Üldised valitsussektori teenused
@@ -270,8 +274,9 @@ Select 'S' As is_esita, ;
 	sum(eelarve_taps) As eelarve_taps, Sum(eelarve_kassa_taps) As eelarve_kassa_taps,;
 	sum(tegelik) As tegelik, Sum(kassa) As kassa, Sum(saldoandmik) As saldoandmik ;
 	FROM qryReport ;
-	where Alltrim(tegev) In ('01111', '01112','01114','01600','01700','01800',;
+	where (Alltrim(tegev) In ('01111', '01112','01114','01600','01700','01800',;
 	'01110','01120','01130','01210','01220','01310','01320','01330','01400') ;
+	OR (tegev = '     ' AND idx = '3.1.099'));
 	INTO Cursor tmp1
 
 Select eelarve_report_query
@@ -294,7 +299,9 @@ Select 'S' As is_esita, ;
 	sum(eelarve_taps) As eelarve_taps, Sum(eelarve_kassa_taps) As eelarve_kassa_taps, ;
 	sum(tegelik) As tegelik, Sum(kassa) As kassa, Sum(saldoandmik) As saldoandmik ;
 	FROM qryReport ;
-	where Alltrim(tegev) In ('01110','01120','01130','01210','01220','01310','01320','01330','01400','01500','01800') ;
+	where (Alltrim(tegev) In ('01110','01120','01130','01210','01220','01310','01320','01330','01400','01500','01800') ;
+	or (tegev = '     ' AND idx = '3.1.099' );
+	);
 	INTO Cursor tmp1
 
 Select eelarve_report_query
@@ -682,9 +689,6 @@ Insert Into eelarve_report_query (idx , sub_idx, is_esita , rekvid, tegev, artik
 
 Use In qryReport
 
-*!*		order by idx, tegev, artikkel ;
-*!*		INTO CURSOR eelarve_report1
-
 
 Select kontrol_report
 Append Blank
@@ -766,7 +770,8 @@ l_field = 'saldoandmik'
 l_result_saldo =  get_kontrol ('2.11-4-2','','',l_field ) + get_kontrol ('','15','',l_field ) + ;
 	get_kontrol ('','4502','',l_field ) + ;
 	get_kontrol ('','1501','',l_field ) + get_kontrol ('','1511','',l_field ) + get_kontrol ('','1531','',l_field )+;
-	get_kontrol ('','650','',l_field ) +	get_kontrol ('3.1-5-0','','',l_field)
+	get_kontrol ('','650','',l_field ) +	get_kontrol ('3.1-5-0','','',l_field) 
+	* +	get_kontrol ('3.1.099-5-8','','',l_field)
 
 If !Empty(l_result_kassa) Or  !Empty(l_result_saldo) Or !Empty(l_result_eelarve) Or !Empty(l_result_eelarve_taps) Or ;
 		!Empty(l_result_eelarve_kassa_taps ) Or !Empty(l_result_eelarve_kassa )

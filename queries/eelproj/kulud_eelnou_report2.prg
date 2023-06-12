@@ -44,5 +44,5 @@ selg m DEFAULT ' ')
 
 SELECT tulud_eelnou_report1
 APPEND FROM DBF('tmp_eelnou_report')
-
+brow
 USE IN tmp_eelnou_report

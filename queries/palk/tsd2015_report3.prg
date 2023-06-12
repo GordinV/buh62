@@ -3,8 +3,8 @@ Parameter tcWhere
 
 tdKpv1 = fltrAruanne.kpv1
 tdKpv2 = fltrAruanne.kpv2
-tnKond = Iif(!Empty(fltrAruanne.kond),Null,1)
-
+tnKond = fltrAruanne.kond
+SET STEP ON
 lError = oDb.readFromModel('aruanned\palk\tsd_lisa1b', 'tsd_lisa1b', 'tdKpv1,tdKpv2, gRekv,tnKond', 'tsd_report')
 If !lError
 	Messagebox('Viga',0+16, 'TSD')

@@ -2,6 +2,7 @@ Parameter tcWhere
 
 If Used('fltrPalkJaak')
 	tcNimetus = '%'+Rtrim(Ltrim(fltrPalkJaak.nimetus))+'%'
+
 Else
 	If !Empty (fltrAruanne.asutusid)
 		Select comAsutusRemote
@@ -15,8 +16,7 @@ Else
 		tnParent = 3
 	Else
 		tnParent = 1
-	Endif
-
+	ENDIF
 Endif
 
 If !Used('curPalkJaak')

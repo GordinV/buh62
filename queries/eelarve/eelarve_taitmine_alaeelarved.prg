@@ -35,7 +35,7 @@ delete FROM comEelarveremote WHERE kood in ('150','258','450')
 
 INSERT INTO comEelarveremote  (id, kood, nimetus) VALUES (90001 , '150','Osalused avaliku sektori ja sidusüksustes')
 INSERT INTO comEelarveremote  (id, kood, nimetus) VALUES (90002 , '258','Laenukohustiste pikaajaline osa')
-INSERT INTO comEelarveremote  (id, kood, nimetus) VALUES (90003 , '450','Antud sihtfinfntseerimine')
+INSERT INTO comEelarveremote  (id, kood, nimetus) VALUES (90003 , '450','Antud sihtfinantseerimine')
 
 
 Select idx, regkood, asutus ,;

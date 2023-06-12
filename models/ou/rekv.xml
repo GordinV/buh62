@@ -43,7 +43,7 @@
                       FROM ou.aa
                       WHERE parentid = $1
                         AND kassa = 2
-                          LIMIT 1)::VARCHAR(20)                                       AS oma_tp
+                      LIMIT 1)::VARCHAR(20)                                           AS oma_tp
 
               FROM ou.rekv r,
                    ou.userid u
@@ -91,8 +91,12 @@
                          aa.pank,
                          aa.konto::VARCHAR(20),
                          aa.tp,
-                         kassa AS kassapank,
-                         $2    AS userId
+                         kassa::INTEGER                                                        AS kassapank,
+                         $2                                                                    AS userId,
+                         coalesce((aa.properties -&gt;&gt; 'kas_tulud')::BOOLEAN, FALSE)::INTEGER    AS kas_tulud,
+                         coalesce((aa.properties -&gt;&gt; 'kas_kulud')::BOOLEAN, FALSE)::INTEGER    AS kas_kulud,
+                         coalesce((aa.properties -&gt;&gt; 'kas_palk')::BOOLEAN, FALSE)::INTEGER     AS kas_palk,
+                         coalesce((aa.properties -&gt;&gt; 'kas_oppetasu')::BOOLEAN, FALSE)::INTEGER AS kas_oppetasu
                   FROM ou.Aa aa
                   WHERE Aa.parentid = $1</sql>
     <query />
@@ -114,8 +118,8 @@
                          coalesce((u.properties -&gt;&gt; 'pass')::VARCHAR(100))::VARCHAR(254)   AS pass,
                          coalesce((u.properties -&gt;&gt; 'email')::VARCHAR(100))::VARCHAR(254)  AS email,
                          coalesce((c.properties -&gt;&gt; 'earved')::VARCHAR(254))::VARCHAR(254) AS earved,
-                         coalesce((c.properties -&gt;&gt; 'liik')::VARCHAR(20))::VARCHAR(20)     AS liik
-
+                         coalesce((c.properties -&gt;&gt; 'liik')::VARCHAR(20))::VARCHAR(20)     AS liik,
+                         coalesce((c.properties -&gt;&gt; 'pdf')::VARCHAR(254))::VARCHAR(254)    AS pdf
                   FROM ou.config c,
                        ou.userid u
                   WHERE c.rekvid = $1

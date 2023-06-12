@@ -41,7 +41,7 @@ Endif
 If  .Not. Used('curValitud')
 	Create Cursor curValitud (Id Int, koOd C (20), niMetus C (120))
 Endif
-Create Cursor curResult (Id Int, osAkonnaid Int, paLklibid Int)
+Create Cursor curResult (Id Int, osAkonnaid Int, paLklibid Int, projLibId int)
 
 lnStep = 1
 l_success = .f.	
@@ -64,7 +64,9 @@ Do While lnStep>0
 			Do geT_isiku_list
 		Case lnStep=3
 			Do geT_kood_list
-		Case lnStep>3
+		Case lnStep=4
+			Do geT_proj_list
+		Case lnStep>4
 			l_success = arVutus()
 		OTHERWISE 
 			l_success = .f.	
@@ -93,6 +95,10 @@ Procedure arVutus
 
 	Select Distinct Id From curResult Where  Not Empty(curResult.Id)  ;
 		INTO Cursor qryIsikud
+		
+	Select Distinct projLibId  From curResult Where  Not  ;
+		EMPTY(curResult.projLibId) Into Cursor ValProjLib
+		
 * isik_ids
 	Select qryIsikud
 	l_isik_ids = ''
@@ -122,9 +128,22 @@ Procedure arVutus
 	Endscan
 	Use In qryLibs
 
+* projlibid
+	Select Distinct projlibid As Id From curResult Where  Not Empty(curResult.projlibid)  ;
+		INTO Cursor qryLibs
+
+	Select qryLibs
+	l_proj_ids = ''
+	Scan
+		l_proj_ids = l_proj_ids + Iif(Len(l_proj_ids)>0,',','') +  Alltrim(Str(qryLibs.Id))
+	Endscan
+	Use In qryLibs
+
+
 TEXT TO lcJson TEXTMERGE noshow
 		{"isik_ids":[<<l_isik_ids>>],
 		"osakond_ids":[<<l_osak_ids>>],
+		"proj_ids":[<<l_proj_ids>>],
 		"lib_ids":[<<l_lib_ids>>],"kpv":<<DTOC(gdKpv,1)>>}
 ENDTEXT
 
@@ -271,3 +290,40 @@ Procedure geT_kood_list
 	Endif
 Endproc
 *
+Procedure geT_proj_list
+
+	leRror = oDb.readFromModel('libs\libraries\project', 'selectAsLibs', 'gRekv, guserid', 'qryProjLib')
+
+
+	Select curSource
+	If Reccount('curSource')>0
+		Zap
+	Endif
+	Append From Dbf('qryProjLib')
+	
+	INSERT INTO curSource (id, kood, nimetus) ;
+	values (0, '', 'Ilma projektita')
+
+	Select curValitud
+	If Reccount('curvalitud')>0
+		Zap
+	Endif
+	Do Form Forms\samm To nrEsult With '4', Iif(config.keel=2,  ;
+		'Projektid', 'Начисления и удержания'), Iif(config.keel=2,  ;
+		'Valitud ', 'Выбранно ')
+	If nrEsult=1
+		Select Distinct Id From curValitud Into Cursor query1
+		Select query1
+		Scan
+			Insert Into curResult (projLibId) Values (query1.Id)
+		Endscan
+		Use In query1
+		Select curValitud
+		Zap
+	Endif
+	If nrEsult=0
+		lnStep = 0
+	Else
+		lnStep = lnStep+nrEsult
+	Endif
+Endproc

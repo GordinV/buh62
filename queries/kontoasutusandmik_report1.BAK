@@ -13,7 +13,7 @@ If !lError
 	Return .F.
 Endif
 
-Select alg_saldo As algsaldo, lopp_saldo As loppsaldo, deebet, kreedit, ;
+Select alg_saldo As algsaldo, lopp_saldo As loppsaldo, deebet, kreedit, NIMETUS, ;
 	kpv, regkood, asutus_id as asutusid, asutus, tp, rekv_nimetus, rekv_id, Number, ;
 	konto, korr_konto, dok, kood1, kood2, kood3, kood4, kood5, Proj, tunnus ;
 	From tmpReport ;

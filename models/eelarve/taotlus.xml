@@ -6,19 +6,21 @@
                            koostajaid,
                            aktseptid,
                            kpv,
-                           number,
+                           number::INTEGER,
                            aasta,
                            kuu,
-                           t.status    AS status,
+                           t.status AS status,
                            allkiri,
                            kood1,
                            kood2,
                            kood3,
                            kood4,
                            kood5,
+                           proj,
                            tunnus,
                            summa,
                            summa_kassa,
+                           oodatav_taitmine,
                            parentid,
                            regkood,
                            nimetus::VARCHAR(254),
@@ -46,6 +48,7 @@
                      t.ametnikId,
                      t.aktseptid,
                      t.kpv,
+                     to_char(t.kpv, 'DD.MM.YYYY')::TEXT                                            AS kpv_print,
                      t.number,
                      t.aasta,
                      t.kuu,
@@ -62,15 +65,21 @@
                      (SELECT sum(summa_kassa)
                       FROM eelarve.taotlus1 t1
                       WHERE t1.parentid = t.id)::NUMERIC(12, 2)                                    AS summa_kassa,
+                     (SELECT sum(oodatav_taitmine)
+                      FROM eelarve.taotlus1 t1
+                      WHERE t1.parentid = t.id)::NUMERIC(12, 2)                                    AS oodatav_taitmine,
                      (to_json($2::INTEGER)::JSONB &lt;@ (d.rigths -&gt;&gt; 'EelKoostaja')::JSONB)::BOOLEAN AS is_koostaja,
                      (to_json($2::INTEGER)::JSONB &lt;@
                       (d.rigths -&gt;&gt; 'EelAktsepterja')::JSONB)::BOOLEAN                             AS is_aktsepterja,
                      (to_json($2::INTEGER)::JSONB &lt;@
                       (d.rigths -&gt;&gt; 'EelAllkirjastaja')::JSONB)::BOOLEAN                           AS is_allkirjastaja,
-                     (to_json($2::INTEGER)::JSONB &lt;@ (d.rigths -&gt;&gt; 'Eelesitaja')::JSONB)::BOOLEAN  AS is_esitaja
+                     (to_json($2::INTEGER)::JSONB &lt;@ (d.rigths -&gt;&gt; 'Eelesitaja')::JSONB)::BOOLEAN  AS is_esitaja,
+                     r.regkood,
+                     r.nimetus                                                                     AS asutus
               FROM docs.doc d
                        INNER JOIN libs.library l ON l.id = d.doc_type_id
                        INNER JOIN eelarve.taotlus t ON t.parentId = d.id
+                       INNER JOIN ou.rekv r ON r.id = t.rekvid
                        LEFT OUTER JOIN ou.userid koostaja ON t.koostajaid = koostaja.id
                        LEFT OUTER JOIN ou.userid esitaja ON t.ametnikid = esitaja.id
                        LEFT OUTER JOIN ou.userid aktsepteerija ON t.aktseptid = aktsepteerija.id
@@ -104,7 +113,8 @@
                           0 :: INTEGER                                                             AS tunnus,
                           NULL :: VARCHAR(120)                                                     AS esitaja,
                           NULL::VARCHAR(120)                                                       AS aktseptja,
-                          0::NUMERIC(12, 2)                                                        AS summa
+                          0::NUMERIC(12, 2)                                                        AS summa,
+                          0::NUMERIC(12, 2)                                                        AS oodatav_taitmine
                    FROM libs.library l,
                         libs.library s,
                         ou.userid u
@@ -143,7 +153,7 @@
                        INNER JOIN eelarve.taotlus t ON t.id = t1.parentid
                        LEFT OUTER JOIN com_artikkel a ON a.kood = t1.kood5
               WHERE t.parentid = $1
-              ORDER BY kood1, kood2, kood5</sql>
+              ORDER BY kood1, kood2, kood5, tunnus, proj</sql>
     <query />
     <multiple>true</multiple>
     <alias>details</alias>
@@ -184,7 +194,7 @@
     <alias>deleteDoc</alias>
   </deleteDoc>
   <requiredFields>
-    <validate>koostajaId,aasta,kpv,muud</validate>
+    <validate>koostajaId,aasta,kpv,number,muud</validate>
   </requiredFields>
   <executeSql>
     <sql></sql>
@@ -207,7 +217,11 @@
     <sql />
     <alias />
   </generateJournal>
-  <print></print>
+  <print>
+    <view>taotlus</view>
+    <params>id</params>
+    <register></register>
+  </print>
   <getLog>
     <sql>SELECT ROW_NUMBER() OVER ()                                                                        AS id,
                          (ajalugu -&gt;&gt; 'user')::VARCHAR(20)                                                           AS kasutaja,

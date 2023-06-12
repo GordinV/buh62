@@ -29,7 +29,8 @@
                            docs_ids,
                            coalesce(a.arve, qry_aa.arve)::VARCHAR(20) AS aa,
                            a.viitenr::VARCHAR(120)                    AS viitenr,
-                           ebatoenaolised
+                           ebatoenaolised,
+                           korr_konto
                     FROM cur_arved a,
                          (SELECT arve
                           FROM ou.aa aa
@@ -45,8 +46,8 @@
   <select>
     <sql>SELECT d.id,
                          $2 :: INTEGER                                                     AS userid,
-                         to_char(created, 'DD.MM.YYYY HH:MM:SS') :: TEXT                   AS created,
-                         to_char(lastupdate, 'DD.MM.YYYY HH:MM:SS') :: TEXT                AS lastupdate,
+                         to_char(created, 'DD.MM.YYYY HH:MI:SS') :: TEXT                   AS created,
+                         to_char(lastupdate, 'DD.MM.YYYY HH:MI:SS') :: TEXT                AS lastupdate,
                          d.bpm,
                          trim(l.nimetus)                                                   AS doc,
                          trim(l.kood)                                                      AS doc_type_id,
@@ -83,7 +84,9 @@
                          dp.vaatalaus                                                      AS is_show_journal,
                          (d.history -&gt; 0 -&gt;&gt; 'user') :: VARCHAR(120)                       AS koostaja,
                          coalesce((a.properties -&gt;&gt; 'aa')::TEXT, qry_aa.arve)::VARCHAR(20) AS aa,
-                         coalesce((a.properties -&gt;&gt; 'viitenr')::TEXT, '')::VARCHAR(120)    AS viitenr
+                         coalesce((a.properties -&gt;&gt; 'viitenr')::TEXT, '')::VARCHAR(120)    AS viitenr,
+                         coalesce((a.properties -&gt;&gt; 'tyyp')::TEXT, '')::VARCHAR(20)        AS tyyp
+
                   FROM docs.doc d
                            INNER JOIN libs.library l ON l.id = d.doc_type_id
                            INNER JOIN docs.arv a ON a.parentId = d.id
@@ -104,21 +107,17 @@
                   WHERE d.id = $1</sql>
     <sqlAsNew>SELECT $1 :: INTEGER                                                          AS id,
                               $2 :: INTEGER                                                          AS userid,
-                              to_char(now(), 'DD.MM.YYYY HH:MM:SS') :: TEXT                          AS created,
-                              to_char(now(), 'DD.MM.YYYY HH:MM:SS') :: TEXT                          AS lastupdate,
+                              to_char(now(), 'DD.MM.YYYY HH:MI:SS') :: TEXT                          AS created,
+                              to_char(now(), 'DD.MM.YYYY HH:MI:SS') :: TEXT                          AS lastupdate,
                               NULL                                                                   AS bpm,
                               trim(l.nimetus)                                                        AS doc,
                               trim(l.kood)                                                           AS doc_type_id,
                               trim(s.nimetus)                                                        AS status,
                               0                                                                      AS doc_status,
                               (SELECT arve
-                               FROM ou.aa aa
-                               WHERE aa.parentid = u.rekvid
-                                 AND NOT empty(default_::INTEGER)
-                                 AND NOT empty(kassa::INTEGER)
-                                 AND kassa = 1
+                               FROM ou.aa
+                               WHERE id = ou.get_aa(u.rekvid, 'TULUD'::TEXT)::INTEGER
                                LIMIT 1)::VARCHAR(20)                                                 AS aa,
-
                               docs.sp_get_number(u.rekvId, 'ARV', year(date()), NULL) :: VARCHAR(20) AS number,
                               0.00                                                                   AS summa,
                               NULL :: INTEGER                                                        AS rekvId,
@@ -165,15 +164,15 @@
   </select>
   <select>
     <sql>SELECT a1.id,
-                         $2 :: INTEGER                           AS userid,
+                         $2 :: INTEGER                                                                AS userid,
                          a1.nomid,
                          a1.kogus,
                          a1.hind,
                          a1.kbm,
                          a1.kbmta,
                          a1.summa,
-                         trim(n.kood) :: VARCHAR(20)             AS kood,
-                         trim(n.nimetus) :: VARCHAR(254)         AS nimetus,
+                         trim(n.kood) :: VARCHAR(20)                                                  AS kood,
+                         trim(n.nimetus) :: VARCHAR(254)                                              AS nimetus,
                          a1.soodus,
                          a1.kood1,
                          a1.kood2,
@@ -184,15 +183,20 @@
                          a1.proj,
                          a1.konto,
                          a1.tp,
-                         NULL :: TEXT                            AS vastisik,
-                         NULL :: TEXT                            AS formula,
-                         'EUR' :: VARCHAR(20)                    AS valuuta,
-                         1 :: NUMERIC                            AS kuurs,
+                         NULL :: TEXT                                                                 AS vastisik,
+                         NULL :: TEXT                                                                 AS formula,
+                         'EUR' :: VARCHAR(20)                                                         AS valuuta,
+                         1 :: NUMERIC                                                                 AS kuurs,
                          (CASE
                               WHEN a1.kbm_maar IS NULL
                                   THEN coalesce((n.properties :: JSONB -&gt;&gt; 'vat'), '-') :: VARCHAR(20)
-                              ELSE a1.kbm_maar END)::VARCHAR(20) AS km,
+                              ELSE a1.kbm_maar END)::VARCHAR(20)                                      AS km,
                          n.uhik,
+                         coalesce((a1.properties -&gt;&gt; 'allikas_85')::NUMERIC, 0)::NUMERIC(12, 2)       AS allikas_85,
+                         coalesce((a1.properties -&gt;&gt; 'allikas_muud')::NUMERIC, 0)::NUMERIC(12, 2)     AS allikas_muud,
+                         coalesce((a1.properties -&gt;&gt; 'allikas_vara')::NUMERIC, 0)::NUMERIC(12, 2)     AS allikas_vara,
+                         coalesce((a1.properties -&gt;&gt; 'omavalitsuse_osa')::NUMERIC, 0)::NUMERIC(12, 2) AS omavalitsuse_osa,
+                         coalesce((a1.properties -&gt;&gt; 'sugulane_osa')::NUMERIC, 0)::NUMERIC(12, 2)     AS sugulane_osa,
                          a1.muud
                   FROM docs.arv1 AS a1
                            INNER JOIN docs.arv a ON a.id = a1.parentId
@@ -226,79 +230,116 @@
                          coalesce(journalid.number, 0) AS number,
                          'EUR' :: VARCHAR              AS valuuta,
                          1 :: NUMERIC                  AS kuurs,
-                         coalesce(a.kinni, 0)          AS kinni       
+                         coalesce(a.kinni, 0)          AS kinni
                   FROM docs.arvtasu arvtasu
                            INNER JOIN docs.mk mk ON (arvtasu.doc_tasu_id = mk.parentid AND arvtasu.pankkassa = 1)
                            INNER JOIN docs.mk1 mk1 ON (mk.id = mk1.parentid)
                            LEFT OUTER JOIN docs.journal j ON mk1.journalId = j.parentid
                            LEFT OUTER JOIN docs.journalid journalid ON j.id = journalId.journalId
                            LEFT OUTER JOIN ou.aasta a
-                                           ON a.rekvid = arvtasu.rekvid AND month(arvtasu.kpv) = a.kuu AND year(arvtasu.kpv) = a.aasta
+                                           ON a.rekvid = arvtasu.rekvid AND month(arvtasu.kpv) = a.kuu AND
+                                              year(arvtasu.kpv) = a.aasta
                   WHERE Arvtasu.doc_arv_id = $1
                     AND arvtasu.summa &lt;&gt; 0
                     AND arvtasu.status &lt;&gt; 3
                   UNION ALL
-                  SELECT Arvtasu.id,
-                         arvtasu.kpv,
-                         arvtasu.summa,
-                         'KASSAORDER' :: VARCHAR(20)   AS dok,
-                         'KASSA' :: VARCHAR            AS liik,
-                         pankkassa,
-                         korder1.journalid,
-                         doc_tasu_id,
-                         coalesce(journalid.number, 0) AS number,
-                         'EUR' :: VARCHAR              AS valuuta,
-                         1 :: NUMERIC                  AS kuurs,
-                         coalesce(a.kinni, 0)          AS kinni                         
+                  SELECT Arvtasu.id
+                          ,
+                         arvtasu.kpv
+                          ,
+                         arvtasu.summa
+                          ,
+                         'KASSAORDER' :: VARCHAR(20)   AS dok
+                          ,
+                         'KASSA' :: VARCHAR            AS liik
+                          ,
+                         pankkassa
+                          ,
+                         korder1.journalid
+                          ,
+                         doc_tasu_id
+                          ,
+                         coalesce(journalid.number, 0) AS number
+                          ,
+                         'EUR' :: VARCHAR              AS valuuta
+                          ,
+                         1 :: NUMERIC                  AS kuurs
+                          ,
+                         coalesce(a.kinni, 0)          AS kinni
                   FROM docs.arvtasu arvtasu
                            INNER JOIN docs.korder1 korder1
                                       ON (arvtasu.doc_tasu_id = korder1.parentid AND arvtasu.pankkassa = 2)
                            LEFT OUTER JOIN docs.journal j ON korder1.journalId = j.parentid
                            LEFT OUTER JOIN docs.journalid journalid ON j.id = journalId.journalId
                            LEFT OUTER JOIN ou.aasta a
-                                           ON a.rekvid = arvtasu.rekvid AND month(arvtasu.kpv) = a.kuu AND year(arvtasu.kpv) = a.aasta
+                                           ON a.rekvid = arvtasu.rekvid AND month(arvtasu.kpv) = a.kuu AND
+                                              year(arvtasu.kpv) = a.aasta
                   WHERE Arvtasu.doc_arv_id = $1
                     AND arvtasu.summa &lt;&gt; 0
                     AND arvtasu.status &lt;&gt; 3
                   UNION ALL
-                  SELECT Arvtasu.id,
-                         arvtasu.kpv,
-                         arvtasu.summa,
-                         'PAEVARAAMAT' :: VARCHAR(20)  AS dok,
-                         'JOURNAL' :: VARCHAR          AS liik,
-                         pankkassa,
-                         arvtasu.doc_tasu_id           AS journalid,
-                         doc_tasu_id,
-                         coalesce(journalid.number, 0) AS number,
-                         'EUR' :: VARCHAR              AS valuuta,
-                         1 :: NUMERIC                  AS kuurs,
-                         coalesce(a.kinni, 0)          AS kinni                         
+                  SELECT Arvtasu.id
+                          ,
+                         arvtasu.kpv
+                          ,
+                         arvtasu.summa
+                          ,
+                         'PAEVARAAMAT' :: VARCHAR(20)  AS dok
+                          ,
+                         'JOURNAL' :: VARCHAR          AS liik
+                          ,
+                         pankkassa
+                          ,
+                         arvtasu.doc_tasu_id           AS journalid
+                          ,
+                         doc_tasu_id
+                          ,
+                         coalesce(journalid.number, 0) AS number
+                          ,
+                         'EUR' :: VARCHAR              AS valuuta
+                          ,
+                         1 :: NUMERIC                  AS kuurs
+                          ,
+                         coalesce(a.kinni, 0)          AS kinni
                   FROM docs.arvtasu arvtasu
                            LEFT OUTER JOIN docs.journal journal
                                            ON (arvtasu.doc_tasu_id = journal.parentId AND arvtasu.pankkassa = 3)
                            LEFT OUTER JOIN docs.journalid journalid ON (journal.id = journalId.journalId)
                            LEFT OUTER JOIN ou.aasta a
-                                           ON a.rekvid = arvtasu.rekvid AND month(arvtasu.kpv) = a.kuu AND year(arvtasu.kpv) = a.aasta
+                                           ON a.rekvid = arvtasu.rekvid AND month(arvtasu.kpv) = a.kuu AND
+                                              year(arvtasu.kpv) = a.aasta
                   WHERE Arvtasu.doc_arv_id = $1
                     AND arvtasu.summa &lt;&gt; 0
                     AND arvtasu.status &lt;&gt; 3
                     AND arvtasu.pankkassa = 3
                   UNION ALL
-                  SELECT Arvtasu.id,
-                         arvtasu.kpv,
-                         arvtasu.summa,
-                         '' :: VARCHAR(20) AS dok,
-                         'MUUD' :: VARCHAR AS liik,
-                         pankkassa,
-                         0                 AS journalid,
-                         NULL,
-                         0                 AS number,
-                         'EUR' :: VARCHAR  AS valuuta,
-                         1 :: NUMERIC      AS kuurs,
-                         coalesce(a.kinni, 0)          AS kinni                         
+                  SELECT Arvtasu.id
+                          ,
+                         arvtasu.kpv
+                          ,
+                         arvtasu.summa
+                          ,
+                         '' :: VARCHAR(20)    AS dok
+                          ,
+                         'MUUD' :: VARCHAR    AS liik
+                          ,
+                         pankkassa
+                          ,
+                         0                    AS journalid
+                          ,
+                         NULL
+                          ,
+                         0                    AS number
+                          ,
+                         'EUR' :: VARCHAR     AS valuuta
+                          ,
+                         1 :: NUMERIC         AS kuurs
+                          ,
+                         coalesce(a.kinni, 0) AS kinni
                   FROM docs.arvtasu arvtasu
                            LEFT OUTER JOIN ou.aasta a
-                                           ON a.rekvid = arvtasu.rekvid AND month(arvtasu.kpv) = a.kuu AND year(arvtasu.kpv) = a.aasta
+                                           ON a.rekvid = arvtasu.rekvid AND month(arvtasu.kpv) = a.kuu AND
+                                              year(arvtasu.kpv) = a.aasta
                   WHERE Arvtasu.doc_arv_id = $1
                     AND arvtasu.summa &lt;&gt; 0
                     AND arvtasu.status &lt;&gt; 3

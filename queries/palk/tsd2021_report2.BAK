@@ -172,8 +172,13 @@ Select * From tmpReport Where isikukood Not In ;
 	v1020 In ('10','17'))) ;
 	INTO Cursor qryKoormusLisa
 
+
 Select qryKoormusLisa
-Scan
+SCAN
+IF AqryKoormusLisa.isikukood = '38612113719 '
+SET STEP ON 
+ENDIF
+
 	Insert Into tsd_report (isikukood, nimi, v1020, v1040, v1090, v1100, lisa) ;
 		VALUES (qryKoormusLisa.isikukood,  qryKoormusLisa.isik,'10',qryKoormusLisa.v1040, qryKoormusLisa.min_sots_alus,qryKoormusLisa.arv_min_sots, '1a' )
 Endscan
@@ -198,6 +203,7 @@ IF !EMPTY(fltrAruanne.asutusid)
 TEXT TO lcWhere TEXTMERGE NOSHOW 
 		c_1300 = '<<ALLTRIM(comTootajadLeping.isikukood)>>'
 ENDTEXT
+ENDIF
 
 
 lError = oDb.readFromModel('aruanned\palk\tsd_lisa1b', 'tsd_lisa1b', 'tdKpv1,tdKpv2, gRekv,tnKond', 'tsd_1b_report', lcWhere)

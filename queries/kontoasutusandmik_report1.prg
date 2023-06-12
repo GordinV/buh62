@@ -3,8 +3,35 @@ Parameter cWhere
 lcWhere = ''
 lcWhere = Iif(Empty(fltrAruanne.kond),' rekv_id = ' + Str(gRekv), '')
 
+
+l_params  = ''
+TEXT TO l_params TEXTMERGE noshow
+	<<IIF(!EMPTY(fltrAruanne.konto),'Konto=','')>> <<ALLTRIM(fltrAruanne.konto)>> <<IIF(!EMPTY(fltrAruanne.konto),'%','')>>
+ENDTEXT
+
+TEXT TO l_params TEXTMERGE NOSHOW additive
+	<<IIF(!EMPTY(fltrAruanne.tunnus),IIF(LEN(l_params)> 0 ,', ','') + 'Tunnus=','')>> <<ALLTRIM(fltrAruanne.tunnus)>> <<IIF(!EMPTY(fltrAruanne.tunnus),'%','')>>
+ENDTEXT
+TEXT TO l_params TEXTMERGE NOSHOW additive
+	<<IIF(!EMPTY(fltrAruanne.proj),IIF(LEN(l_params)> 0 ,', ','') + 'Projekt=','')>> <<ALLTRIM(fltrAruanne.proj)>> <<IIF(!EMPTY(fltrAruanne.proj),'%','')>>
+ENDTEXT
+TEXT TO l_params TEXTMERGE NOSHOW additive
+	<<IIF(!EMPTY(fltrAruanne.uritus),IIF(LEN(l_params)> 0 ,', ','') + 'Üritus=','')>> <<ALLTRIM(fltrAruanne.uritus)>> <<IIF(!EMPTY(fltrAruanne.uritus),'%','')>>
+ENDTEXT
+
+
+If !Used('fltrParametid')
+	Create Cursor fltrParametid (params m)
+	Append Blank
+Endif
+
+Replace fltrParametid.params With l_params In fltrParametid
+
+
+
+
 lError = oDb.readFromModel('aruanned\raamatupidamine\kontoasutusandmik', 'kontoasutusandmik_report',;
-	'alltrim(fltrAruanne.konto), fltrAruanne.asutusid, fltrAruanne.kpv1,fltrAruanne.kpv2, gRekv', 'tmpReport', lcWhere)
+	'alltrim(fltrAruanne.konto), fltrAruanne.asutusid, fltrAruanne.kpv1,fltrAruanne.kpv2, gRekv, l_params ', 'tmpReport', lcWhere)
 
 If !lError
 	Messagebox('Viga',0+16, 'Kontoasutus andmik')

@@ -1,4 +1,4 @@
-<?xml version = "1.0" encoding="Windows-1252" standalone="yes"?>
+<?xml version = "1.0" encoding="utf-8" standalone="yes"?>
 <VFPData>
   <grid>
     <sql>SELECT d.*
@@ -8,48 +8,52 @@
   </grid>
   <select>
     <sql>SELECT hl.id,
-                         hl.number AS number,
+                         hl.number                                                     AS number,
                          hl.rekvid,
                          hl.isikid,
                          hl.omavalitsusId,
                          hl.hooldekoduid,
-                         hl.muud   AS muud,
+                         hl.sugulane_id,
+                         hl.muud                                                       AS muud,
                          hl.algkpv,
                          hl.loppkpv,
                          hl.summa,
                          hl.jaak,
                          hl.kovjaak,
                          hl.osa,
-                         hl.status
+                         hl.sugulane_osa,
+                         hl.status,
+                         coalesce((hl.properties -&gt;&gt; 'algoritm')::INTEGER, 0)::INTEGER AS algoritm
                   FROM hooldekodu.hooleping hl
                            INNER JOIN libs.asutus a ON a.id = hl.hooldekoduid
                   WHERE hl.id = $1</sql>
-    <sqlAsNew>SELECT $1 :: INTEGER                                        AS id,
-                              $2 :: INTEGER                                        AS userid,
-                              1 :: VARCHAR(20)                                     AS number,
-                              (SELECT rekvid FROM ou.userid WHERE id = $2 LIMIT 1)::INTEGER AS rekvid,
-                           0::INTEGER AS isikId,
-                           0 :: INTEGER AS omavalitsusId,
-                           0::INTEGER AS hooldekoduId,
-                           '' :: TEXT AS muud,
-                           (make_date(date_part(
-                              'year', CURRENT_DATE)::INTEGER,
-                           date_part(
-                              'month', CURRENT_DATE) :: INTEGER, 1) -
-                           INTERVAL
-                              '1 month') :: DATE AS algkpv,
-                           (make_date(date_part(
-                              'year', CURRENT_DATE)::INTEGER,
-                           date_part(
-                              'month', CURRENT_DATE) :: INTEGER, 1) -
-                           INTERVAL
-                              '1 day') :: DATE AS loppkpv,
-                           0 :: NUMERIC AS summa,
-                           0 :: NUMERIC AS jaak,
-                           0 :: NUMERIC AS kovjaak,
-                           0::INTEGER AS osa,
-                           1 AS status
-            </sqlAsNew>
+    <sqlAsNew>SELECT $1 :: INTEGER                                                                AS id,
+                              docs.sp_get_number(u.rekvId, 'HOOLEPING', year(date()), NULL) :: VARCHAR(20) AS number,
+                              (SELECT rekvid FROM ou.userid WHERE id = $2 LIMIT 1)::INTEGER                AS rekvid,
+                              0::INTEGER                                                                   AS isikId,
+                              0 :: INTEGER                                                                 AS omavalitsusId,
+                              0::INTEGER                                                                   AS hooldekoduId,
+                              0::INTEGER                                                                   AS sugulane_id,
+                              '' :: TEXT                                                                   AS muud,
+                              (make_date(date_part('year', CURRENT_DATE)::INTEGER,
+                                         date_part('month', CURRENT_DATE) :: INTEGER, 1) -
+                               INTERVAL
+                                   '1 month') :: DATE                                                      AS algkpv,
+                              (make_date(date_part(
+                                                 'year', CURRENT_DATE)::INTEGER,
+                                         date_part(
+                                                 'month', CURRENT_DATE) :: INTEGER, 1) -
+                               INTERVAL
+                                   '1 day') :: DATE                                                        AS loppkpv,
+                              0 :: NUMERIC                                                                 AS summa,
+                              0 :: NUMERIC                                                                 AS jaak,
+                              0 :: NUMERIC                                                                 AS kovjaak,
+                              0 :: NUMERIC                                                                 AS sugulane_osa,
+                              0::INTEGER                                                                   AS osa,
+                              1                                                                            AS status,
+                              0                                                                            AS algoritm
+                       FROM ou.userid u
+                       WHERE u.id = $2 :: INTEGER            </sqlAsNew>
     <query />
     <multiple>false</multiple>
     <alias>row</alias>
@@ -60,10 +64,10 @@
                          ht.nomid,
                          nom.kood,
                          nom.nimetus,
-                         ht.hind,
+                         ht.hind::NUMERIC(12, 2),
                          ht.allikas,
                          ht.tuluosa,
-                         ht.jaak,
+                         ht.jaak::NUMERIC(12, 2),
                          ht.muud,
                          ht.muud::VARCHAR(254) AS selg,
                          ht.kehtivus,
@@ -85,6 +89,14 @@
     <query />
     <multiple>true</multiple>
     <alias>relations</alias>
+  </select>
+  <select>
+    <sql>select 0 as id, 'Jääk kuu lõpus'::varchar(254) as nimetus, $1 as param1, $2 as param2
+                    union all
+                  select 1 as id, 'Vaba jääk'::varchar(254) as nimetus, $1 as param1, $2 as param2</sql>
+    <query />
+    <multiple>true</multiple>
+    <alias>algoritmid</alias>
   </select>
   <selectAsLibs>
     <sql>SELECT id,

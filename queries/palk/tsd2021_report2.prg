@@ -94,6 +94,11 @@ Scan
 
 	l_1090 = 0
 	
+	IF curTSD.isikukood = '38612113719'
+		SET STEP ON 
+	ENDIF
+	
+	
 	If !Isnull(curTSD.arv_min_sots) AND !EMPTY(curTSD.arv_min_sots) And l_used_1090 = .F. ;
 		and Alltrim(curTSD.tululiik) <> ('17') ;
 		and Alltrim(curTSD.tululiik) <> ('16') ;
@@ -172,8 +177,9 @@ Select * From tmpReport Where isikukood Not In ;
 	v1020 In ('10','17'))) ;
 	INTO Cursor qryKoormusLisa
 
+
 Select qryKoormusLisa
-Scan
+SCAN
 	Insert Into tsd_report (isikukood, nimi, v1020, v1040, v1090, v1100, lisa) ;
 		VALUES (qryKoormusLisa.isikukood,  qryKoormusLisa.isik,'10',qryKoormusLisa.v1040, qryKoormusLisa.min_sots_alus,qryKoormusLisa.arv_min_sots, '1a' )
 Endscan

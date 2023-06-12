@@ -12,7 +12,6 @@ l_secret = ALLTRIM(qryRekv.earved)
 *=check_cursors()
 Create Cursor m_memo (url c(120), Header c(120), Request m, response m, Timestamp T Default Datetime())
 
-SET STEP ON 
 
 cMessage = get_xml()
 

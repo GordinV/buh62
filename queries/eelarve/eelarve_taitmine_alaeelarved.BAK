@@ -31,11 +31,6 @@ If !lError
 	Return .F.
 ENDIF
 
-SELECT id, kood, nimetus FROM comEelarveremote ;
-UNION ALL ;
-
-
-
 delete FROM comEelarveremote WHERE kood in ('150','258','450')
 
 INSERT INTO comEelarveremote  (id, kood, nimetus) VALUES (90001 , '150','Osalused avaliku sektori ja sidusüksustes')
