@@ -17,7 +17,7 @@ Scan
 		case v_pv_oper.liik = 2
 			cLiik = 'KULUM'
 		case v_pv_oper.liik = 3
-			cLiik = 'PARANDAMINE (PLUUS)'
+			cLiik = 'PARANDAMINE (PLUSS)'
 		case v_pv_oper.liik = 4
 			cLiik = 'PARANDAMINE (MINUUS)'
 		case v_pv_oper.liik = 5

@@ -9,7 +9,13 @@ TEXT TO lcWhere TEXTMERGE noshow
 	and coalesce(tegev,'') like '<<ALLTRIM(fltrAruanne.kood1)>>%'
 ENDTEXT
 
-lError = oDb.readFromModel('aruanned\eelarve\tulud_eelnou_detailne', 'tulud_eelnou', 'fltrAruanne.kpv2, gRekv,fltrAruanne.kond', 'tmp_eelnou_report',lcWhere)
+lcJson = ''
+* lisa params
+TEXT TO lcJson TEXTMERGE noshow
+	{"taotlus_statusid":<<fltrAruanne.taotlus_statusid>>}
+ENDTEXT
+
+lError = oDb.readFromModel('aruanned\eelarve\tulud_eelnou_detailne', 'tulud_eelnou', 'fltrAruanne.kpv2, gRekv,fltrAruanne.kond,lcJson', 'tmp_eelnou_report',lcWhere)
 
 If !lError OR !USED('tmp_eelnou_report')
 	Messagebox('Viga',0+16, 'Tulud eelarve eelnõu')

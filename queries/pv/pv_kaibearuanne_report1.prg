@@ -20,6 +20,7 @@ TEXT TO lcWhere TEXTMERGE noshow
 	konto ilike '<<ALLTRIM(fltrAruanne.konto)>>%'
 	and grupp ilike '%<<ALLTRIM(l_grupp)>>%'
 	and vastisik ilike '%<<ALLTRIM(l_vast_isik)>>%'
+	and aadress ilike '%<<ALLTRIM(fltrAruanne.aadress)>>%'
 ENDTEXT
 
 lError = oDb.readFromModel('aruanned\pv\pv_kaibearuanne', 'pv_kaibe_aruanne_report', 'fltrAruanne.kpv1,fltrAruanne.kpv2, gRekv,fltrAruanne.kond', 'tmp_report',lcWhere)

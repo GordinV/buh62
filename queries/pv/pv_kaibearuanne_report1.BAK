@@ -31,8 +31,8 @@ If !lError
 ENDIF
 
 SELECT kood, nimetus, konto, pindala, kulumi_maar, eluiga, esimise_kpv, alg_soetmaks,;
-	alg_kulum, db_soetmaks, db_kulum, kr_soetmaks, kr_kulum, lopp_soetmaks, lopp_kulum, grupp, asutus, ;
-	vastisik,kinnitus_osa, motteline_osa, ehituse_objekt, rentnik, tegevus_alla, turu_vaartsus;
+	alg_kulum, db_soetmaks, db_kulum, kr_soetmaks, kr_kulum, lopp_soetmaks, lopp_kulum,  asutus, ;
+	vastisik,kinnitus_osa, motteline_osa, ehituse_objekt, rentnik, tegevus_alla, turu_vaartsus, grupp;
 from tmp_report ORDER BY konto, kood INTO CURSOR kaibearuanne_report1
 
 USE IN tmp_report

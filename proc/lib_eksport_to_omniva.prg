@@ -64,6 +64,7 @@ With loXMLHTTP
 Endwith
 
 If Atc('Ok', loXMLHTTP.responsetext) > 0
+_cliptext = loXMLHTTP.responsetext
 	l_tulemus = .T.
 	Messagebox('Tehtud!',0+48,'Liidestamine')
 

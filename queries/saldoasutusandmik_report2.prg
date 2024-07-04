@@ -1,22 +1,21 @@
 Parameter tcWhere
 lcWhere = '1 = 1'
-lcWhere = lcWhere  + Iif(Empty(fltrAruanne.kond),' AND qry.rekv_id = ' + Str(gRekv), '')
+
+lcWhere = lcWhere + Iif(Empty(fltrAruanne.kond),' and qry.rekv_id = ' + Str(gRekv), '')
+
+TEXT TO lcWhere ADDITIVE TEXTMERGE noshow
+	and konto ilike '<<ALLTRIM(fltrAruanne.konto)>>%'
+ENDTEXT
+
 
 TEXT TO lcWhere ADDITIVE TEXTMERGE noshow
 	AND LEFT(konto,6) in ('102060','102070','102081','102090','102095','103000','103010',
 	'201000','201010','203900','203910','203990') 
+	and rekv_id < 999999
 ENDTEXT
 
-IF !EMPTY(fltrAruanne.konto) 
-TEXT TO lcWhere ADDITIVE TEXTMERGE noshow
-	and konto ilike '<<ALLTRIM(fltrAruanne.konto)>>%'
-ENDTEXT
-ENDIF
-
-
-
-l_konto = null
-lError = oDb.readFromModel('aruanned\raamatupidamine\kontosaldoandmik', 'kontosaldoandmik_report', 'l_konto,fltrAruanne.asutusid, fltrAruanne.kpv2, gRekv', 'tmpReport', lcWhere)
+l_konto = ''
+lError = oDb.readFromModel('aruanned\raamatupidamine\kontosaldoandmik', 'kontosaldoandmik_report', 'l_konto, fltrAruanne.asutusid, fltrAruanne.kpv2, gRekv, fltrAruanne.kond', 'tmpReport', lcWhere )
 If !lError
 	Messagebox('Viga',0+16, 'Konto saldoandmik')
 	Set Step On

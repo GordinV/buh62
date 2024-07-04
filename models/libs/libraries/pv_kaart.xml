@@ -142,7 +142,8 @@
     <alias>row</alias>
   </select>
   <select>
-    <sql>SELECT $2 :: INTEGER AS userid, $1 AS pv_id, po.*
+    <sql>SELECT $2 :: INTEGER AS userid, $1 AS pv_id, 
+                po.*
               FROM cur_pv_oper po
               WHERE po.pv_kaart_id = $1</sql>
     <multiple>true</multiple>

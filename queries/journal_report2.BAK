@@ -15,9 +15,9 @@ Create Cursor journal_report1 (Id Int, kpv d, asutus c(254), dok c(120) Null, ;
 
 
 select journal_report1 
-index on alltrim(kood2)+'-'+ALLTRIM(deebet) +'-'+ALLTRIM(kreedit) tag lausend additive
+*index on alltrim(kood2)+'-'+ALLTRIM(deebet) +'-'+ALLTRIM(kreedit) tag lausend additive
 
-SET ORDER to lausend 
+*SET ORDER to lausend 
 
 
 Select qryJournal1

@@ -1,8 +1,10 @@
 <?xml version = "1.0" encoding="Windows-1252" standalone="yes"?>
 <VFPData>
   <grid>
-    <sql>SELECT *
-                    FROM eelarve.lisa1_lisa5_kontrol($1::date, $2::integer, $3::integer) qryReport</sql>
+    <sql>SELECT qryReport.*, r.nimetus as asutus
+                    FROM eelarve.lisa1_lisa5_kontrol($1::date, $2::integer, $3::integer) qryReport
+                    INNER JOIN ou.rekv r on r.id = $2
+                    </sql>
     <alias>lisa1_lisa5_kontrol</alias>
   </grid>
   <select></select>

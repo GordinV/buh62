@@ -54,7 +54,7 @@ Scan
 			email with qryAsutus.email,; 
 			muud with iif (isnull(qryAsutus.muud) or empty(qryAsutus.muud) ,space(1),qryAsutus.muud),;
 			amet with qrytooleping.amet, osakond with qrytooleping.osakond,;
-			algab with qrytooleping.algab, lopp with iif (qrytooleping.lopp < qrytooleping.algab,{},qrytooleping.lopp),;
+			algab with qrytooleping.algab, lopp with iif (IIF(ISNULL(qrytooleping.lopp),{},qrytooleping.lopp) < qrytooleping.algab,{},qrytooleping.lopp),;
 			palk with qrytooleping.palk, tasuliik with iif (qrytooleping.tasuliik = 1,'Astmepalk','Tunni alusel'),;
 			toopaev with qrytooleping.toopaev, palgamaar with qrytooleping.palgamaar,;
 			pohikoht with iif (qrytooleping.pohikoht = 1,'Jah','Ei'),;

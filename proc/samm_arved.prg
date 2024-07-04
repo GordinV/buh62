@@ -622,9 +622,9 @@ Function fnc_addfromleping
 		Select comAsutusRemote
 		Locate For Id = v_leping1.asutusId
 
-		Insert Into v_arvread (nomid, hind, kogus, Summa, soodus, kbm, kood1, kood2, kood3, kood5, konto, tp);
+		Insert Into v_arvread (nomid, hind, kogus, Summa, soodus, kbm, kood1, kood2, kood3,kood4, kood5, konto, tp);
 			values (v_leping2.nomid, lnHind, lnKogus, lnSumma, lnSoodus, lnKbm, coMnomremote.tegev,coMnomremote.allikas, coMnomremote.rahavoog,;
-			coMnomremote.artikkel, coMnomremote.konto, comAsutusRemote.tp )
+			coMnomremote.uritus,coMnomremote.artikkel, coMnomremote.konto, comAsutusRemote.tp )
 	Endscan
 	Select v_arvread
 	Sum (v_arvread.kbmta - v_arvread.soodus) To lnKbmta

@@ -7,9 +7,7 @@
       lcMark = ''
  ENDIF
  tcValuuta = 'EUR'
- IF EMPTY(tcCent)
-	 tcCent = 'Cent'
- ENDIF
+ tcCent = 'Cent'
  
  cuR = tcValuuta
  msUmma = ' '

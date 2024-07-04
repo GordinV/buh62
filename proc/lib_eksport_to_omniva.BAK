@@ -21,7 +21,7 @@ ENDTEXT
 cMessage = cMessage + '<Dimensioonid><' + l_lib_name + '>'
 
 SELECT (l_cursor)
-SCAN
+SCAN FOR !EMPTY(kood)
 	cMessage = cMessage + '<' + l_item_name + '>'
 TEXT TO cMessage ADDITIVE TEXTMERGE noshow
 

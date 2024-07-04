@@ -118,7 +118,7 @@ TEXT TO lcString ADDITIVE TEXTMERGE NOSHOW
 </PmtTpInf>
 <ReqdExctnDt><<lcIsoKpv>></ReqdExctnDt>
 <Dbtr>
-<Nm><<Alltrim(lcRekvNimetus)>></Nm>
+<Nm><<convert_to_utf(Alltrim(lcRekvNimetus))>></Nm>
 <PstlAdr>
 <Ctry>EE</Ctry>
 <AdrLine><<LEFT(Alltrim(lcRekvAadress),70)>></AdrLine>

@@ -281,8 +281,7 @@ Function edIt_arve
 		asutusId With v_leping1.asutusId,;
 		liSa With v_leping1.Number,;
 		taHtaeg With ldKpv,;
-		objekt With lcObjekt,;
-		muud With v_leping1.selgitus In v_arv
+		objekt With lcObjekt In v_arv
 
 
 	=fnc_addfromleping(v_leping1.Id)

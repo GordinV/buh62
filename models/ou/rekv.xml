@@ -16,6 +16,9 @@
                      r.parentid,
                      r.nimetus::VARCHAR(254),
                      coalesce(r.muud, nimetus)::VARCHAR(254)                          AS taisnimetus,
+                     (SELECT coalesce(rekv.muud, rekv.nimetus)::VARCHAR(254) AS nimetus
+                      FROM ou.rekv rekv
+                      WHERE rekv.id = r.parentid)                                     AS parent_asutus,
                      r.aadress,
                      r.email::VARCHAR(254),
                      r.faks::VARCHAR(254),
@@ -127,6 +130,31 @@
     <query />
     <multiple>false</multiple>
     <alias>config</alias>
+  </select>
+  <select>
+    <sql>SELECT arve,
+                         aa.parentid                          AS omanik_id,
+                         CASE
+                             WHEN p.muud IS NOT NULL
+                                 AND exists(SELECT aa.arve
+                                            FROM ou.aa a
+                                            WHERE a.parentid = r.parentid
+                                              AND a.arve = aa.arve)
+                                 THEN p.muud
+                             WHEN r.muud IS NOT NULL
+                                 THEN r.muud
+                             WHEN r.muud IS NOT NULL
+                                 THEN r.muud
+                             ELSE r.nimetus END::VARCHAR(254) AS pay_to_name,
+                         $2                                   AS user_id
+                  FROM ou.aa aa
+                           INNER JOIN ou.rekv r ON r.id = aa.parentid
+                           LEFT OUTER JOIN ou.rekv p ON p.id = r.parentid
+                  WHERE r.id = $1
+                    AND aa.kassa = 1</sql>
+    <query />
+    <multiple>false</multiple>
+    <alias>pay_to_name</alias>
   </select>
   <selectAsLibs>
     <sql>SELECT id, nimetus::VARCHAR(254), regkood::VARCHAR(20), parentid

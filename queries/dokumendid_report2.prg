@@ -1,6 +1,11 @@
 Parameter cWhere
 l_asutus_id  = 0
 
+IF USED('v_asutus')
+l_asutus_id  = v_asutus.id 
+ENDIF
+
+
 If isdigit(alltrim(cWhere))
 	l_asutus_id = val(alltrim(cWhere))
 ENDIF

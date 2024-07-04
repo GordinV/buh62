@@ -146,14 +146,23 @@ TEXT TO lcString ADDITIVE TEXTMERGE noshow
 <CdtTrfTxInf>
 <PmtId>
 <InstrId><<ALLTRIM(tmp_mk.number)>></InstrId>
-<EndToEndId><<ALLTRIM(STR(tmp_mk1.lausnr))>></EndToEndId>
+<EndToEndId><<ALLTRIM(STR(tmp_mk1.id))>></EndToEndId>
 </PmtId>
-<Amt><InstdAmt Ccy="EUR"><<Alltrim(Str(tmp_mk1.Summa,14,2))>></InstdAmt></Amt>
+<Amt>
+<InstdAmt Ccy="EUR"><<Alltrim(Str(tmp_mk1.Summa,14,2))>></InstdAmt>
+</Amt>
 <Cdtr>
 <Nm><<convert_to_utf(Alltrim(tmp_mk1.asutus))>></Nm>
-<PstlAdr><Ctry>EE</Ctry><AdrLine><<LEFT(convert_to_utf(Alltrim(tmp_mk1.aadress)),70)>></AdrLine></PstlAdr>
+<PstlAdr>
+<Ctry>EE</Ctry>
+<AdrLine><<LEFT(convert_to_utf(Alltrim(tmp_mk1.aadress)),70)>></AdrLine>
+</PstlAdr>
 </Cdtr>
-<CdtrAcct><Id><IBAN><<Alltrim(tmp_mk1.aa)>></IBAN></Id></CdtrAcct>
+<CdtrAcct>
+<Id>
+<IBAN><<Alltrim(tmp_mk1.aa)>></IBAN>
+</Id>
+</CdtrAcct>
 <RmtInf>
 <<IIF(!Empty(tmp_mk.selg),'<Ustrd>'+convert_to_utf(Alltrim(tmp_mk.selg))+'</Ustrd>','')>>
 <<IIF(!Empty(tmp_mk.viitenr),'<Strd><CdtrRefInf><Tp><CdOrPrtry><Cd>SCOR</Cd></CdOrPrtry></Tp><Ref>'+Alltrim(tmp_mk.viitenr)+'</Ref></CdtrRefInf></Strd>','')>>

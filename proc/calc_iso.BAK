@@ -172,10 +172,10 @@ TEXT TO lcString ADDITIVE TEXTMERGE noshow
 <PmtTpInf><SvcLvl><Cd>SEPA</Cd></SvcLvl></PmtTpInf>
 <ReqdExctnDt><<lcIsoKpv>></ReqdExctnDt>
 <Dbtr>
-<Nm><<Alltrim(lcRekvNimetus)>></Nm>
+<Nm><<Alltrim(convert_to_utf(lcRekvNimetus))>></Nm>
 <PstlAdr>
 <Ctry>EE</Ctry>
-<AdrLine><<LEFT(Alltrim(lcRekvAadress),70)>></AdrLine>
+<AdrLine><<LEFT(Alltrim(convert_to_utf(lcRekvAadress)),70)>></AdrLine>
 </PstlAdr>
 </Dbtr>
 <DbtrAcct>

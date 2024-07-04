@@ -12,6 +12,8 @@ IF !EMPTY(fltrAruanne.grupp)
 	ENDTEXT
 ENDIF
 
+
+
 IF !EMPTY(fltrAruanne.asutusid)
 	TEXT TO lcWhere ADDITIVE TEXTMERGE noshow
 		and vastisik_id = <<fltrAruanne.asutusid>>

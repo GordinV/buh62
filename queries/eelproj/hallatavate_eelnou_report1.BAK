@@ -7,7 +7,7 @@ TEXT TO lcWhere TEXTMERGE noshow
 	and 	coalesce(tegev,'') like '<<ALLTRIM(fltrAruanne.kood1)>>%'
 
 ENDTEXT
-Set Step On
+
 lError = oDb.readFromModel('aruanned\eelarve\hallatavate_eelnou', 'hallatavate_eelnou', 'fltrAruanne.kpv2, gRekv,fltrAruanne.kond', 'hallatavate_eelnou_report1',lcWhere )
 
 If !lError Or !Used('hallatavate_eelnou_report1')

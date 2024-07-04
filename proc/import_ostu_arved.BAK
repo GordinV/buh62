@@ -7,12 +7,12 @@ l_onnestus = .F.
 If !Used('v_xml_arv')
 	Messagebox('Arved ei leidnud',0+64,'Import ostuarved')
 	Return 0
-ENDIF
+Endif
 
 l_nom_id = getNomIdByNimetus('OMNIVA')
-IF EMPTY(l_nom_id)
-	MESSAGEBOX('Omniva kood ei leidnud',0+16,'Import ostuarved')
-ENDIF
+If Empty(l_nom_id)
+	Messagebox('Omniva kood ei leidnud',0+16,'Import ostuarved')
+Endif
 
 
 l_model = 'raamatupidamine\arv'
@@ -45,10 +45,12 @@ Endif
 
 Select v_xml_arv
 Wait Window 'Importeerin arve nr. ' + Alltrim(v_xml_arv.Number) Timeout 1
+brow
 
 If !Empty(v_xml_arv.korr_konto)
 	t_dokprop_id = getdokpropId('ARV', 'libs\libraries\dokprops', v_xml_arv.korr_konto)
 Endif
+
 
 * asutusId
 Select comAsutusRemote
@@ -69,14 +71,16 @@ Else
 	Scan For Id = v_xml_arv.Id
 * seach for noms
 
-		Insert Into v_arvread (nomid, kogus, hind, Summa, kbmta, km, kbm, nimetus, konto, tp, kood1, kood2, kood5, MUUD) ;
-			VALUES (l_nom_id, IIF(EMPTY(v_xml_arv_detail.kogus),1,v_xml_arv_detail.kogus),; 
-			v_xml_arv_detail.Summa / IIF(EMPTY(v_xml_arv_detail.kogus),1,v_xml_arv_detail.kogus), ;
+		Insert Into v_arvread (nomid, kogus, hind, Summa, kbmta, km, kbm, nimetus, konto, tp, kood1, kood2, kood5, MUUD,;
+			tunnus, Proj, kood4, kood3, objekt) ;
+			VALUES (l_nom_id, Iif(Empty(v_xml_arv_detail.kogus),1,v_xml_arv_detail.kogus),;
+			v_xml_arv_detail.Summa / Iif(Empty(v_xml_arv_detail.kogus),1,v_xml_arv_detail.kogus), ;
 			v_xml_arv_detail.summa_kokku, v_xml_arv_detail.Summa,v_xml_arv_detail.kbm_maar, v_xml_arv_detail.kbm,;
 			v_xml_arv_detail.nimetus,;
 			v_xml_arv_detail.konto,;
 			comAsutusRemote.tp, v_xml_arv_detail.tegev, v_xml_arv_detail.allikas, v_xml_arv_detail.artikkel, ;
-			v_xml_arv_detail.nimetus)
+			v_xml_arv_detail.nimetus,;
+			v_xml_arv_detail.tunnus, v_xml_arv_detail.Proj, v_xml_arv_detail.uuritus, v_xml_arv_detail.rahavoog, v_xml_arv_detail.objekt)
 	Endscan
 
 	Select v_arvread
@@ -121,7 +125,7 @@ Function save_arve
 
 	Select v_arv
 	lcJson = '{"id":' + Alltrim(Str(v_arv.Id)) + ',"data": '+ oDb.getJson(lcJson) +  '}'
-	lError = oDb.readFromModel(l_model, 'saveDoc', 'lcJson,gUserid,gRekv', 'v_arv_id')
+*	lError = oDb.readFromModel(l_model, 'saveDoc', 'lcJson,gUserid,gRekv', 'v_arv_id')
 	Return lError
 
 Endfunc

@@ -72,7 +72,7 @@
       dd(6) = IIF(config.keel = 2,'kuuskümmend','kuuskummend')
       dd(7) = IIF(config.keel = 2,'seitsekümmend','seitsekummend')
       dd(8) = IIF(config.keel = 2,'kaheksakümmend','kaheksakummend')
-      dd(9) = IIF(config.keel = 2,'uheksakümmend','uheksakummend')
+      dd(9) = IIF(config.keel = 2,'üheksakümmend','uheksakummend')
       sd(1) = 'sada'
       sd(2) = 'tuhat'
       sd(3) = 'miljon'

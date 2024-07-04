@@ -2,15 +2,16 @@
 <VFPData>
   <grid>
     <sql>SELECT id,
-                           coalesce(kood, '')::VARCHAR(20)     AS kood,
-                           coalesce(nimetus, '')::VARCHAR(254) AS nimetus,
-                           $2::INTEGER                         AS userId,
+                           coalesce(kood, '')::VARCHAR(20)      AS kood,
+                           coalesce(nimetus, '')::VARCHAR(254)  AS nimetus,
+                           $2::INTEGER                          AS userId,
                            n.dok,
-                           (n.properties -&gt;&gt; 'konto')::TEXT    AS konto,
-                           (n.properties -&gt;&gt; 'tunnus')::TEXT   AS tunnus,
+                           (n.properties -&gt;&gt; 'konto')::TEXT     AS konto,
+                           (n.properties -&gt;&gt; 'tunnus')::TEXT    AS tunnus,
                            n.hind,
-                           (n.properties -&gt;&gt; 'tyyp')::TEXT     AS tyyp,
-                           (n.properties -&gt;&gt; 'valid')::DATE    AS valid
+                           (n.properties -&gt;&gt; 'tyyp')::TEXT      AS tyyp,
+                           (n.properties -&gt;&gt; 'oppe_tyyp')::TEXT AS liik,
+                           (n.properties -&gt;&gt; 'valid')::DATE     AS valid
                     FROM libs.nomenklatuur n
                     WHERE (n.rekvId = $1 OR n.rekvid IS NULL)
                       AND n.status &lt;&gt; 3</sql>
@@ -37,11 +38,13 @@
                      (n.properties::JSONB -&gt;&gt; 'allikas')::VARCHAR(20)                         AS allikas,
                      (n.properties::JSONB -&gt;&gt; 'rahavoog')::VARCHAR(20)                        AS rahavoog,
                      (n.properties::JSONB -&gt;&gt; 'artikkel')::VARCHAR(20)                        AS artikkel,
+                     (n.properties::JSONB -&gt;&gt; 'uritus')::VARCHAR(20)                          AS uritus,
                      coalesce((n.properties::JSONB -&gt;&gt; 'kas_inf3')::BOOLEAN, FALSE)           AS kas_inf3,
                      (n.properties::JSONB -&gt;&gt; 'valid')::DATE                                  AS valid,
                      (n.properties::JSONB -&gt;&gt; 'tyyp')::TEXT                                   AS tyyp,
-                     coalesce((n.properties::JSONB -&gt;&gt; 'kas_inf3')::BOOLEAN, FALSE)         AS kas_inf3,
-                     coalesce((n.properties::JSONB -&gt;&gt; 'oppe_tyyp')::TEXT, 'Põhiõpe')::TEXT AS oppe_tyyp,
+                     coalesce((n.properties::JSONB -&gt;&gt; 'kas_inf3')::BOOLEAN, FALSE)           AS kas_inf3,
+                     coalesce((n.properties::JSONB -&gt;&gt; 'kas_umberarvestus')::BOOLEAN, FALSE)  AS kas_umberarvestus,
+                     coalesce((n.properties::JSONB -&gt;&gt; 'oppe_tyyp')::TEXT, 'Põhiõpe')::TEXT   AS oppe_tyyp,
                      coalesce((n.properties::JSONB -&gt;&gt; 'algoritm')::TEXT, 'konstantne')::TEXT AS algoritm
 
               FROM libs.nomenklatuur n
@@ -50,7 +53,7 @@
             ''::varchar(20) as  kood,
             0::integer as rekvid,
             ''::varchar(254) as nimetus,
-            ''::varchar(20) as dok,
+            'ARV'::varchar(20) as dok,
             ''::varchar(20) as uhik,
             0::numeric as hind,
             0::numeric as ulehind,
@@ -62,6 +65,7 @@
             'EUR' as valuuta, 1 as kuurs,
             '20'::varchar(20) as vat,
             false as kas_inf3,
+            false as kas_umberarvestus,
             null::varchar(20) as konto,
             null::varchar(20) as projekt,
             null::varchar(20) as tunnus,
@@ -69,6 +73,7 @@
             null::varchar(20) as allikas,
             null::varchar(20) as rahavoog,
             null::varchar(20) as artikkel,
+            null::varchar(20) as uritus,
             null::date as valid,
             'konstantne'::text as algoritm,                      
             null::text as tyyp</sqlAsNew>

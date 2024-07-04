@@ -8,7 +8,7 @@ TEXT TO lcWhere TEXTMERGE noshow
 
 ENDTEXT
 
-lError = oDb.readFromModel('aruanned\eelarve\hallatavate_eelnou', 'hallatavate_eelnou', 'fltrAruanne.kpv2, gRekv,fltrAruanne.kond', 'hallatavate_eelnou_report1',lcWhere )
+lError = oDb.readFromModel('aruanned\eelarve\hallatavate_eelnou', 'hallatavate_eelnou', 'fltrAruanne.kpv2, gRekv,fltrAruanne.kond, fltrAruanne.taotlus_statusid', 'hallatavate_eelnou_report1',lcWhere )
 
 If !lError Or !Used('hallatavate_eelnou_report1')
 	Messagebox('Viga',0+16, 'Hallatavate eelarve eelnõu')

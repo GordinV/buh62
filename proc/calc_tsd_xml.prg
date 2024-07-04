@@ -129,13 +129,12 @@ TEXT TO lcString NOSHOW additive
 <tsd_L1_B_Isik>
 <c1300_Kood><<ALLTRIM(tmpIsikud.c_1300)>></c1300_Kood>
 <c1310_Nimi><<ALLTRIM(tmpIsikud.c_1310)>></c1310_Nimi>
-
+<vmList>
 ENDTEXT
 
 		Select tsd_lisa1b
 		Scan For Alltrim(tsd_lisa1b.c_1300) = Alltrim(tmpIsikud.c_1300)
 TEXT TO lcString NOSHOW additive
-<vmList>
 <tsd_L1_B_Vm>
 <c1320_ValiKood><<ALLTRIM(tsd_lisa1b.c_1320)>></c1320_ValiKood>
 <c1330_Summa><<ROUND(tsd_lisa1b.c_1330,2)>></c1330_Summa>
@@ -159,7 +158,6 @@ TEXT TO lcString NOSHOW additive
 <c1470_Summa><<ROUND(tsd_lisa1b.c_1470,2)>></c1470_Summa>
 </tsd_L1_B_Mvt>
 </mvtList>
-
 ENDTEXT
 			Endif
 
@@ -183,12 +181,12 @@ ENDTEXT
 TEXT TO lcString NOSHOW additive
 
 </tsd_L1_B_Vm>
-</vmList>
 
 ENDTEXT
 
 	Endscan
 TEXT TO lcString NOSHOW additive
+</vmList>
 </tsd_L1_B_Isik>
 
 ENDTEXT

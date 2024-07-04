@@ -1,12 +1,56 @@
 Parameter cWhere
 
-If !Used('curJournal')
-	Return .F.
-Endif
+tcKood1 = Rtrim(Ltrim(fltrJournal.kood1))+'%'
+tcKood2 = Rtrim(Ltrim(fltrJournal.kood2))+'%'
+tcKood3 = Rtrim(Ltrim(fltrJournal.kood3))+'%'
+tcKood5 = Rtrim(Ltrim(fltrJournal.kood5))+'%'
+cSelg = '%'+Rtrim(Ltrim(fltrJournal.selg))+'%'
+cDeebet = Rtrim(Ltrim(fltrJournal.deebet))+'%'
+cKreedit = Rtrim(Ltrim(fltrJournal.kreedit))+'%'
+cAsutus = '%'+Upper(Rtrim(Ltrim(fltrJournal.asutus)))+'%'
+cDok = '%'+Upper(Ltrim(Rtrim(fltrJournal.dok)))+'%'
+tcTunnus = Upper(Ltrim(Rtrim(fltrJournal.tunnus)))+'%'
+dKpv1 = fltrJournal.kpv1
+dKpv2 = Iif(Empty(fltrJournal.kpv2),Date()+365*10,fltrJournal.kpv2)
+nSumma1 = Iif(Empty(fltrJournal.Summa1),-999999999,fltrJournal.Summa1)
+nSumma2 = Iif(Empty(fltrJournal.Summa2),999999999,fltrJournal.Summa2)
+tcTPD = Rtrim(Ltrim(fltrJournal.tpd))+'%'
+tcTPK = Rtrim(Ltrim(fltrJournal.tpk))+'%'
+tcKasutaja = Rtrim(Ltrim(fltrJournal.ametnik))+'%'
+*!*	=dodefault()
+tcMuud = '%'+Rtrim(Ltrim(fltrJournal.muud))+'%'
+tcProj = Rtrim(Ltrim(fltrJournal.Proj))+'%'
+tcUritus = Rtrim(Ltrim(fltrJournal.uritus))+'%'
+tcValuuta = Rtrim(Ltrim(fltrJournal.valuuta))+'%'
+tcObjekt = Rtrim(Ltrim(fltrJournal.objekt))+'%'
+
+
+TEXT TO l_sql_where NOSHOW textmerge
+	 kood1 ilike ?tcKood1 and kood2 ilike ?tcKood2 and kood3 ilike ?tcKood3 and kood5 ilike ?tcKood5
+	 and coalesce(selg,'') ilike ?cSelg
+	 and deebet ilike ?cDeebet and kreedit ilike ?cKreedit
+	 and lisa_d ilike ?tcTPD and lisa_k ilike ?tcTPK
+	 and coalesce(asutus,'') ilike ?cAsutus
+	 and kpv >= ?dKpv1
+	 and kpv <= ?dKpv2
+	 and dok ilike '<<cDok>>'
+	 and summa >= ?nSumma1 and summa <= ?nSumma2
+	 and kasutaja ilike ?tcKasutaja
+	 and tunnus ilike ?tcTunnus
+	 and coalesce(muud,'') ilike ?tcMuud
+	 and proj ilike ?tcProj
+	 and kood4 ilike ?tcUritus
+	 and objekt ilike ?tcObjekt
+	and	 rekvid = <<gRekv>>	 
+ENDTEXT
+
+*l_months = MONTH(dKpv2) - MONTH(dKpv1) + 1
 
 Create Cursor journal_report1 (Id Int, kpv d, asutusid Int Null,  deebet c(20), kreedit c(20), lisa_d c(20)Null, lisa_k c(20) Null,;
 	kood1 c(20) Null, kood2 c(20) Null, kood3 c(20) Null, kood4 c(20) Null, kood5 c(20) Null, Summa N(14,2), selg c(254) Null,;
-	dok c(120) Null, asutus c(254) Null, tunnus c(20) Null, Proj c(20) Null, summa_kokku N(14,2), valuuta c(20) Default 'EUR', read_kokku Int, Number Int)
+	dok c(120) Null, asutus c(254) Null, tunnus c(20) Null, Proj c(20) Null, objekt c(20) Null, summa_kokku N(14,2), valuuta c(20) Default 'EUR',; 
+	read_kokku Int, Number Int)
+	
 
 
 Index On Id Tag Id
@@ -21,6 +65,7 @@ Index On kood4 Tag kood4 Additive
 Index On kood5 Tag kood5 Additive
 Index On lisa_d Tag lisa_d Additive
 Index On lisa_k Tag lisa_k Additive
+Index On objekt Tag objekt Additive
 Index On Summa Tag Summa Additive
 Index On Left(Upper(selg),40) Tag selg Additive
 Index On Left(Upper(dok),40) Tag dok Additive
@@ -35,8 +80,14 @@ If Used('curJournal')
 Endif
 Select journal_report1
 Set Order To (l_order )
+	
+	
+	l_where = l_sql_where 
+	lError = oDb.readFromModel('raamatupidamine\journal', 'curJournal', 'gRekv, guserid', 'tmp_journal', l_where )
 
-Append From Dbf('curJournal')
+SELECT journal_report1
+Append From Dbf('tmp_journal')
+USE IN tmp_journal
 
 Return .T.
 

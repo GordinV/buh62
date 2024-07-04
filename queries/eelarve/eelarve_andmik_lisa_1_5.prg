@@ -621,7 +621,7 @@ Update eelarve_report_query  ;
 	SET idx = '3.1.91', ;
 	sub_idx = 4 ;
 	WHERE Alltrim(tegev) In ('10110','10120','10121','10200','10201','10300','10400','10402','10500','10600',;
-	'10700','10701','10702','10800','10900')
+	'10700','10701','10702','10800','10900','10123', '10124', '10125', '10126', '10127', '10403', '10404', '10704')
 
 Select 'S' As is_esita, ;
 	'3.1.91' As idx, 2 As sub_idx, gRekv As rekvid, Space(20) As tegev, '' As artikkel, Upper('Sotsiaalne kaitse') As nimetus, ;
@@ -630,7 +630,7 @@ Select 'S' As is_esita, ;
 	sum(tegelik) As tegelik, Sum(kassa) As kassa, Sum(saldoandmik) As saldoandmik ;
 	FROM qryReport ;
 	where Alltrim(tegev) In ('10110','10120','10121','10200','10201','10300','10400','10402','10500','10600',;
-	'10700','10701','10702','10800','10900');
+	'10700','10701','10702','10800','10900','10123', '10124', '10125', '10126', '10127', '10403', '10404', '10704');
 	INTO Cursor tmp1
 
 Select eelarve_report_query
@@ -803,6 +803,7 @@ l_field = 'eelarve_taps'
 l_result_eelarve_taps =  get_kontrol ('2.4.6-5-1','','',l_field) +  get_kontrol ('2.4.6-5-2','','',l_field) - ;
 	get_kontrol ('','100','',l_field) + get_kontrol ('2.4.8-5-2','','',l_field)
 
+SET STEP ON 
 l_field = 'kassa'
 l_result_kassa =  get_kontrol ('2.4.6-5-1','','',l_field) +  get_kontrol ('2.4.6-5-2','','',l_field) - ;
 	get_kontrol ('','100','',l_field) + get_kontrol ('2.4.8-5-2','','',l_field)

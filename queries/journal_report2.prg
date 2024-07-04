@@ -11,7 +11,7 @@ lError = oDb.readFromModel('raamatupidamine\journal', 'details', 'tnId, guserid'
 Create Cursor journal_report1 (Id Int, kpv d, asutus c(254), dok c(120) Null, ;
 	selg m , deebet c(20), kreedit c(20), lisa_d c(20) Null, lisa_k c(20) Null, Summa Y,;
 	kood1 c(20) Null, valuuta c(20) Default 'EUR', kuurs N(14,4) Default 1, kood2 c(20) Null,;
-	kood3 c(20) Null, kood4 c(20) Null, kood5 c(20) Null, muud m Null, kasutaja c(120) Null, TUNNUS c(20) Null, Proj c(20) Null)
+	kood3 c(20) Null, kood4 c(20) Null, kood5 c(20) Null, muud m Null, kasutaja c(120) Null, TUNNUS c(20) Null, Proj c(20) Null, Objekt c(20) Null)
 
 
 select journal_report1 
@@ -43,6 +43,7 @@ Scan
 		summa With qryJournal1.Summa,;
 		TUNNUS With Iif(Isnull(qryJournal1.TUNNUS),'',qryJournal1.TUNNUS),;
 		proj With Iif(Isnull(qryJournal1.Proj),'',qryJournal1.Proj),;
+		objekt With Iif(Isnull(qryJournal1.objekt),'',qryJournal1.objekt),;
 		muud With qryjournal.muud  In journal_report1
 Endscan
 

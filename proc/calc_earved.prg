@@ -5,6 +5,10 @@ Set Textmerge On
 * Kalle 15.02.2023
 select id, IIF(LEFT(regkood,8) = '75024260' OR regkood = '75024260-18510139', '75024260',  regkood) as regkood, nimetus, aadress, email, tel  FROM comAsutusRemote a INTO CURSOR qryAsutused
    
+* pay_to_name andmed
+lError = oDb.readFromModel('ou\rekv', 'pay_to_name', 'gRekv, guserid', 'v_pay_to_name')
+
+
 
 If !Empty(tnId)
 	If !Used('curArved')
@@ -235,11 +239,28 @@ ENDTEXT
 l_tahtaeg = ALLTRIM(STR(YEAR(qryeArved.tahtaeg))) + '-' + ; 
 	IIF(MONTH(qryeArved.tahtaeg) < 10, '0','') + ALLTRIM(STR(MONTH(qryeArved.tahtaeg))) + '-' + ;
 	IIF(DAY(qryeArved.tahtaeg) < 10, '0','') + ALLTRIM(STR(DAY(qryeArved.tahtaeg)))
+	
+l_raha_saaja = ALLTRIM(convert_to_utf(qryeArved.muuja))
+* Sotsiaal tookestus 
+IF TYPE('qryeArved.raha_saaja') = 'C' AND !EMPTY(qryeArved.raha_saaja)
+	l_raha_saaja = ALLTRIM(convert_to_utf(qryeArved.raha_saaja))
+ENDIF
+
+IF  USED('v_pay_to_name')
+	* vaatame kas arve aa omab ule asutusel
+	SELECT v_pay_to_name
+	LOCATE FOR arve = ALLTRIM(qryeArved.arve)
+	IF FOUND()
+		l_raha_saaja  = ALLTRIM(convert_to_utf(v_pay_to_name.pay_to_name))
+	ENDIF	
+ENDIF
+
+
 
 TEXT TO lcFileString ADDITIVE NOSHOW
 <PaymentInfo>
 <Currency>EUR</Currency>
-<PaymentRefId><<ALLTRIM(qryeArved.viitenr)>></PaymentRefId>
+<PaymentRefId><<IIF(ISNULL(qryeArved.viitenr),'',ALLTRIM(qryeArved.viitenr))>></PaymentRefId>
 <PaymentDescription>Arve <<convert_to_utf(qryeArved.Number)>></PaymentDescription>
 <Payable>YES</Payable>
 <PayDueDate><<l_tahtaeg>></PayDueDate> 
@@ -247,7 +268,7 @@ TEXT TO lcFileString ADDITIVE NOSHOW
 <PayerName><<Alltrim(convert_to_utf(qryeArved.ostja)) >></PayerName>
 <PaymentId><<ALLTRIM(convert_to_utf(qryeArved.number))>></PaymentId>
 <PayToAccount><<ALLTRIM(qryeArved.arve)>></PayToAccount>
-<PayToName><<ALLTRIM(convert_to_utf(qryeArved.muuja))>></PayToName>
+<PayToName><<l_raha_saaja>></PayToName>
 </PaymentInfo>
 </Invoice>
 

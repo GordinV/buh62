@@ -1,4 +1,4 @@
-<?xml version = "1.0" encoding="utf-8" standalone="yes"?>
+<?xml version = "1.0" encoding="Windows-1252" standalone="yes"?>
 <VFPData>
   <grid>
     <sql>SELECT d.*
@@ -21,11 +21,30 @@
                          hl.jaak,
                          hl.kovjaak,
                          hl.osa,
+                         hl.tasku_raha,
+                         hl.makse_viis,
+                         hl.rahasaaja_id,
+                         hl.aa,
+                         hl.tunnus,
+                         hl.bruttosissetulek,
+                         coalesce(hl.netosissetulek, 0)                                AS netosissetulek,
                          hl.sugulane_osa,
                          hl.status,
-                         coalesce((hl.properties -&gt;&gt; 'algoritm')::INTEGER, 0)::INTEGER AS algoritm
+                         coalesce((hl.properties -&gt;&gt; 'algoritm')::INTEGER, 0)::INTEGER AS algoritm,
+                         CASE
+                             WHEN coalesce(hl.hoolduskulud, 0) = 0 THEN h.summa
+                             ELSE hl.hoolduskulud END                                  AS hoolduskulud,
+                         hl.summa - (CASE
+                                         WHEN coalesce(hl.hoolduskulud, 0) = 0 THEN h.summa
+                                         ELSE hl.hoolduskulud END)                     AS isiku_kulud
                   FROM hooldekodu.hooleping hl
-                           INNER JOIN libs.asutus a ON a.id = hl.hooldekoduid
+                           INNER JOIN libs.asutus a ON a.id = hl.hooldekoduid,
+                       (SELECT summa
+                        FROM hooldekodu.hoo_config
+                        WHERE library = 'RIIGI_TOETUS'
+                          AND status &lt; 3
+                        ORDER BY kpv DESC
+                        LIMIT 1) h
                   WHERE hl.id = $1</sql>
     <sqlAsNew>SELECT $1 :: INTEGER                                                                AS id,
                               docs.sp_get_number(u.rekvId, 'HOOLEPING', year(date()), NULL) :: VARCHAR(20) AS number,
@@ -49,7 +68,12 @@
                               0 :: NUMERIC                                                                 AS jaak,
                               0 :: NUMERIC                                                                 AS kovjaak,
                               0 :: NUMERIC                                                                 AS sugulane_osa,
+                              NULL::INTEGER                                                                AS makse_viis,
+                              NULL::INTEGER                                                                AS rahasaaja_id,
+                              NULL::VARCHAR(20)                                                            AS aa,
+                              NULL::VARCHAR(20)                                                            AS tunnus,
                               0::INTEGER                                                                   AS osa,
+                              15::INTEGER                                                                  AS tasku_raha,
                               1                                                                            AS status,
                               0                                                                            AS algoritm
                        FROM ou.userid u
@@ -93,10 +117,28 @@
   <select>
     <sql>select 0 as id, 'Jääk kuu lõpus'::varchar(254) as nimetus, $1 as param1, $2 as param2
                     union all
-                  select 1 as id, 'Vaba jääk'::varchar(254) as nimetus, $1 as param1, $2 as param2</sql>
+                  select 1 as id, 'Vaba jääk'::varchar(254) as nimetus, $1 as param1, $2 as param2
+                    union all
+                  select 2 as id, 'Tulu arve'::varchar(254) as nimetus, $1 as param1, $2 as param2</sql>
     <query />
     <multiple>true</multiple>
     <alias>algoritmid</alias>
+  </select>
+  <select>
+    <sql>select 1 as id, 'Makse korraldus'::varchar(254) as nimetus, $1 as param1, $2 as param2
+                    union all
+                  select 2 as id, 'Väljamakse kassaorder'::varchar(254) as nimetus, $1 as param1, $2 as param2
+                    union all
+                  select 3 as id, 'Tasaarveldus'::varchar(254) as nimetus, $1 as param1, $2 as param2</sql>
+    <query />
+    <multiple>true</multiple>
+    <alias>makse_viis</alias>
+  </select>
+  <select>
+    <sql>select hooldekodu.sp_calc_netosissetulek($1::integer, $2::numeric) as summa</sql>
+    <query />
+    <multiple>true</multiple>
+    <alias>calcNeto</alias>
   </select>
   <selectAsLibs>
     <sql>SELECT id,

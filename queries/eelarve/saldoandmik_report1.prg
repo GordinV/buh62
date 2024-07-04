@@ -27,10 +27,16 @@ TEXT TO l_params TEXTMERGE NOSHOW additive
 	<<IIF(!EMPTY(fltrAruanne.kood1),IIF(LEN(l_params)> 0 ,', ','') + 'Tegevus=','')>> <<ALLTRIM(fltrAruanne.kood1)>> <<IIF(!EMPTY(fltrAruanne.kood1),'%','')>> 
 ENDTEXT
 
+TEXT TO l_params TEXTMERGE NOSHOW additive		
+	<<IIF(!EMPTY(fltrAruanne.tp),IIF(LEN(l_params)> 0 ,', ','') + 'TP=','')>> <<ALLTRIM(fltrAruanne.tp)>> <<IIF(!EMPTY(fltrAruanne.tp),'%','')>> 
+ENDTEXT
+
 IF !USED('fltrParametid')
 	CREATE CURSOR fltrParametid (params m)
 	APPEND BLANK
 ENDIF
+
+
 
 replace fltrParametid.params WITH l_params IN fltrParametid
 
@@ -41,7 +47,8 @@ TEXT TO l_params TEXTMERGE noshow
 		"konto":"<<ALLTRIM(fltrAruanne.konto)>>",
 		"proj":"<<ALLTRIM(fltrAruanne.proj)>>",
 		"uritus":"<<ALLTRIM(fltrAruanne.uritus)>>",
-		"tegevus":"<<ALLTRIM(fltrAruanne.kood1)>>"
+		"tegevus":"<<ALLTRIM(fltrAruanne.kood1)>>",
+		"tp":"<<ALLTRIM(fltrAruanne.tp)>>"
 	}
 ENDTEXT
 
@@ -49,7 +56,7 @@ l_kpv1 = fltrAruanne.kpv1
 l_kpv2 = fltrAruanne.kpv2
 l_kond = IIF(EMPTY(fltrAruanne.kond), null, 1)
 
-lError = oDb.readFromModel('aruanned\eelarve\saldoandmik', 'saldoandmik_report', 'l_kpv2, gRekv, l_kond, l_params', 'tmpReport', lcWhere)
+lError = oDb.readFromModel('aruanned\eelarve\saldoandmik', 'saldoandmik_report', 'l_kpv2, gRekv, l_kond, l_params', 'saldoaruanne_report1', lcWhere)
 If !lError
 	Messagebox('Viga',0+16, 'Eelarve kulud')
 	Set Step On
@@ -57,15 +64,9 @@ If !lError
 	Return .F.
 ENDIF
 
-SELECT tmpReport
-
-Select konto, tp, tegev, allikas, rahavoog, ;
-	sum(deebet) as deebet, sum(kreedit) as kreedit;
-	from tmpReport ;
-	WHERE (deebet <> 0 OR kreedit <> 0 );
-	GROUP By konto, tp, tegev, allikas, rahavoog ;
-	ORDER By konto, tp, tegev, allikas, rahavoog ;
-	INTO Cursor saldoaruanne_report1
-
-Use In tmpReport
 Select saldoaruanne_report1
+
+IF !EMPTY(fltrAruanne.kond) AND !EMPTY(fltrAruanne.ainult_kond)
+	SET FILTER TO rekv_id = 999999
+	GO TOP 
+ENDIF

@@ -12,6 +12,7 @@ IF EMPTY(l_asutus_id)
 ENDIF
 
 lError = oDb.readFromModel('libs\libraries\asutused', 'dokumenidid', 'l_asutus_id ', 'dok_report1')
+
 If !lError
 	Messagebox('Viga',0+16, 'Dokumendid')
 	Set Step On

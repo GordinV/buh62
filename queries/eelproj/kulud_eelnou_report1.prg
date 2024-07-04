@@ -6,14 +6,22 @@ TEXT TO lcWhere TEXTMERGE noshow
 	coalesce(artikkel,'') like '<<ALLTRIM(fltrAruanne.kood5)>>%'
 ENDTEXT
 
-l_params = null
+lcJson = null
 IF !EMPTY(fltrAruanne.kood2)
-	TEXT TO l_params TEXTMERGE noshow
-	{"allikas":"<<ALLTRIM(fltrAruanne.kood2)>>"}
+	TEXT TO lcJson TEXTMERGE noshow
+	{"allikas":"<<ALLTRIM(fltrAruanne.kood2)>>","taotlus_statusid":<<fltrAruanne.taotlus_statusid>>}
 	ENDTEXT	
+ELSE
+* lisa params
+TEXT TO lcJson TEXTMERGE noshow
+	{"taotlus_statusid":<<fltrAruanne.taotlus_statusid>>}
+ENDTEXT
+	
 ENDIF
 
-lError = oDb.readFromModel('aruanned\eelarve\kulud_eelnou', 'kulud_eelnou', 'fltrAruanne.kpv2, gRekv,fltrAruanne.kond,l_params', 'tmp_eelnou_report',lcWhere )
+
+
+lError = oDb.readFromModel('aruanned\eelarve\kulud_eelnou', 'kulud_eelnou', 'fltrAruanne.kpv2, gRekv,fltrAruanne.kond,lcJson', 'tmp_eelnou_report',lcWhere )
 
 If !lError OR !USED('tmp_eelnou_report')
 	Messagebox('Viga',0+16, 'Kulud eelarve eelnõu')

@@ -29,10 +29,8 @@ TEXT TO lcSqlWhere TEXTMERGE noshow
 		and rekvid = <<gRekv>>
 		and status <= <<IIF(EMPTY(fltrPalkJaak.status),2,1)>>
 ENDTEXT
-SET STEP ON 
+
 lError = oDb.readFromModel('palk\palk_jaak', 'printPalkJaak', 'gRekv, guserid,tcProj', 'tmpPalkOper', lcSqlWhere)
-SELECT tmpPalkOper 
-brow
 
 Insert Into palkJaak_report1 (isikid, isik, isikukood, ;
 	arv, tasu, tulumaks,  tki, muud, sots, tka, jaak, kinni, kkinni, pm, osakond, osakonna_nimetus);
