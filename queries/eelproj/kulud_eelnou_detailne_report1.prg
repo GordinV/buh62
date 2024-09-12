@@ -1,0 +1,54 @@
+Parameter cWhere
+
+Wait Window 'Päring...' Nowait
+
+TEXT TO lcWhere TEXTMERGE noshow
+	coalesce(artikkel,'') like '<<ALLTRIM(fltrAruanne.kood5)>>%'
+ENDTEXT
+
+TEXT TO l_params TEXTMERGE noshow
+	{"allikas":"<<ALLTRIM(fltrAruanne.kood2)>>",
+	"artikkel":"<<ALLTRIM(fltrAruanne.kood5)>>",
+	"tegev":"<<ALLTRIM(fltrAruanne.kood1)>>",
+	"rahavoog":"<<ALLTRIM(fltrAruanne.kood3)>>",
+	"tunnus":"<<ALLTRIM(fltrAruanne.tunnus)>>",
+	"proj":"<<ALLTRIM(fltrAruanne.proj)>>",
+	"taotlus_statusid":<<fltrAruanne.taotlus_statusid>>,	
+	"uritus":"<<ALLTRIM(fltrAruanne.kood4)>>"}
+ENDTEXT	
+
+lError = oDb.readFromModel('aruanned\eelarve\kulud_eelnou_pikk', 'kulud_eelnou', 'fltrAruanne.kpv2, gRekv,fltrAruanne.kond,l_params', 'tmp_eelnou_report',lcWhere )
+
+If !lError OR !USED('tmp_eelnou_report')
+	Messagebox('Viga',0+16, 'Kulud eelarve eelnõu')
+	Set Step On
+	Select 0
+	Return .F.
+ENDIF
+
+CREATE CURSOR tulud_eelnou_report1(asutus c(254), hallava_asutus c(254),   ;
+artikkel c(20), nimetus c(254),;
+tegev c(20),;
+tegev_nimetus c(254),;
+tunnus c(20),;
+proj c(20),;
+uritus c(20),;
+allikas c(20),;
+objekt c(20),;
+aasta_1_tekke_taitmine n(12,2), ;
+eelarve_tekkepohine_kinnitatud n(12,2), ;
+eelarve_tekkepohine_tapsustatud n(12,2), ;
+aasta_2_tekke_taitmine n(12,2),;
+aasta_3_oodatav n(12,2) ,;
+aasta_3_eelnou n(12,2),;
+aasta_3_prognoos n(12,2),;
+selg m DEFAULT ' ')
+
+
+
+SELECT tulud_eelnou_report1
+APPEND FROM DBF('tmp_eelnou_report')
+
+USE IN tmp_eelnou_report
+
+SELECT tulud_eelnou_report1

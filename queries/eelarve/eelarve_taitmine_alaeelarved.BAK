@@ -35,7 +35,7 @@ delete FROM comEelarveremote WHERE kood in ('150','258','450')
 
 INSERT INTO comEelarveremote  (id, kood, nimetus) VALUES (90001 , '150','Osalused avaliku sektori ja sidusüksustes')
 INSERT INTO comEelarveremote  (id, kood, nimetus) VALUES (90002 , '258','Laenukohustiste pikaajaline osa')
-INSERT INTO comEelarveremote  (id, kood, nimetus) VALUES (90003 , '450','Antud sihtfinfntseerimine')
+INSERT INTO comEelarveremote  (id, kood, nimetus) VALUES (90003 , '450','Antud sihtfinantseerimine')
 
 
 Select idx, regkood, asutus ,;
@@ -70,14 +70,18 @@ Select 	asutus ,;
 	INTO Cursor eelarve_report
 
 
-CREATE CURSOR eelarve_report2 (asutus c(120), allikas c(20), tegev c(20), artikkel c(20),;
+* 	parasutus c(254) null, parregkood c(20) null,; 
+
+CREATE CURSOR eelarve_report2 (;
+	parasutus c(254) null, parregkood c(20) null,; 
+	asutus c(120), allikas c(20), tegev c(20), artikkel c(20),;
 	nimetus c(254),eelarve_kinni n(14,2),;
 	 eelarve_parandatud n(14,2), ;
 	 tegelik n(14,2),;
 	 eelarve_kassa_kinni n(14,2),;
 	eelarve_kassa_parandatud n(14,2),;  
-	kassa n(14,2),;
-	parasutus c(254) null, parregkood c(20) null )
+	kassa n(14,2);
+	)
 	
 APPEND FROM DBF('eelarve_report')	
 
@@ -85,3 +89,4 @@ USE IN eelarve_report
 Use In tmpReport
 Use In qryReport
 Select eelarve_report2
+brow

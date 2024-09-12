@@ -100,6 +100,14 @@
     <multiple>false</multiple>
     <alias>kulum_umber_arvestamine</alias>
   </select>
+  <select>
+    <sql>SELECT d.*
+                  FROM docs.get_relative_docs($1::INTEGER) d
+                           INNER JOIN ou.userid u ON u.id = $2 :: INTEGER</sql>
+    <query />
+    <multiple>true</multiple>
+    <alias>relations</alias>
+  </select>
   <selectAsLibs>
     <sql>SELECT *
                    FROM cur_pohivara l

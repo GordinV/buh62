@@ -33,8 +33,6 @@ With loXMLHTTP
 
 Endwith
 
-	SELECT m_memo
-	brow
 
 Return l_found_xml
 

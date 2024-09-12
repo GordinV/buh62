@@ -1,0 +1,49 @@
+Parameter cWhere
+
+TEXT TO lcWhere TEXTMERGE noshow
+	(isikukood like '<<allTRIM(fltrHooIsikud.isik)>>%'
+	or nimi ilike '%<<allTRIM(fltrHooIsikud.isik)>>%')
+	and kpv >= '<<DTOC(fltrTehingud.kpv1 ,1)>>'::date
+	and kpv <= '<<DTOC(fltrTehingud.kpv2,1)>>'::date
+	and summa >= <<fltrTehingud.summa1)>>::numeric
+	and summa <= <<fltrTehingud.summa2)>>::numeric
+	and tyyp ilike '%<<RTRIM(lTRIM(fltrTehingud.tyyp))>>%'::text
+	and allikas ilike '%<<RTRIM(lTRIM(fltrTehingud.allikas))>>%'::text
+	and coalesce(muud,'') ilike '%<<RTRIM(lTRIM(fltrTehingud.muud))>>%'::text
+ENDTEXT
+
+
+l_params  = ''
+TEXT TO l_params TEXTMERGE noshow
+	<<IIF(!EMPTY(fltrHooIsikud.isik),'Isik=','')>> <<ALLTRIM(fltrHooIsikud.isik)>> <<IIF(!EMPTY(fltrHooIsikud.isik),'%','')>> 
+ENDTEXT
+
+TEXT TO l_params TEXTMERGE NOSHOW additive
+kpv >= <<DTOC(fltrTehingud.kpv1 ,1)>>, kpv <= <<DTOC(fltrTehingud.kpv2 ,1)>>, summa >= <<fltrTehingud.summa1>>, summa <= <<fltrTehingud.summa2>>
+ENDTEXT
+TEXT TO l_params TEXTMERGE NOSHOW additive
+	<<IIF(!EMPTY(fltrTehingud.tyyp),IIF(LEN(l_params)> 0 ,', ','') + 'Tüüp=','')>> <<ALLTRIM(fltrTehingud.tyyp)>> <<IIF(!EMPTY(fltrTehingud.tyyp),'%','')>> 
+ENDTEXT
+TEXT TO l_params TEXTMERGE NOSHOW additive
+	<<IIF(!EMPTY(RTRIM(lTRIM(fltrTehingud.allikas),IIF(LEN(l_params)> 0 ,', ','') + 'Allikas=','')>> <<RTRIM(lTRIM(fltrTehingud.allikas>> <<IIF(!EMPTY(fltrTehingud.allikas),'%','')>> 
+ENDTEXT
+TEXT TO l_params TEXTMERGE NOSHOW additive
+	<<IIF(!EMPTY(RTRIM(lTRIM(fltrTehingud.muud),IIF(LEN(l_params)> 0 ,', ','') + 'Selgitus=','')>> <<RTRIM(lTRIM(fltrTehingud.muud>> <<IIF(!EMPTY(fltrTehingud.muud),'%','')>> 
+ENDTEXT
+
+IF !USED('fltrParametid')
+	CREATE CURSOR fltrParametid (params m)
+	APPEND BLANK
+ENDIF
+
+replace fltrParametid.params WITH l_params IN fltrParametid
+
+lError = oDb.readFromModel('hooldekodu\hootehingus', 'curHooTehingud', 'gRekv,gUserid', 'hootehingud1', lcWhere)
+If !lError
+	Messagebox('Viga',0+16, 'Hooldekodu')
+	Set Step On
+	Select 0
+	Return .F.
+Endif
+Select hootehingud1
+

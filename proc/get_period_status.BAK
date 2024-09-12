@@ -1,0 +1,13 @@
+LPARAMETERS l_validated, l_osalised_avatud 
+
+l_status = 0
+
+IF !EMPTY(l_validated) AND EMPTY(l_osalised_avatud )
+	l_status = 1
+ENDIF
+
+IF !EMPTY(l_validated) AND !EMPTY(l_osalised_avatud )
+	l_status = 2
+ENDIF
+
+RETURN l_status 

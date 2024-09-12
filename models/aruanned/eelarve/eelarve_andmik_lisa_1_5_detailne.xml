@@ -1,0 +1,63 @@
+<?xml version = "1.0" encoding="Windows-1252" standalone="yes"?>
+<VFPData>
+  <grid>
+    <sql>SELECT report.idx:: VARCHAR(20),
+                           report.rekvid:: INTEGER,
+                           report.tegevus:: VARCHAR(20),
+                           report.allikas:: VARCHAR(20),
+                           report.artikkel:: VARCHAR(20),
+                           report.nimetus:: VARCHAR(254),
+                           report.kassa:: NUMERIC(14, 2),
+                           r.nimetus::VARCHAR(254) AS asutus,
+                           report.tunnus
+                    FROM eelarve.eelarve_andmik_lisa_1_5_detailne($1::DATE, $2::INTEGER,
+                                                                  $3::INTEGER) report
+                             LEFT OUTER JOIN (SELECT id, nimetus
+                                              FROM ou.rekv
+                                              UNION ALL
+                                              SELECT 999 AS id, 'Kokku' AS nimetus
+                    ) r ON r.id = report.rekvid</sql>
+    <alias>eelarve_andmik_lisa_1_5_report</alias>
+  </grid>
+  <select></select>
+  <selectAsLibs>
+    <sql></sql>
+    <alias>selectAsLibs</alias>
+  </selectAsLibs>
+  <saveDoc>
+    <sql></sql>
+    <alias>saveDoc</alias>
+  </saveDoc>
+  <deleteDoc>
+    <sql></sql>
+    <alias>deleteDoc</alias>
+  </deleteDoc>
+  <requiredFields>
+    <validate></validate>
+  </requiredFields>
+  <executeSql>
+    <sql></sql>
+    <alias></alias>
+  </executeSql>
+  <executeCommand>
+    <sql></sql>
+    <alias></alias>
+  </executeCommand>
+  <register>
+    <sql></sql>
+    <alias></alias>
+  </register>
+  <endProcess>
+    <sql />
+    <alias />
+  </endProcess>
+  <generateJournal>
+    <sql />
+    <alias />
+  </generateJournal>
+  <print></print>
+  <getLog>
+    <sql />
+    <alias />
+  </getLog>
+</VFPData>

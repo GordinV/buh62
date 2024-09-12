@@ -1,0 +1,24 @@
+Parameter cWhere
+
+TEXT TO l_sql_where NOSHOW textmerge
+	kpv >= '<<DTOC(fltrAruanne.kpv1,1)>>'::date
+	and kpv <= '<<DTOC(fltrAruanne.kpv2,1)>>'::date
+ENDTEXT
+
+IF !EMPTY(fltrAruanne.isikid) 
+TEXT TO l_sql_where additive NOSHOW textmerge
+	and asutusid = <<fltrAruanne.isikid>>
+ENDTEXT
+
+ENDIF
+	SET STEP on
+
+
+lError = oDb.readFromModel('aruanned\hooldekodu\hoo_arved', 'hoo_arved', 'gRekv, gUserId,fltrAruanne.kpv1,fltrAruanne.kpv2, fltrAruanne.kond', 'arve_report2', l_sql_where)
+IF !lError OR !USED('arve_report2')
+	SET STEP on
+	SELECT 0 
+	return	
+ENDIF
+	
+SELECT arve_report2
