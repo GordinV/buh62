@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="dataSourceStorageLocal">
+  <component name="dataSourceStorageLocal" created-in="PS-242.20224.361">
     <data-source name="test_server" uuid="086e3906-c253-4189-8a7f-fefe12c32476">
       <database-info product="PostgreSQL" version="10.5" jdbc-version="4.0" driver-name="PostgreSQL Native Driver" driver-version="PostgreSQL 9.4.1212" dbms="POSTGRES" exact-version="10.5" exact-driver-version="9.4">
         <identifier-quote-string>&quot;</identifier-quote-string>
@@ -8,7 +8,13 @@
       <case-sensitivity plain-identifiers="lower" quoted-identifiers="exact" />
       <secret-storage>master_key</secret-storage>
       <user-name>vlad</user-name>
-      <introspection-schemas>@:@</introspection-schemas>
+      <schema-mapping>
+        <introspection-scope>
+          <node kind="database" qname="@">
+            <node kind="schema" qname="@" />
+          </node>
+        </introspection-scope>
+      </schema-mapping>
     </data-source>
     <data-source name="db@localhost" uuid="5e594526-e16c-4810-91b2-7d84fd317b33">
       <database-info product="PostgreSQL" version="11.5 (Debian 11.5-1.pgdg90+1)" jdbc-version="4.0" driver-name="PostgreSQL Native Driver" driver-version="PostgreSQL 9.4.1212" dbms="POSTGRES" exact-version="11.5" exact-driver-version="9.4">
@@ -17,7 +23,13 @@
       <case-sensitivity plain-identifiers="lower" quoted-identifiers="exact" />
       <secret-storage>master_key</secret-storage>
       <user-name>vlad</user-name>
-      <introspection-schemas>@:@</introspection-schemas>
+      <schema-mapping>
+        <introspection-scope>
+          <node kind="database" qname="@">
+            <node kind="schema" qname="@" />
+          </node>
+        </introspection-scope>
+      </schema-mapping>
     </data-source>
   </component>
 </project>

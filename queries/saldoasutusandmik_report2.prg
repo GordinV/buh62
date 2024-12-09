@@ -15,7 +15,8 @@ TEXT TO lcWhere ADDITIVE TEXTMERGE noshow
 ENDTEXT
 
 l_konto = ''
-lError = oDb.readFromModel('aruanned\raamatupidamine\kontosaldoandmik', 'kontosaldoandmik_report', 'l_konto, fltrAruanne.asutusid, fltrAruanne.kpv2, gRekv, fltrAruanne.kond', 'tmpReport', lcWhere )
+l_params = null
+lError = oDb.readFromModel('aruanned\raamatupidamine\kontosaldoandmik', 'kontosaldoandmik_report', 'l_konto, fltrAruanne.asutusid, fltrAruanne.kpv2, gRekv, fltrAruanne.kond,l_params', 'tmpReport', lcWhere )
 If !lError
 	Messagebox('Viga',0+16, 'Konto saldoandmik')
 	Set Step On

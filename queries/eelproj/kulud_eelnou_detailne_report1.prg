@@ -26,6 +26,7 @@ If !lError OR !USED('tmp_eelnou_report')
 	Return .F.
 ENDIF
 
+
 CREATE CURSOR tulud_eelnou_report1(asutus c(254), hallava_asutus c(254),   ;
 artikkel c(20), nimetus c(254),;
 tegev c(20),;

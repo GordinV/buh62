@@ -5,6 +5,10 @@ Set Textmerge On
 * Kalle 15.02.2023
 select id, IIF(LEFT(regkood,8) = '75024260' OR regkood = '75024260-18510139', '75024260',  regkood) as regkood, nimetus, aadress, email, tel  FROM comAsutusRemote a INTO CURSOR qryAsutused
    
+* pay_to_name andmed
+lError = oDb.readFromModel('ou\rekv', 'pay_to_name', 'gRekv, guserid', 'v_pay_to_name')
+
+
 
 If !Empty(tnId)
 	If !Used('curArved')
@@ -177,7 +181,7 @@ ENDTEXT
 TEXT TO lcFileString ADDITIVE NOSHOW
 		</InvoiceInformation>
 		<InvoiceSumGroup>
-		<InvoiceSum><<Alltrim(Str(qryeArved.Summa,14,2))>></InvoiceSum>
+		<InvoiceSum><<Alltrim(Str((qryeArved.Summa - qryeArved.kbm),14,2))>></InvoiceSum>
 ENDTEXT
 
 
@@ -241,6 +245,17 @@ l_raha_saaja = ALLTRIM(convert_to_utf(qryeArved.muuja))
 IF TYPE('qryeArved.raha_saaja') = 'C' AND !EMPTY(qryeArved.raha_saaja)
 	l_raha_saaja = ALLTRIM(convert_to_utf(qryeArved.raha_saaja))
 ENDIF
+
+IF  USED('v_pay_to_name')
+	* vaatame kas arve aa omab ule asutusel
+	SELECT v_pay_to_name
+	LOCATE FOR arve = ALLTRIM(qryeArved.arve)
+	IF FOUND()
+		l_raha_saaja  = ALLTRIM(convert_to_utf(v_pay_to_name.pay_to_name))
+	ENDIF	
+ENDIF
+
+
 
 TEXT TO lcFileString ADDITIVE NOSHOW
 <PaymentInfo>

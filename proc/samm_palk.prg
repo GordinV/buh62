@@ -71,7 +71,6 @@ if EMPTY(l_error) OR !USED('qryTootajad') OR RECCOUNT('qryTootajad') = 0
 	RETURN .f.
 ENDIF
 
-
 l_success = .f.
 
 Do While lnStep>0
@@ -172,7 +171,7 @@ TEXT TO lcJson TEXTMERGE noshow
 				}
 ENDTEXT
 * sql proc
-_cliptext = lcJson 
+*_cliptext = lcJson 
 	task = 'palk.gen_palkoper'
 	leRror = odB.readFromModel('palk\palk_oper', 'executeTask', 'guserid,lcJson,task', 'qryResult')
 	Do Form taitmine_raport With 'qryResult' 

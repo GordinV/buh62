@@ -1,4 +1,13 @@
-PARAMETERS tdKpv
+PARAMETERS tdKpv, tLiik
 LOCAL lcKpv
-lcKpv = "to_date('" + DTOC(DATE(),1) + "','YYYYMMDD')"
+
+IF EMPTY(tLiik)
+	lcKpv = "to_date('" + DTOC(tdKpv,1) + "','YYYYMMDD')"
+ELSE
+* YYYY-MM-DD
+	lcKpv = STR(YEAR(tdKpv),4)+'-'+;
+				IIF(month(tdKpv) < 10, '0','') + ALLTRIM(STR(MONTH(tdKpv),2))+;
+				'-'+IIF(day(tdKpv) < 10,'0','') + ALLTRIM(STR(DAY(tdKpv),2))
+ENDIF
+
 RETURN lcKpv

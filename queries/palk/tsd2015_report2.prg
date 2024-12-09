@@ -179,8 +179,6 @@ If Used('qryKoormusLisa')
 	Use In qryKoormusLisa
 Endif
 
-Select tsd_report
-
 If (ltest)
 	=SQLDISCONNECT(gnHandle)
 Endif

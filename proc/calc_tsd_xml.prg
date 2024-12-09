@@ -207,12 +207,6 @@ TEXT TO lcString NOSHOW ADDITIVE
 </tsd_vorm>
 ENDTEXT
 
-*!*	SELECT v_memo
-*!*	INSERT INTO v_memo (xml) VALUES (lcString)
-
-*!*	MODIFY MEMO v_memo.xml
-
-
 lnHandle = Fcreate(cFail)  && If not create it
 If lnHandle < 0     && Check for error opening file
 	Messagebox(Iif(This.eesti=.T.,'Ei saa kirjutada faili','Не могу создать файл'),'Kontrol')

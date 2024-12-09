@@ -17,11 +17,11 @@
 		<name>local</name>
 		<description>local_server</description>
 		<type>connection</type>
-		<conn_str>DRIVER=PostgreSQL Unicode;DATABASE=narvalv;server=localhost;PORT=5432;MaxVarcharSize=254;</conn_str>
+		<conn_str>DRIVER=PostgreSQL Unicode;DATABASE=db;server=localhost;PORT=5432;MaxVarcharSize=254;</conn_str>
 		<app_name>
 	  		Raamatupidamine 7.0 local
 	  	</app_name>
-    <ssl>true</ssl>
+    <ssl>false</ssl>
 	<sslaccess>http://localhost:3000/get_access_code</sslaccess>
     <sslcert>c:/temp/buh60/client.crt</sslcert>
     <sslkey>c:/temp/buh60/server.key</sslkey>
@@ -31,7 +31,7 @@
 		<name>docker_local</name>
 		<description>local_docker_server</description>
 		<type>connection</type>
-		<conn_str>DRIVER=PostgreSQL Unicode;DATABASE=narvalv;server=localhost;PORT=5434;MaxVarcharSize=254;</conn_str>
+		<conn_str>DRIVER=PostgreSQL Unicode;DATABASE=db;server=localhost;PORT=5432;MaxVarcharSize=254;</conn_str>
 		<app_name>
 	  		Raamatupidamine 7.0 local
 	  	</app_name>

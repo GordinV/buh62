@@ -181,7 +181,7 @@ ENDTEXT
 TEXT TO lcFileString ADDITIVE NOSHOW
 		</InvoiceInformation>
 		<InvoiceSumGroup>
-		<InvoiceSum><<Alltrim(Str(qryeArved.Summa,14,2))>></InvoiceSum>
+		<InvoiceSum><<Alltrim(Str((qryeArved.Summa - qryeArved.kbm),14,2))>></InvoiceSum>
 ENDTEXT
 
 

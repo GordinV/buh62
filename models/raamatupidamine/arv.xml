@@ -12,6 +12,8 @@
                                     rekvid,
                                     kpv,
                                     summa,
+                                    kbm,
+                                    kbmta,
                                     tahtaeg,
                                     jaak,
                                     lisa,
@@ -475,6 +477,14 @@
     <query />
     <multuple>false</multuple>
     <alias>check_arv_jaak</alias>
+  </select>
+  <select>
+    <sql>SELECT error_code, result, error_message,  'ARV' AS doc_type_id
+                  FROM docs.koosta_kreedit_arve($2::INTEGER, $1::INTEGER)</sql>
+    <query />
+    <multuple>false</multuple>
+    <alias>koostaKreeditArve</alias>
+    <not_initial_load>true</not_initial_load>
   </select>
   <select>
     <sql>SELECT $1::INTEGER                                                   AS rekv_id,

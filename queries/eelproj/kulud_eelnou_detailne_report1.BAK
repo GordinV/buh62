@@ -6,6 +6,8 @@ TEXT TO lcWhere TEXTMERGE noshow
 	coalesce(artikkel,'') like '<<ALLTRIM(fltrAruanne.kood5)>>%'
 ENDTEXT
 
+SET STEP ON 
+
 TEXT TO l_params TEXTMERGE noshow
 	{"allikas":"<<ALLTRIM(fltrAruanne.kood2)>>",
 	"artikkel":"<<ALLTRIM(fltrAruanne.kood5)>>",
@@ -26,7 +28,6 @@ If !lError OR !USED('tmp_eelnou_report')
 	Return .F.
 ENDIF
 
-brow
 
 CREATE CURSOR tulud_eelnou_report1(asutus c(254), hallava_asutus c(254),   ;
 artikkel c(20), nimetus c(254),;
@@ -54,4 +55,3 @@ APPEND FROM DBF('tmp_eelnou_report')
 USE IN tmp_eelnou_report
 
 SELECT tulud_eelnou_report1
-brow

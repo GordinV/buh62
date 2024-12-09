@@ -152,11 +152,12 @@ ENDTEXT
 
 			If !Empty(tsd_lisa1b.c_1470)
 TEXT TO lcString NOSHOW additive
+<mvtList>
 <tsd_L1_B_Mvt>
 <c1460_TuliKood><<ALLTRIM(tsd_lisa1b.c_1460)>></c1460_TuliKood>
 <c1470_Summa><<ROUND(tsd_lisa1b.c_1470,2)>></c1470_Summa>
 </tsd_L1_B_Mvt>
-
+</mvtList>
 ENDTEXT
 			Endif
 
