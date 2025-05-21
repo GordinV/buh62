@@ -85,9 +85,10 @@ Procedure arVutus
 		Endif
 		l_params_id = l_params_id  + ALLTRIM(Str(recalc1.Id))
 	ENDSCAN
+	_cliptext = l_params_id 
+	SET STEP ON 
 
-	
-	lError = oDb.readFromModel('hooldekodu\hooisik', 'arvutaTaskuRaha', 'l_params_id,guserid,gdKpv', 'v_tulemus')
+*	lError = oDb.readFromModel('hooldekodu\hooisik', 'arvutaTaskuRaha', 'l_params_id,guserid,gdKpv', 'v_tulemus')
 	IF !lError
 		MESSAGEBOX('Error',0+16, 'Taabelite arvestus')
 		SET STEP ON 
@@ -111,8 +112,7 @@ Procedure geT_isikute_list
 	
 	SELECT DISTINCT id, isikukood as kood, nimi as nimetus ;
 		FROM tmpIsikud ;
-		WHERE (EMPTY(gdKpv) OR loppkpv >= gdKpv)
-		and makse_viis = 'Makse korraldus';		
+		WHERE (EMPTY(gdKpv) OR loppkpv >= gdKpv);
 		ORDER BY nimi;
 		INTO CURSOR qryIsikud
 	USE IN tmpIsikud 

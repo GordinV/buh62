@@ -36,7 +36,7 @@ If  Used('curSource')
 	USE IN 'curSource'
 ENDIF
 
-Create Cursor curSource (Id Int, koOd C (20), niMetus C (120))
+Create Cursor curSource (Id Int, koOd C (20), niMetus C (120), liik int)
 
 If  Used('curValitud')
 	USE IN curValitud
@@ -164,7 +164,8 @@ TEXT TO lcJson TEXTMERGE noshow
 				{"osakond_ids":[<<l_osakond_ids>>],
 				"isik_ids":[<<l_isik_ids>>],
 				"lib_ids":[<<l_lib_ids>>],
-				"kpv":<<DTOC(gdKpv,1)>>,
+				"kpv":<<DTOC(tmpArvestaMinSots.kpv,1)>>,
+				"maksekpv":<<DTOC(tmpArvestaMinSots.maksekpv,1)>>,				
 				"kas_kustuta":<<IIF(!EMPTY(tmpArvestaMinSots.kustuta) and !is_tasu ,'true','false')>>,
 				"kas_arvesta_minsots":<<IIF(!EMPTY(tmpArvestaMinSots.arvesta),'true','false')>>,
 				"dokprop":<<ALLTRIM(STR(l_dokprop))>>
@@ -172,6 +173,7 @@ TEXT TO lcJson TEXTMERGE noshow
 ENDTEXT
 * sql proc
 *_cliptext = lcJson 
+*SET STEP ON 
 	task = 'palk.gen_palkoper'
 	leRror = odB.readFromModel('palk\palk_oper', 'executeTask', 'guserid,lcJson,task', 'qryResult')
 	Do Form taitmine_raport With 'qryResult' 
@@ -211,7 +213,7 @@ Procedure geT_isiku_list
 		Zap
 	Endif
 	Do Form Forms\samm To nrEsult With '2', Iif(coNfig.keEl=2, 'Isikud',  ;
-		'Работники'), Iif(coNfig.keEl=2, 'Valitud isikud', 'Выбранные работники'), gdKpv, IIF(is_tasu,0,1)
+		'Работники'), Iif(coNfig.keEl=2, 'Valitud isikud', 'Выбранные работники'), gdKpv, IIF(is_tasu,0,1), gdKpv, IIF(is_tasu,0,1)
 	If nrEsult=1
 		Select Distinct Id From curValitud Into Cursor query1
 		Select query1
@@ -238,6 +240,7 @@ Procedure geT_kood_list
 		lcWhere = 'liik = 6'
 	ENDIF
 	
+	
 	TEXT TO lcWhere ADDITIVE TEXTMERGE noshow
 	and (valid >= '<<DTOC(date(year(gdKpv),MONTH(gdKpv),DAY(gdKpv)),1)>>'::date  or valid is null)
 	endtext	
@@ -254,10 +257,17 @@ Procedure geT_kood_list
 	Select curValitud
 	If Reccount('curvalitud')>0
 		Zap
-	Endif
+	ENDIF
+	l_makse_kpv = gdKpv
+	l_kpv = gdKpv
+	
+	IF USED('tmpArvestaMinSots')
+		l_makse_kpv = tmpArvestaMinSots.maksekpv
+	ENDIF
+	
 	Do Form Forms\samm To nrEsult With '3', Iif(coNfig.keEl=2,  ;
 		'Palgastruktuur', 'Начисления и удержания'), Iif(coNfig.keEl=2,  ;
-		'Valitud ', 'Выбранно '), gdKpv, IIF(is_tasu,0,1)
+		'Valitud ', 'Выбранно '), l_kpv, IIF(is_tasu,0,1), l_makse_kpv, IIF(is_tasu,0,1) 
 
 
 	If nrEsult=1
@@ -319,7 +329,7 @@ Procedure geT_osakonna_list
 		Zap
 	Endif
 	Do Form Forms\samm To nrEsult With '1', Iif(coNfig.keEl=2, 'Osakonnad',  ;
-		'Отделы'), Iif(coNfig.keEl=2, 'Valitud osakonnad', 'Выбранные отделы'), gdKpv, IIF(is_tasu,0,1)
+		'Отделы'), Iif(coNfig.keEl=2, 'Valitud osakonnad', 'Выбранные отделы'), gdKpv, IIF(is_tasu,0,1), gdKpv, IIF(is_tasu,0,1)
 	If nrEsult=1
 		Select Distinct Id From curValitud Into Cursor query1
 		Select query1

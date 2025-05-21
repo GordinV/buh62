@@ -3,7 +3,14 @@ If Isdigit(Alltrim(cWhere))
 	cWhere = Val(Alltrim(cWhere))
 Endif
 
-tnId = cWhere
+IF !EMPTY(cWhere)
+	tnId = cWhere
+ELSE
+	IF USED('v_arv')
+		tnId  = v_arv.id
+	ENDIF	
+ENDIF
+
 
 lError = oDb.readFromModel('raamatupidamine\arv', 'row', 'tnId, guserid', 'qryArv')
 

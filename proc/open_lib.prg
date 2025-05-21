@@ -26,6 +26,7 @@ Endif
 
 
 If Empty(tnOpt)
+	
 	= OpenView('comTpremote',.T., 'comTpremote', 'libs\libraries\tp')
 	Select coMTpremote
 	Index On Id Tag Id
@@ -58,6 +59,10 @@ If Empty(tnOpt)
 
 
 ENDIF
+
+
+=oDb.readFromModel('palk\palk_config', 'row', 'gRekv, guserid', 'v_palk_config')
+
 
 get_cities()
 

@@ -52,7 +52,13 @@ Function iso
 		
 		
 		lcRekvAadress = LEFT(Alltrim(qryRekv.aadress),70)
-	Endif
+	ENDIF
+	
+	If qryRekv.parentid = 64 
+		lcRekvNimetus = 'Narva Linna Sotsiaalabiamet'
+		lcRekvAadress = 'Malmi 5a Narva'
+	ENDIF
+	
 
 TEXT TO lcString NOSHOW
 <?xml version="1.0" encoding="UTF-8"?>

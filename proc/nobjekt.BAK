@@ -1,4 +1,6 @@
  PARAMETER ckLass, cvAr, cpArameter, ccLasslib, ldAta
+SET STEP ON 
+
  IF EMPTY(cvAr)
       &cKlass
       RETURN
@@ -24,7 +26,7 @@
            oObject = &cVar
       ENDIF
       ooBject.shOw()
-      IF  .NOT. ocOnnect.chKmenu(ckLass)
+      IF LOWER(ooBject.name) <> 'editmenu' and .NOT. ocOnnect.chKmenu(ckLass)
            ooBject = .NULL.
            RETURN .F.
       ENDIF

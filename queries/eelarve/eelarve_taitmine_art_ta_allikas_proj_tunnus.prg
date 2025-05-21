@@ -24,7 +24,6 @@ If Empty(fltrAruanne.kond)
 ENDIF
 l_aasta = year(fltrAruanne.kpv2)
 
-
 lError = oDb.readFromModel('aruanned\eelarve\eelarve_taitmine_art_ta_allikas_proj_tunnus', 'eelarve_taitmine_report', 'l_aasta,fltrAruanne.kpv1, fltrAruanne.kpv2, gRekv, fltrAruanne.kond,lcJson', 'tmpReport', lcWhere)
 If !lError
 	Messagebox('Viga',0+16, 'Eelarve kulud')

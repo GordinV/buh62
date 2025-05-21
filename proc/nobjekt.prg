@@ -1,4 +1,5 @@
  PARAMETER ckLass, cvAr, cpArameter, ccLasslib, ldAta
+
  IF EMPTY(cvAr)
       &cKlass
       RETURN

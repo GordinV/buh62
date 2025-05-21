@@ -4,26 +4,24 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d929205d-3ba4-4e9f-a7bc-dd6bae618f69" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/086e3906-c253-4189-8a7f-fefe12c32476.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/086e3906-c253-4189-8a7f-fefe12c32476.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/5e594526-e16c-4810-91b2-7d84fd317b33.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/5e594526-e16c-4810-91b2-7d84fd317b33.xml" afterDir="false" />
+    <list default="true" id="d929205d-3ba4-4e9f-a7bc-dd6bae618f69" name="Default Changelist" comment="backup 09.12.2024">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CSV/report.csv" beforeDir="false" afterPath="$PROJECT_DIR$/CSV/report.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/buh50viga.log" beforeDir="false" afterPath="$PROJECT_DIR$/buh50viga.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/classes/AMETID.VCT" beforeDir="false" afterPath="$PROJECT_DIR$/classes/AMETID.VCT" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/classes/Projektid.VCT" beforeDir="false" afterPath="$PROJECT_DIR$/classes/Projektid.VCT" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/classes/_base.vcx" beforeDir="false" afterPath="$PROJECT_DIR$/classes/_base.vcx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/classes/allikad.vcx" beforeDir="false" afterPath="$PROJECT_DIR$/classes/allikad.vcx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/classes/ametid.vcx" beforeDir="false" afterPath="$PROJECT_DIR$/classes/ametid.vcx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/classes/aruanne.vcx" beforeDir="false" afterPath="$PROJECT_DIR$/classes/aruanne.vcx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/classes/arve.VCT" beforeDir="false" afterPath="$PROJECT_DIR$/classes/arve.VCT" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/classes/arve.vcx" beforeDir="false" afterPath="$PROJECT_DIR$/classes/arve.vcx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/classes/arved.VCT" beforeDir="false" afterPath="$PROJECT_DIR$/classes/arved.VCT" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/classes/arved.vcx" beforeDir="false" afterPath="$PROJECT_DIR$/classes/arved.vcx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/classes/asutus.vcx" beforeDir="false" afterPath="$PROJECT_DIR$/classes/asutus.vcx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/classes/asutused.vcx" beforeDir="false" afterPath="$PROJECT_DIR$/classes/asutused.vcx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/classes/autlausend.vcx" beforeDir="false" afterPath="$PROJECT_DIR$/classes/autlausend.vcx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/classes/classlib.VCT" beforeDir="false" afterPath="$PROJECT_DIR$/classes/classlib.VCT" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/classes/classlib.vcx" beforeDir="false" afterPath="$PROJECT_DIR$/classes/classlib.vcx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/classes/clvalidok.vcx" beforeDir="false" afterPath="$PROJECT_DIR$/classes/clvalidok.vcx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/classes/connect.VCT" beforeDir="false" afterPath="$PROJECT_DIR$/classes/connect.VCT" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/classes/connect.vcx" beforeDir="false" afterPath="$PROJECT_DIR$/classes/connect.vcx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/classes/crypapi.vct" beforeDir="false" afterPath="$PROJECT_DIR$/classes/crypapi.vct" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/classes/crypapi.vcx" beforeDir="false" afterPath="$PROJECT_DIR$/classes/crypapi.vcx" afterDir="false" />
@@ -42,19 +40,20 @@
       <change beforePath="$PROJECT_DIR$/classes/eeltaotlus.vcx" beforeDir="false" afterPath="$PROJECT_DIR$/classes/eeltaotlus.vcx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/classes/eelvariandid.vcx" beforeDir="false" afterPath="$PROJECT_DIR$/classes/eelvariandid.vcx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/classes/email.vcx" beforeDir="false" afterPath="$PROJECT_DIR$/classes/email.vcx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/classes/etsd.vct" beforeDir="false" afterPath="$PROJECT_DIR$/classes/etsd.vct" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/classes/etsd.vcx" beforeDir="false" afterPath="$PROJECT_DIR$/classes/etsd.vcx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/classes/finder.vcx" beforeDir="false" afterPath="$PROJECT_DIR$/classes/finder.vcx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/classes/formula.vcx" beforeDir="false" afterPath="$PROJECT_DIR$/classes/formula.vcx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/classes/getasutusarve.VCX" beforeDir="false" afterPath="$PROJECT_DIR$/classes/getasutusarve.VCX" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/classes/holiday.vcx" beforeDir="false" afterPath="$PROJECT_DIR$/classes/holiday.vcx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/classes/hooldekodu/hooldekodu.vcx" beforeDir="false" afterPath="$PROJECT_DIR$/classes/hooldekodu/hooldekodu.vcx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/classes/journalbase.VCT" beforeDir="false" afterPath="$PROJECT_DIR$/classes/journalbase.VCT" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/classes/journalbase.vcx" beforeDir="false" afterPath="$PROJECT_DIR$/classes/journalbase.vcx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/classes/journaleel.vcx" beforeDir="false" afterPath="$PROJECT_DIR$/classes/journaleel.vcx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/classes/kesk_pension.vcx" beforeDir="false" afterPath="$PROJECT_DIR$/classes/kesk_pension.vcx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/classes/kiri.VCT" beforeDir="false" afterPath="$PROJECT_DIR$/classes/kiri.VCT" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/classes/kiri.vcx" beforeDir="false" afterPath="$PROJECT_DIR$/classes/kiri.vcx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/classes/klsaldo.vcx" beforeDir="false" afterPath="$PROJECT_DIR$/classes/klsaldo.vcx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/classes/kontod.VCT" beforeDir="false" afterPath="$PROJECT_DIR$/classes/kontod.VCT" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/classes/kontod.vcx" beforeDir="false" afterPath="$PROJECT_DIR$/classes/kontod.vcx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/classes/korder.vcx" beforeDir="false" afterPath="$PROJECT_DIR$/classes/korder.vcx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/classes/korderid.vcx" beforeDir="false" afterPath="$PROJECT_DIR$/classes/korderid.vcx" afterDir="false" />
@@ -79,8 +78,10 @@
       <change beforePath="$PROJECT_DIR$/classes/palkjaak.vcx" beforeDir="false" afterPath="$PROJECT_DIR$/classes/palkjaak.vcx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/classes/palklib.vct" beforeDir="false" afterPath="$PROJECT_DIR$/classes/palklib.vct" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/classes/palklib.vcx" beforeDir="false" afterPath="$PROJECT_DIR$/classes/palklib.vcx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/classes/palkoper.vct" beforeDir="false" afterPath="$PROJECT_DIR$/classes/palkoper.vct" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/classes/palkoper.vcx" beforeDir="false" afterPath="$PROJECT_DIR$/classes/palkoper.vcx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/classes/period.vcx" beforeDir="false" afterPath="$PROJECT_DIR$/classes/period.vcx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/classes/pohivara.VCT" beforeDir="false" afterPath="$PROJECT_DIR$/classes/pohivara.VCT" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/classes/pohivara.vcx" beforeDir="false" afterPath="$PROJECT_DIR$/classes/pohivara.vcx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/classes/printform2.vcx" beforeDir="false" afterPath="$PROJECT_DIR$/classes/printform2.vcx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/classes/projektid.vcx" beforeDir="false" afterPath="$PROJECT_DIR$/classes/projektid.vcx" afterDir="false" />
@@ -112,13 +113,16 @@
       <change beforePath="$PROJECT_DIR$/classes/uritused.vcx" beforeDir="false" afterPath="$PROJECT_DIR$/classes/uritused.vcx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/classes/userid.vcx" beforeDir="false" afterPath="$PROJECT_DIR$/classes/userid.vcx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/classes/varad.vcx" beforeDir="false" afterPath="$PROJECT_DIR$/classes/varad.vcx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/custom/config.xml" beforeDir="false" afterPath="$PROJECT_DIR$/custom/config.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/eelarve/curprinter.dbf" beforeDir="false" afterPath="$PROJECT_DIR$/eelarve/curprinter.dbf" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/eelarve/eelarve62.PJT" beforeDir="false" afterPath="$PROJECT_DIR$/eelarve/eelarve62.PJT" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/eelarve/eelarve62.pjx" beforeDir="false" afterPath="$PROJECT_DIR$/eelarve/eelarve62.pjx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/eelarve62.exe" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/eelarve/main.BAK" beforeDir="false" afterPath="$PROJECT_DIR$/eelarve/main.BAK" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/eelarve/main.prg" beforeDir="false" afterPath="$PROJECT_DIR$/eelarve/main.prg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/finder.ini" beforeDir="false" afterPath="$PROJECT_DIR$/finder.ini" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/aastaaruanne.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/aastaaruanne.scx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/add_doc_link.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/add_doc_link.scx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/allikas.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/allikas.scx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/forms/amet.SCT" beforeDir="false" afterPath="$PROJECT_DIR$/forms/amet.SCT" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/amet.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/amet.scx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/aruanne.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/aruanne.scx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/arve.SCT" beforeDir="false" afterPath="$PROJECT_DIR$/forms/arve.SCT" afterDir="false" />
@@ -129,6 +133,7 @@
       <change beforePath="$PROJECT_DIR$/forms/atasu.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/atasu.scx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/avans.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/avans.scx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/bpm_data.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/bpm_data.scx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/forms/config.SCT" beforeDir="false" afterPath="$PROJECT_DIR$/forms/config.SCT" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/config.SCX" beforeDir="false" afterPath="$PROJECT_DIR$/forms/config.SCX" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/dok.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/dok.scx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/doklausend.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/doklausend.scx" afterDir="false" />
@@ -139,6 +144,7 @@
       <change beforePath="$PROJECT_DIR$/forms/eel_config.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/eel_config.scx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/eelarvearuanne.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/eelarvearuanne.scx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/eelproj.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/eelproj.scx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/forms/eelprojaruanne.SCX" beforeDir="false" afterPath="$PROJECT_DIR$/forms/eelprojaruanne.SCX" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/email.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/email.scx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/emailprop.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/emailprop.scx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/formula.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/formula.scx" afterDir="false" />
@@ -166,7 +172,6 @@
       <change beforePath="$PROJECT_DIR$/forms/leping.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/leping.scx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/lisacounter.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/lisacounter.scx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/logid.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/logid.scx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/forms/maksukood.SCT" beforeDir="false" afterPath="$PROJECT_DIR$/forms/maksukood.SCT" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/maksukood.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/maksukood.scx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/menu.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/menu.scx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/mk.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/mk.scx" afterDir="false" />
@@ -174,47 +179,60 @@
       <change beforePath="$PROJECT_DIR$/forms/motte.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/motte.scx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/muud.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/muud.scx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/mvtkontrol.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/mvtkontrol.scx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/forms/nomenklatuur.SCT" beforeDir="false" afterPath="$PROJECT_DIR$/forms/nomenklatuur.SCT" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/nomenklatuur.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/nomenklatuur.scx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/objekt.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/objekt.scx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/operatsioon.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/operatsioon.scx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/osakond.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/osakond.scx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/paev.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/paev.scx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/pakett.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/pakett.scx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/forms/palk_config.SCT" beforeDir="false" afterPath="$PROJECT_DIR$/forms/palk_config.SCT" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/palk_config.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/palk_config.scx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/forms/palk_kaart.SCT" beforeDir="false" afterPath="$PROJECT_DIR$/forms/palk_kaart.SCT" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/palk_kaart.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/palk_kaart.scx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/forms/palk_lib.SCT" beforeDir="false" afterPath="$PROJECT_DIR$/forms/palk_lib.SCT" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/palk_lib.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/palk_lib.scx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/palk_tmpl.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/palk_tmpl.scx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/palkaruanne.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/palkaruanne.scx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/forms/palkoper.SCT" beforeDir="false" afterPath="$PROJECT_DIR$/forms/palkoper.SCT" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/palkoper.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/palkoper.scx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/period.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/period.scx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/prelarvestus.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/prelarvestus.scx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/forms/proj.SCT" beforeDir="false" afterPath="$PROJECT_DIR$/forms/proj.SCT" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/proj.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/proj.scx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/forms/puudumine.SCT" beforeDir="false" afterPath="$PROJECT_DIR$/forms/puudumine.SCT" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/puudumine.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/puudumine.scx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/pv_kaart.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/pv_kaart.scx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/pvaruanne.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/pvaruanne.scx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/pvgrupp.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/pvgrupp.scx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/forms/pvoper.SCT" beforeDir="false" afterPath="$PROJECT_DIR$/forms/pvoper.SCT" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/pvoper.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/pvoper.scx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/raha.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/raha.scx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/rahamark.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/rahamark.scx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/rekl/deklsaadetud.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/rekl/deklsaadetud.scx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/rekldekl.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/rekldekl.scx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/reklluba.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/reklluba.scx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/forms/rekv.SCT" beforeDir="false" afterPath="$PROJECT_DIR$/forms/rekv.SCT" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/rekv.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/rekv.scx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/forms/relations.SCT" beforeDir="false" afterPath="$PROJECT_DIR$/forms/relations.SCT" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/relations.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/relations.scx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/saldoaruanne.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/saldoaruanne.scx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/samm.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/samm.scx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/seeklausend.SCX" beforeDir="false" afterPath="$PROJECT_DIR$/forms/seeklausend.SCX" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/seteelarveparametrid.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/seteelarveparametrid.scx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/sorder.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/sorder.scx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/forms/taabel1.SCT" beforeDir="false" afterPath="$PROJECT_DIR$/forms/taabel1.SCT" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/taabel1.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/taabel1.scx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/tahtpaev.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/tahtpaev.scx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/taitmine_raport.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/taitmine_raport.scx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/taotlus.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/taotlus.scx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/forms/taotlusmvt.SCT" beforeDir="false" afterPath="$PROJECT_DIR$/forms/taotlusmvt.SCT" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/taotlusmvt.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/taotlusmvt.scx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/tegev.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/tegev.scx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/forms/toograf.SCT" beforeDir="false" afterPath="$PROJECT_DIR$/forms/toograf.SCT" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/toograf.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/toograf.scx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/forms/tooleping.SCT" beforeDir="false" afterPath="$PROJECT_DIR$/forms/tooleping.SCT" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/tooleping.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/tooleping.scx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/forms/tootaja.SCT" beforeDir="false" afterPath="$PROJECT_DIR$/forms/tootaja.SCT" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/tootaja.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/tootaja.scx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/tp.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/tp.scx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/tulu.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/tulu.scx" afterDir="false" />
@@ -235,29 +253,71 @@
       <change beforePath="$PROJECT_DIR$/forms/value.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/value.scx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/vara.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/vara.scx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/viivis.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/viivis.scx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/forms/vorder.SCT" beforeDir="false" afterPath="$PROJECT_DIR$/forms/vorder.SCT" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forms/vorder.scx" beforeDir="false" afterPath="$PROJECT_DIR$/forms/vorder.scx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/aruanned/eelarve/tulud_eelnou.xml" beforeDir="false" afterPath="$PROJECT_DIR$/models/aruanned/eelarve/tulud_eelnou.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/aruanned/eelarve/tulud_eelnou_detailne.xml" beforeDir="false" afterPath="$PROJECT_DIR$/models/aruanned/eelarve/tulud_eelnou_detailne.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/aruanned/eelarve/tulud_eelnou_detailne_pikk.xml" beforeDir="false" afterPath="$PROJECT_DIR$/models/aruanned/eelarve/tulud_eelnou_detailne_pikk.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/aruanned/pv/pv_inventuur.xml" beforeDir="false" afterPath="$PROJECT_DIR$/models/aruanned/pv/pv_inventuur.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/aruanned/raamatupidamine/kond_ebatoenaolised.xml" beforeDir="false" afterPath="$PROJECT_DIR$/models/aruanned/raamatupidamine/kond_ebatoenaolised.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/aruanned/palk/palk_kaart.xml" beforeDir="false" afterPath="$PROJECT_DIR$/models/aruanned/palk/palk_kaart.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/aruanned/pv/pv_oper_aruanne.xml" beforeDir="false" afterPath="$PROJECT_DIR$/models/aruanned/pv/pv_oper_aruanne.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/libs/libraries/amet.xml" beforeDir="false" afterPath="$PROJECT_DIR$/models/libs/libraries/amet.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/libs/libraries/kontod.xml" beforeDir="false" afterPath="$PROJECT_DIR$/models/libs/libraries/kontod.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/libs/libraries/palk_lib.xml" beforeDir="false" afterPath="$PROJECT_DIR$/models/libs/libraries/palk_lib.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/libs/libraries/project.xml" beforeDir="false" afterPath="$PROJECT_DIR$/models/libs/libraries/project.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/libs/libraries/pv_kaart.xml" beforeDir="false" afterPath="$PROJECT_DIR$/models/libs/libraries/pv_kaart.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/ou/config.xml" beforeDir="false" afterPath="$PROJECT_DIR$/models/ou/config.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/palk/palk_config.xml" beforeDir="false" afterPath="$PROJECT_DIR$/models/palk/palk_config.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/palk/palk_kaart.xml" beforeDir="false" afterPath="$PROJECT_DIR$/models/palk/palk_kaart.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/palk/palk_oper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/models/palk/palk_oper.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/palk/palk_taabel.xml" beforeDir="false" afterPath="$PROJECT_DIR$/models/palk/palk_taabel.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/palk/puudumine.xml" beforeDir="false" afterPath="$PROJECT_DIR$/models/palk/puudumine.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/palk/tooleping.xml" beforeDir="false" afterPath="$PROJECT_DIR$/models/palk/tooleping.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/palk/tootaja.xml" beforeDir="false" afterPath="$PROJECT_DIR$/models/palk/tootaja.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/models/raamatupidamine/arv.xml" beforeDir="false" afterPath="$PROJECT_DIR$/models/raamatupidamine/arv.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/raamatupidamine/arvtasu.xml" beforeDir="false" afterPath="$PROJECT_DIR$/models/raamatupidamine/arvtasu.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/proc/calc_earved.BAK" beforeDir="false" afterPath="$PROJECT_DIR$/proc/calc_earved.BAK" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/proc/calc_earved.prg" beforeDir="false" afterPath="$PROJECT_DIR$/proc/calc_earved.prg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/proc/fnc_dtoc.BAK" beforeDir="false" afterPath="$PROJECT_DIR$/proc/fnc_dtoc.BAK" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/proc/fnc_dtoc.prg" beforeDir="false" afterPath="$PROJECT_DIR$/proc/fnc_dtoc.prg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/proc/samm_palk.BAK" beforeDir="false" afterPath="$PROJECT_DIR$/proc/samm_palk.BAK" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/proc/samm_palk.prg" beforeDir="false" afterPath="$PROJECT_DIR$/proc/samm_palk.prg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/queries/ebatoenaolised.FXP" beforeDir="false" afterPath="$PROJECT_DIR$/queries/ebatoenaolised.FXP" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/queries/eelproj/eeltaotlus_report2.FXP" beforeDir="false" afterPath="$PROJECT_DIR$/queries/eelproj/eeltaotlus_report2.FXP" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/queries/eelproj/kulud_eelnou_detailne_report1.BAK" beforeDir="false" afterPath="$PROJECT_DIR$/queries/eelproj/kulud_eelnou_detailne_report1.BAK" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/queries/eelproj/kulud_eelnou_detailne_report1.FXP" beforeDir="false" afterPath="$PROJECT_DIR$/queries/eelproj/kulud_eelnou_detailne_report1.FXP" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/queries/eelproj/kulud_eelnou_detailne_report1.prg" beforeDir="false" afterPath="$PROJECT_DIR$/queries/eelproj/kulud_eelnou_detailne_report1.prg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/queries/eelproj/tulud_eelnou_report1.FXP" beforeDir="false" afterPath="$PROJECT_DIR$/queries/eelproj/tulud_eelnou_report1.FXP" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/queries/pv/pv_rv_kaibearuanne_report1.FXP" beforeDir="false" afterPath="$PROJECT_DIR$/queries/pv/pv_rv_kaibearuanne_report1.FXP" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/queries/pv/varadearuanne_report3.FXP" beforeDir="false" afterPath="$PROJECT_DIR$/queries/pv/varadearuanne_report3.FXP" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/queries/saldoandmik/kondsaldoandmik_report1.FXP" beforeDir="false" afterPath="$PROJECT_DIR$/queries/saldoandmik/kondsaldoandmik_report1.FXP" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/raamatupidamine/journal.xml" beforeDir="false" afterPath="$PROJECT_DIR$/models/raamatupidamine/journal.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/raamatupidamine/vorder.xml" beforeDir="false" afterPath="$PROJECT_DIR$/models/raamatupidamine/vorder.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/proc/calc_iso.BAK" beforeDir="false" afterPath="$PROJECT_DIR$/proc/calc_iso.BAK" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/proc/calc_iso.prg" beforeDir="false" afterPath="$PROJECT_DIR$/proc/calc_iso.prg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/proc/connect_to_omniva.BAK" beforeDir="false" afterPath="$PROJECT_DIR$/proc/connect_to_omniva.BAK" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/proc/connect_to_omniva.prg" beforeDir="false" afterPath="$PROJECT_DIR$/proc/connect_to_omniva.prg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/proc/nobjekt.BAK" beforeDir="false" afterPath="$PROJECT_DIR$/proc/nobjekt.BAK" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/proc/nobjekt.prg" beforeDir="false" afterPath="$PROJECT_DIR$/proc/nobjekt.prg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/proc/open_lib.BAK" beforeDir="false" afterPath="$PROJECT_DIR$/proc/open_lib.BAK" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/proc/open_lib.prg" beforeDir="false" afterPath="$PROJECT_DIR$/proc/open_lib.prg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/proc/samm_hoo_tasku_raha.BAK" beforeDir="false" afterPath="$PROJECT_DIR$/proc/samm_hoo_tasku_raha.BAK" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/proc/samm_hoo_tasku_raha.prg" beforeDir="false" afterPath="$PROJECT_DIR$/proc/samm_hoo_tasku_raha.prg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/queries/arve_report1.BAK" beforeDir="false" afterPath="$PROJECT_DIR$/queries/arve_report1.BAK" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/queries/arve_report1.FXP" beforeDir="false" afterPath="$PROJECT_DIR$/queries/arve_report1.FXP" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/queries/arve_report1.prg" beforeDir="false" afterPath="$PROJECT_DIR$/queries/arve_report1.prg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/queries/eelarve/eelarve_andmik_lisa_1_5.BAK" beforeDir="false" afterPath="$PROJECT_DIR$/queries/eelarve/eelarve_andmik_lisa_1_5.BAK" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/queries/eelarve/eelarve_andmik_lisa_1_5.FXP" beforeDir="false" afterPath="$PROJECT_DIR$/queries/eelarve/eelarve_andmik_lisa_1_5.FXP" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/queries/eelarve/eelarve_andmik_lisa_1_5.prg" beforeDir="false" afterPath="$PROJECT_DIR$/queries/eelarve/eelarve_andmik_lisa_1_5.prg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/queries/eelarve/eelarve_taitmine_art_ta_allikas_proj_tunnus.BAK" beforeDir="false" afterPath="$PROJECT_DIR$/queries/eelarve/eelarve_taitmine_art_ta_allikas_proj_tunnus.BAK" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/queries/eelarve/eelarve_taitmine_art_ta_allikas_proj_tunnus.FXP" beforeDir="false" afterPath="$PROJECT_DIR$/queries/eelarve/eelarve_taitmine_art_ta_allikas_proj_tunnus.FXP" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/queries/eelarve/eelarve_taitmine_art_ta_allikas_proj_tunnus.prg" beforeDir="false" afterPath="$PROJECT_DIR$/queries/eelarve/eelarve_taitmine_art_ta_allikas_proj_tunnus.prg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/queries/eelarve/lisa1_lisa5_kontrol_asutuste_jargi.BAK" beforeDir="false" afterPath="$PROJECT_DIR$/queries/eelarve/lisa1_lisa5_kontrol_asutuste_jargi.BAK" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/queries/eelarve/lisa1_lisa5_kontrol_asutuste_jargi.FXP" beforeDir="false" afterPath="$PROJECT_DIR$/queries/eelarve/lisa1_lisa5_kontrol_asutuste_jargi.FXP" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/queries/eelarve/tulude_taitmine_A_TT_RV_Tunnus_ART.FXP" beforeDir="false" afterPath="$PROJECT_DIR$/queries/eelarve/tulude_taitmine_A_TT_RV_Tunnus_ART.FXP" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/queries/eelarve/tulude_taitmine_A_TT_Tunnus_ART_Proj_Uritus.FXP" beforeDir="false" afterPath="$PROJECT_DIR$/queries/eelarve/tulude_taitmine_A_TT_Tunnus_ART_Proj_Uritus.FXP" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/queries/eelarve/tulude_taitmine_a_tt_tunnus_art_proj_uritus.BAK" beforeDir="false" afterPath="$PROJECT_DIR$/queries/eelarve/tulude_taitmine_a_tt_tunnus_art_proj_uritus.BAK" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/queries/eelarve/tulude_taitmine_a_tt_tunnus_art_proj_uritus.prg" beforeDir="false" afterPath="$PROJECT_DIR$/queries/eelarve/tulude_taitmine_a_tt_tunnus_art_proj_uritus.prg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/queries/eelproj/eeltaotlused_report1.BAK" beforeDir="false" afterPath="$PROJECT_DIR$/queries/eelproj/eeltaotlused_report1.BAK" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/queries/eelproj/eeltaotlused_report1.prg" beforeDir="false" afterPath="$PROJECT_DIR$/queries/eelproj/eeltaotlused_report1.prg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/queries/konto_report2.FXP" beforeDir="false" afterPath="$PROJECT_DIR$/queries/konto_report2.FXP" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/queries/palk/ametid_report1.BAK" beforeDir="false" afterPath="$PROJECT_DIR$/queries/palk/ametid_report1.BAK" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/queries/palk/ametid_report1.FXP" beforeDir="false" afterPath="$PROJECT_DIR$/queries/palk/ametid_report1.FXP" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/queries/palk/ametid_report1.prg" beforeDir="false" afterPath="$PROJECT_DIR$/queries/palk/ametid_report1.prg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/queries/palk/palk_kaart_report1.FXP" beforeDir="false" afterPath="$PROJECT_DIR$/queries/palk/palk_kaart_report1.FXP" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/queries/palk/palkoper_report2.FXP" beforeDir="false" afterPath="$PROJECT_DIR$/queries/palk/palkoper_report2.FXP" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/queries/palk/palkoper_report3.BAK" beforeDir="false" afterPath="$PROJECT_DIR$/queries/palk/palkoper_report3.BAK" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/queries/palk/palkoper_report3.FXP" beforeDir="false" afterPath="$PROJECT_DIR$/queries/palk/palkoper_report3.FXP" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/queries/palk/palkoper_report3.prg" beforeDir="false" afterPath="$PROJECT_DIR$/queries/palk/palkoper_report3.prg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/queries/palk/tootaja_report1.FXP" beforeDir="false" afterPath="$PROJECT_DIR$/queries/palk/tootaja_report1.FXP" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/queries/pv/pvoperaruanne_report1.BAK" beforeDir="false" afterPath="$PROJECT_DIR$/queries/pv/pvoperaruanne_report1.BAK" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/queries/pv/pvoperaruanne_report1.FXP" beforeDir="false" afterPath="$PROJECT_DIR$/queries/pv/pvoperaruanne_report1.FXP" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/queries/pv/pvoperaruanne_report1.prg" beforeDir="false" afterPath="$PROJECT_DIR$/queries/pv/pvoperaruanne_report1.prg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/queries/tootajad_report1.FXP" beforeDir="false" afterPath="$PROJECT_DIR$/queries/tootajad_report1.FXP" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/queries/vorder_report1.BAK" beforeDir="false" afterPath="$PROJECT_DIR$/queries/vorder_report1.BAK" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/queries/vorder_report1.FXP" beforeDir="false" afterPath="$PROJECT_DIR$/queries/vorder_report1.FXP" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/queries/vorder_report1.prg" beforeDir="false" afterPath="$PROJECT_DIR$/queries/vorder_report1.prg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/reports/arve_report1.FRT" beforeDir="false" afterPath="$PROJECT_DIR$/reports/arve_report1.FRT" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/reports/arve_report1.frx" beforeDir="false" afterPath="$PROJECT_DIR$/reports/arve_report1.frx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/reports/arve_report2.frx" beforeDir="false" afterPath="$PROJECT_DIR$/reports/arve_report2.frx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/reports/asutus_report1.frx" beforeDir="false" afterPath="$PROJECT_DIR$/reports/asutus_report1.frx" afterDir="false" />
@@ -372,11 +432,13 @@
       <change beforePath="$PROJECT_DIR$/reports/nomenklatuur_report1.frx" beforeDir="false" afterPath="$PROJECT_DIR$/reports/nomenklatuur_report1.frx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/reports/objekt_report1.frx" beforeDir="false" afterPath="$PROJECT_DIR$/reports/objekt_report1.frx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/reports/ou/mitte_saadetud_lehed.frx" beforeDir="false" afterPath="$PROJECT_DIR$/reports/ou/mitte_saadetud_lehed.frx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/reports/palk/ametid_report1.FRT" beforeDir="false" afterPath="$PROJECT_DIR$/reports/palk/ametid_report1.FRT" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/reports/palk/ametid_report1.frx" beforeDir="false" afterPath="$PROJECT_DIR$/reports/palk/ametid_report1.frx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/reports/palk/arvpalkleht_report1.frx" beforeDir="false" afterPath="$PROJECT_DIR$/reports/palk/arvpalkleht_report1.frx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/reports/palk/kondpalklausend_report1.frx" beforeDir="false" afterPath="$PROJECT_DIR$/reports/palk/kondpalklausend_report1.frx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/reports/palk/maksukoodid_report1.frx" beforeDir="false" afterPath="$PROJECT_DIR$/reports/palk/maksukoodid_report1.frx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/reports/palk/osakonnad_report1.frx" beforeDir="false" afterPath="$PROJECT_DIR$/reports/palk/osakonnad_report1.frx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/reports/palk/palgakaart_report1.FRT" beforeDir="false" afterPath="$PROJECT_DIR$/reports/palk/palgakaart_report1.FRT" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/reports/palk/palgakaart_report1.frx" beforeDir="false" afterPath="$PROJECT_DIR$/reports/palk/palgakaart_report1.frx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/reports/palk/palkjaak_report1.frx" beforeDir="false" afterPath="$PROJECT_DIR$/reports/palk/palkjaak_report1.frx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/reports/palk/palkjaak_report2.frx" beforeDir="false" afterPath="$PROJECT_DIR$/reports/palk/palkjaak_report2.frx" afterDir="false" />
@@ -405,7 +467,6 @@
       <change beforePath="$PROJECT_DIR$/reports/pv/pohivara_report1.frx" beforeDir="false" afterPath="$PROJECT_DIR$/reports/pv/pohivara_report1.frx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/reports/pv/pv_kaibearuanne_report1.frx" beforeDir="false" afterPath="$PROJECT_DIR$/reports/pv/pv_kaibearuanne_report1.frx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/reports/pv/pv_oiend_report1.frx" beforeDir="false" afterPath="$PROJECT_DIR$/reports/pv/pv_oiend_report1.frx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/reports/pv/pv_rv_kaibearuanne_report1.FRT" beforeDir="false" afterPath="$PROJECT_DIR$/reports/pv/pv_rv_kaibearuanne_report1.FRT" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/reports/pv/pv_rv_kaibearuanne_report1.frx" beforeDir="false" afterPath="$PROJECT_DIR$/reports/pv/pv_rv_kaibearuanne_report1.frx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/reports/pv/pvgrupp_report1.frx" beforeDir="false" afterPath="$PROJECT_DIR$/reports/pv/pvgrupp_report1.frx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/reports/pv/pvinventura_report1.frx" beforeDir="false" afterPath="$PROJECT_DIR$/reports/pv/pvinventura_report1.frx" afterDir="false" />
@@ -422,7 +483,6 @@
       <change beforePath="$PROJECT_DIR$/reports/saldoAsutusandmik_report2.frx" beforeDir="false" afterPath="$PROJECT_DIR$/reports/saldoAsutusandmik_report2.frx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/reports/saldoandmik/bilanss_report1.frx" beforeDir="false" afterPath="$PROJECT_DIR$/reports/saldoandmik/bilanss_report1.frx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/reports/saldoandmik/bilanss_report2.frx" beforeDir="false" afterPath="$PROJECT_DIR$/reports/saldoandmik/bilanss_report2.frx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/reports/saldoandmik/kondsaldoandmik_report1.FRT" beforeDir="false" afterPath="$PROJECT_DIR$/reports/saldoandmik/kondsaldoandmik_report1.FRT" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/reports/saldoandmik/kondsaldoandmik_report1.frx" beforeDir="false" afterPath="$PROJECT_DIR$/reports/saldoandmik/kondsaldoandmik_report1.frx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/reports/saldoandmik/paring_report1.frx" beforeDir="false" afterPath="$PROJECT_DIR$/reports/saldoandmik/paring_report1.frx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/reports/saldoandmik/rahavoog_report1.frx" beforeDir="false" afterPath="$PROJECT_DIR$/reports/saldoandmik/rahavoog_report1.frx" afterDir="false" />
@@ -441,6 +501,7 @@
       <change beforePath="$PROJECT_DIR$/reports/tunnus_report1.frx" beforeDir="false" afterPath="$PROJECT_DIR$/reports/tunnus_report1.frx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/reports/uritused_report1.frx" beforeDir="false" afterPath="$PROJECT_DIR$/reports/uritused_report1.frx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/reports/viivis_report1.frx" beforeDir="false" afterPath="$PROJECT_DIR$/reports/viivis_report1.frx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/reports/vorder_report1.FRT" beforeDir="false" afterPath="$PROJECT_DIR$/reports/vorder_report1.FRT" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/reports/vorder_report1.frx" beforeDir="false" afterPath="$PROJECT_DIR$/reports/vorder_report1.frx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -548,19 +609,20 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/development/buh61&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "com.codeium.enabled": "true",
+    "git-widget-placeholder": "master",
+    "last_opened_file_path": "C:/development/buh70",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -631,6 +693,8 @@
       <workItem from="1720071412174" duration="1549000" />
       <workItem from="1726135132984" duration="314000" />
       <workItem from="1731686140462" duration="48000" />
+      <workItem from="1733733090085" duration="928000" />
+      <workItem from="1743425370472" duration="100000" />
     </task>
     <task id="LOCAL-00001" summary="PV ja PV aruanned fixed (V. Hrenova)">
       <created>1555938003657</created>
@@ -786,7 +850,14 @@
       <option name="project" value="LOCAL" />
       <updated>1720072013381</updated>
     </task>
-    <option name="localTasksCounter" value="23" />
+    <task id="LOCAL−00023" summary="backup 09.12.2024">
+      <option name="closed" value="true" />
+      <created>1733733117590</created>
+      <option name="number" value="LOCAL−00023" />
+      <option name="presentableId" value="LOCAL−00023" />
+      <updated>1733733117590</updated>
+    </task>
+    <option name="localTasksCounter" value="24" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
@@ -841,7 +912,8 @@
     <MESSAGE value="backup 29.07.2022" />
     <MESSAGE value="backup 12.06.2023" />
     <MESSAGE value="backup 04.07.2024" />
-    <option name="LAST_COMMIT_MESSAGE" value="backup 04.07.2024" />
+    <MESSAGE value="backup 09.12.2024" />
+    <option name="LAST_COMMIT_MESSAGE" value="backup 09.12.2024" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/../../temp/test2.xml">

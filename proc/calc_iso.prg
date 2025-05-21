@@ -181,7 +181,7 @@ TEXT TO lcString ADDITIVE TEXTMERGE noshow
 <Nm><<Alltrim(convert_to_utf(lcRekvNimetus))>></Nm>
 <PstlAdr>
 <Ctry>EE</Ctry>
-<AdrLine><<LEFT(Alltrim(convert_to_utf(lcRekvAadress)),70)>></AdrLine>
+<AdrLine><<convert_to_utf(LEFT(Alltrim(lcRekvAadress),70))>></AdrLine>
 </PstlAdr>
 </Dbtr>
 <DbtrAcct>
@@ -202,7 +202,7 @@ TEXT TO lcString ADDITIVE TEXTMERGE noshow
 <Amt><InstdAmt Ccy="EUR"><<Alltrim(Str(tmp_mk1.Summa,14,2))>></InstdAmt></Amt>
 <Cdtr>
 <Nm><<convert_to_utf(Alltrim(tmp_mk1.asutus))>></Nm>
-<PstlAdr><Ctry>EE</Ctry><AdrLine><<LEFT(convert_to_utf(Alltrim(tmp_mk1.aadress)),70)>></AdrLine></PstlAdr>
+<PstlAdr><Ctry>EE</Ctry><AdrLine><<convert_to_utf(LEFT(Alltrim(tmp_mk1.aadress),70))>></AdrLine></PstlAdr>
 </Cdtr>
 <CdtrAcct><Id><IBAN><<Alltrim(tmp_mk1.aa)>></IBAN></Id></CdtrAcct>
 <RmtInf>

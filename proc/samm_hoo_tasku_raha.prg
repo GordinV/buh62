@@ -86,7 +86,6 @@ Procedure arVutus
 		l_params_id = l_params_id  + ALLTRIM(Str(recalc1.Id))
 	ENDSCAN
 
-	
 	lError = oDb.readFromModel('hooldekodu\hooisik', 'arvutaTaskuRaha', 'l_params_id,guserid,gdKpv', 'v_tulemus')
 	IF !lError
 		MESSAGEBOX('Error',0+16, 'Taabelite arvestus')

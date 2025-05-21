@@ -10,7 +10,7 @@ Public gnHandle,gnHandleAsync, gcWindow, gRekv, gUserId, oPrintform2, oFinder, g
 	tcAllikas, tcArtikkel, tcObjekt, tcTegev, tcEelAllikas, oToograafik, eETSD, tcTunnus, gcProgNimi, omk, oTood,;
 	oPuudumised, oEtsd,tcOsakond, tnOsakondId1, tnOsakondId2,gnPaev,tnParentRekvId,;
 	oTpr, oRahavoodid, oMenu, oEditMenu, oConnect, oKorderID, gcKey, oVanemtasu, gcAmetnik, oLahetuskulud, oLapsed,;
-	oEeltaotlus, oEelVariandid,oDokumendid,;
+	oEeltaotlus, oEelVariandid,oDokumendid,oAmeti_klassif,;
 	oReklmaksud, oReklVolgnik, oReklSaadetud, gMailParool,;
 	oHooLepingud,oKeskPension,oRiigiToetus,oKOVPiiriMaar,;
 	oProjektid, oUritused, tcProj, tcUritus, tcgrupp, glMvt
@@ -71,28 +71,30 @@ Else
 	gcHelp = .F.
 Endif
 
-Create Cursor curprinter (Id Int, objekt c(40), nimetus1 c(120), nimetus2 c(120), procfail c(120), reportfail c(120),;
-	reportvene c(120), Parameter m)
+*!*	Create Cursor curprinter (Id Int, objekt c(40), nimetus1 c(120), nimetus2 c(120), procfail c(120), reportfail c(120),;
+*!*		reportvene c(120), Parameter m)
 
-cFile = 'EELARVE\curPrinter.DBF'
-If File (cFile)
-	Use (cFile) In 0 Alias curPrinter0
-Else
-	Use curprinter In 0 Alias curPrinter0
-Endif
+*!*	cFile = 'EELARVE\curPrinter.DBF'
+*!*	If File (cFile)
+*!*		Use (cFile) In 0 Alias curPrinter0
+*!*	Else
+*!*		Use curprinter In 0 Alias curPrinter0
+*!*	Endif
 
-Select curprinter
-Append From Dbf('curPrinter0')
+*!*	Select curprinter
+*!*	Append From Dbf('curPrinter0')
 
-Use In curPrinter0
+*!*	Use In curPrinter0
 
-cFile1 = 'ERI\curPrinter.DBF'
-If File (cFile1)
-	Use (cFile1) In 0 Alias curPrinter4
-	Select curprinter
-	Append From Dbf('curPrinter4')
-	Use In curPrinter4
-Endif
+*!*	cFile1 = 'ERI\curPrinter.DBF'
+*!*	If File (cFile1)
+*!*		Use (cFile1) In 0 Alias curPrinter4
+*!*		Select curprinter
+*!*		Append From Dbf('curPrinter4')
+*!*		Use In curPrinter4
+*!*	Endif
+
+DO load_curPrinter
 
 If !Used('v_roles')
 	Create Cursor v_roles (	nimetus c(120) Default 'Raamatupidaja', asutusid Int, nomid Int, nomidkassa Int,nomidpank Int, kbmnomidkassa Int,;

@@ -1,18 +1,23 @@
 Parameter tcWhere
-if !used('curPalkOper')
-	SELECT 0
-	return .f.
-ENDIF
 
 * ametiuhengu aruanne
-SELECT curPalkOper
-brow
+SET STEP ON 
+TEXT TO l_sqlwhere TEXTMERGE noshow
+	encode(nimetus::bytea, 'escape') ilike '%<<rtrim(ltrim(fltrPalkOper.nimetus))>>%'
+	and liik::text ilike '%<<ltrim(rtrim(fltrPalkOper.liik))>>%'
+	and kpv >= '<<DTOC(iif(empty(fltrPalkOper.kpv1),date(year(date()),month(date()),1),fltrPalkOper.kpv1),1)>>'::date 
+	and kpv <= '<<DTOC(iif(empty(fltrPalkOper.kpv2),date(year(date()),month(date())+1,1),fltrPalkOper.kpv2),1)>>'::date
+	and summa >= <<fltrPalkOper.Summa1>> 
+	and summa <= <<iif(empty(fltrPalkOper.Summa2),999999999,fltrPalkOper.Summa2)>>
+	and is_ametiuhingu_liikme = 1
+ENDTEXT
+lError = oDb.readFromModel('palk\palk_oper', 'curPalkOper', 'gRekv, guserid', 'palkoper_report', l_sqlwhere)
 
-SELECT comAsutusRemote.regkood as isikukood, curPalkOper.nimetus, sum(curPalkOper.summa) as summa, curPalkOper.isik ;
-	FROM curPalkOper INNER JOIN comAsutusRemote ON  comAsutusRemote.id = curPalkOper.isikId;
-	WHERE !EMPTY(curPalkOper.is_ametiuhingu_liikme) ;
-	GROUP BY curPalkOper.nimetus, curPalkOper.isik, comAsutusRemote.regkood;
-	order BY curPalkOper.nimetus, curPalkOper.isik, comAsutusRemote.regkood;
+
+SELECT comAsutusRemote.regkood as isikukood, po.nimetus, sum(po.summa) as summa, po.isik ;
+	FROM palkoper_report po INNER JOIN comAsutusRemote ON  comAsutusRemote.id = po.isikId;
+	GROUP BY po.nimetus, po.isik, comAsutusRemote.regkood;
+	order BY po.nimetus, po.isik, comAsutusRemote.regkood;
 	INTO CURSOR palkoper_report1
 	
 SELECT palkoper_report1

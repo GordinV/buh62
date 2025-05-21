@@ -10,7 +10,7 @@ Public gnHandle,gnHandleAsync, gcWindow, gRekv, gUserId, oPrintform2, oFinder, g
 	tcAllikas, tcArtikkel, tcObjekt, tcTegev, tcEelAllikas, oToograafik, eETSD, tcTunnus, gcProgNimi, omk, oTood,;
 	oPuudumised, oEtsd,tcOsakond, tnOsakondId1, tnOsakondId2,gnPaev,tnParentRekvId,;
 	oTpr, oRahavoodid, oMenu, oEditMenu, oConnect, oKorderID, gcKey, oVanemtasu, gcAmetnik, oLahetuskulud, oLapsed,;
-	oEeltaotlus, oEelVariandid,oDokumendid,;
+	oEeltaotlus, oEelVariandid,oDokumendid,oAmeti_klassif,oPalgaastmed,;
 	oReklmaksud, oReklVolgnik, oReklSaadetud, gMailParool,;
 	oHooLepingud,oKeskPension,oRiigiToetus,oKOVPiiriMaar,;
 	oProjektid, oUritused, tcProj, tcUritus, tcgrupp, glMvt

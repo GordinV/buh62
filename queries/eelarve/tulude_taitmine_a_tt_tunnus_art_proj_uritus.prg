@@ -24,7 +24,6 @@ TEXT TO lcJson TEXTMERGE noshow
 		"taotlus_statusid":<<fltrAruanne.taotlus_statusid>>}
 ENDTEXT
 
-
 lError = oDb.readFromModel('aruanned\eelarve\tulud_allikas_artikkel_proj_uritus', 'tulud_report', 'l_aasta,fltrAruanne.kpv1, fltrAruanne.kpv2, gRekv, fltrAruanne.kond, lcJson', 'tmpReport', lcWhere)
 If !lError
 	Messagebox('Viga',0+16, 'Eelarve kulud')
@@ -53,23 +52,21 @@ Select idx, allikas, tegev, artikkel, nimetus, tunnus, proj, uritus,objekt,;
 	sum(tegelik) as tegelik, ;
 	sum(kassa) As kassa, ;
 	regkood, asutus ,;
-	parasutus, parregkood, ;
-	sum(report_kokku.eelarve_kinni_kokku) as eelarve_kinni_kokku,;
-	sum(report_kokku.eelarve_parandatud_kokku) as eelarve_parandatud_kokku,;
-	sum(report_kokku.eelarve_kassa_kinni_kokku) as eelarve_kassa_kinni_kokku,;
-	sum(report_kokku.eelarve_kassa_parandatud_kokku) as eelarve_kassa_parandatud_kokku,;
-	sum(report_kokku.tegelik_kokku) as tegelik_kokku,;
-	sum(report_kokku.kassa_kokku) as kassa_kokku,;
-	report_kokku.rekv_id;
-	from tmpReport,  report_kokku;
-	WHERE tmpReport.rekv_id = report_kokku.rekv_id;
-	AND (eelarve_kinni <> 0 OR eelarve_parandatud <> 0 OR eelarve_kassa_kinni <> 0 OR eelarve_kassa_parandatud <> 0 OR tegelik <> 0 OR kassa <> 0);
-	GROUP By allikas, tegev, idx, artikkel, tunnus, proj, uritus, objekt, nimetus, regkood, asutus, parasutus,parregkood,report_kokku.rekv_id;
+	parasutus, parregkood, rekv_id;
+	from tmpReport;
+	WHERE  (eelarve_kinni <> 0 OR eelarve_parandatud <> 0 OR eelarve_kassa_kinni <> 0 OR eelarve_kassa_parandatud <> 0 OR tegelik <> 0 OR kassa <> 0);
+	GROUP By allikas, tegev, idx, artikkel, tunnus, proj, uritus, objekt, nimetus, regkood, asutus, parasutus,parregkood,rekv_id;
 	ORDER By parasutus,asutus, idx, artikkel, allikas, tegev, tunnus, proj, uritus, objekt ;
 	INTO Cursor eelarve_report21
 	
-	SELECT * from eelarve_report21;
-	WHERE eelarve_kinni <> 0 OR eelarve_parandatud <> 0 OR eelarve_kassa_kinni <> 0 OR eelarve_kassa_parandatud <> 0 OR tegelik <> 0 OR kassa <> 0;
+	SELECT eelarve_report21.*, report_kokku.eelarve_kinni_kokku as eelarve_kinni_kokku,;
+	report_kokku.eelarve_parandatud_kokku as eelarve_parandatud_kokku,;
+	report_kokku.eelarve_kassa_kinni_kokku as eelarve_kassa_kinni_kokku,;
+	report_kokku.eelarve_kassa_parandatud_kokku as eelarve_kassa_parandatud_kokku,;
+	report_kokku.tegelik_kokku as tegelik_kokku,;
+	report_kokku.kassa_kokku as kassa_kokku;
+ from eelarve_report21 LEFT OUTER JOIN  report_kokku ON eelarve_report21.rekv_id = report_kokku.rekv_id;
+	WHERE  eelarve_kinni <> 0 OR eelarve_parandatud <> 0 OR eelarve_kassa_kinni <> 0 OR eelarve_kassa_parandatud <> 0 OR tegelik <> 0 OR kassa <> 0;
 	ORDER By parasutus,asutus, idx, artikkel, allikas, tegev, tunnus, proj, uritus, objekt ;
 	INTO CURSOR eelarve_report2
 	

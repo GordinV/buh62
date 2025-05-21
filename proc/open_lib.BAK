@@ -31,7 +31,7 @@ If Empty(tnOpt)
 	Index On Id Tag Id
 	Index On Left(koOd,20) Tag koOd
 	Set Order To Id
-SET STEP ON 
+
 	= OpenView('comEelarveremote',.T., 'comEelarveRemote', 'libs\libraries\artikkel')
 	Select comEelarveremote
 	Index On Id Tag Id

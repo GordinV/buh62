@@ -1,7 +1,6 @@
 Parameter tcWhere
 
 * ametiuhengu aruanne
-
 TEXT TO l_sqlwhere TEXTMERGE noshow
 	encode(nimetus::bytea, 'escape') ilike '%<<rtrim(ltrim(fltrPalkOper.nimetus))>>%'
 	and liik::text ilike '%<<ltrim(rtrim(fltrPalkOper.liik))>>%'

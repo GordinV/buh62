@@ -1,13 +1,13 @@
 Lparameters tcParams
 *!*		SET STEP on
-*!*	gRekv = 64
-*!*	CREATE CURSOR fltrAruanne (kpv2 d, kond i)
+*!*	gRekv = 66
+*!*	CREATE CURSOR fltrAruanne (kpv2 d, kond i, asutusid i, kood5 c(20), kood1 c(20), kood2 c(20))
 *!*	APPEND BLANK
-*!*	replace kpv2 WITH DATE(2019,01,03), kond WITH 0
-*!*
-*!*	gnHandle = SQLCONNECT('NarvaLvPg','vlad','Vlad490710')
-*!*
+*!*	replace kpv2 WITH DATE(2025,02,28), kond WITH 0, asutusid WITH 0
 
+*!*	gnHandle = SQLCONNECT('NarvaLvPg','vlad','Vlad490710')
+
+ 
 TEXT TO lcWhere TEXTMERGE noshow
 	(EMPTY(<<fltrAruanne.asutusid>>) or rekvid = <<fltrAruanne.asutusid>>)
 	and coalesce(artikkel,'') like '<<ALLTRIM(fltrAruanne.kood5)>>%'
@@ -803,7 +803,6 @@ l_field = 'eelarve_taps'
 l_result_eelarve_taps =  get_kontrol ('2.4.6-5-1','','',l_field) +  get_kontrol ('2.4.6-5-2','','',l_field) - ;
 	get_kontrol ('','100','',l_field) + get_kontrol ('2.4.8-5-2','','',l_field)
 
-SET STEP ON 
 l_field = 'kassa'
 l_result_kassa =  get_kontrol ('2.4.6-5-1','','',l_field) +  get_kontrol ('2.4.6-5-2','','',l_field) - ;
 	get_kontrol ('','100','',l_field) + get_kontrol ('2.4.8-5-2','','',l_field)
@@ -858,7 +857,7 @@ If !Empty(l_result_kassa) Or  !Empty(l_result_saldo) Or !Empty(l_result_eelarve)
 Endif
 
 
-Select * From eelarve_report_query Order By idx, tegev, artikkel,  sub_idx  Into Cursor eelarve_report1
+Select * From eelarve_report_query WHERE !ISNULL(nimetus) Order By idx, tegev, artikkel,  sub_idx  Into Cursor eelarve_report1
 
 Clear
 

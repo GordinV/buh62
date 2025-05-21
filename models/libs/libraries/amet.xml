@@ -1,28 +1,35 @@
 <?xml version = "1.0" encoding="Windows-1252" standalone="yes"?>
 <VFPData>
   <grid>
-    <sql>SELECT *
+    <sql>SELECT a.*,
+                           l.kood as ameti_kood,
+                           l.muud
                     FROM cur_ametid a
+                             inner join libs.library l on l.id = a.id
                     WHERE (a.rekvId = $1 OR a.rekvid IS NULL)</sql>
     <alias>curAmetid</alias>
   </grid>
   <select>
-    <sql>SELECT l.id,
-                     l.rekvid,
-                     l.kood::VARCHAR(20)                                  AS kood,
-                     l.nimetus::VARCHAR(254)                              AS nimetus,
-                     l.muud,
-                     l.status,
-                     l.library::VARCHAR(20)                               AS library,
-                     $2::INTEGER                                          AS userid,
-                     'AMET'                                               AS doc_type_id,
-                     (l.properties:: JSONB -&gt;&gt; 'osakondid') :: INTEGER    AS osakondId,
-                     (l.properties:: JSONB -&gt;&gt; 'kogus') :: NUMERIC(18, 2) AS kogus,
-                     (l.properties:: JSONB -&gt;&gt; 'palgamaar') ::INTEGER     AS palgamaar,
-                     (l.properties:: JSONB -&gt;&gt; 'tunnusid') ::INTEGER      AS tunnusId,
-                     (l.properties::JSONB -&gt;&gt; 'valid')::DATE              AS valid
-              FROM libs.library l
-              WHERE l.id = $1</sql>
+    <sql>SELECT
+                  l.id,
+                  l.rekvid,
+                  l.kood::VARCHAR(20)                                      AS kood,
+                  l.nimetus::VARCHAR(254)                                  AS nimetus,
+                  l.muud,
+                  l.status,
+                  l.library::VARCHAR(20)                                   AS library,
+                  $2::INTEGER                                              AS userid,
+                  'AMET'                                                   AS doc_type_id,
+                  (l.properties:: JSONB -&gt;&gt; 'osakondid') :: INTEGER        AS osakondId,
+                  (l.properties:: JSONB -&gt;&gt; 'kogus') :: NUMERIC(18, 2)     AS kogus,
+                  (l.properties:: JSONB -&gt;&gt; 'ameti_klassif') ::varchar(20) AS ameti_klassif,
+                  (l.properties:: JSONB -&gt;&gt; 'palgamaar') ::INTEGER         AS palgamaar,
+                  (l.properties:: JSONB -&gt;&gt; 'tunnusid') ::INTEGER          AS tunnusId,
+                  (l.properties::JSONB -&gt;&gt; 'valid')::DATE                  AS valid
+              FROM
+                  libs.library l
+              WHERE
+                  l.id = $1</sql>
     <sqlAsNew>select  $1::integer as id , 
             $2::integer as userid, 
             'AMET' as doc_type_id,
@@ -33,6 +40,7 @@
             0::integer as status,
             null::integer as osakondId,
             null::numeric(18,2) as kogus,
+            null::varchar(20) as ameti_klassif,
             null::integer as palgamaar,
             null::integer as tunnusId,
             null::date as valid,
@@ -90,6 +98,25 @@
     <query />
     <multiple>true</multiple>
     <alias>validate_lib_usage</alias>
+  </select>
+  <select>
+    <sql>select *
+               from
+                   (
+                       SELECT
+                           (jsonb_array_elements(properties::jsonb -&gt; 'palgaastmed') -&gt;&gt; 'summa')::numeric(12, 2) AS summa,
+                           (jsonb_array_elements(properties::jsonb -&gt; 'palgaastmed') -&gt;&gt;
+                            'palgamaar')::integer                                                                 AS palgamaar
+                       FROM
+                           libs.library l
+                       WHERE
+                           l.id = $1
+                   ) qry
+               order by
+                   palgamaar </sql>
+    <query />
+    <multiple>true</multiple>
+    <alias>comPalgamaar</alias>
   </select>
   <selectAsLibs>
     <sql>SELECT *

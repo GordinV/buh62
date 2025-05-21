@@ -1,6 +1,6 @@
 Parameter cWhere
-cReportName = 'Asutuste järdi'
-
+cReportName = 'Asutuste järgi'
+SET STEP ON 
 IF fltrAruanne.arvestus = 1 AND gRekv = 63
 	WAIT WINDOW 'Re-arvestan ...' nowait
 	lError = oDb.readFromModel('aruanned\eelarve\lisa1_lisa5_kontrol_asutuste_jargi', 'koosta_lisa1_lisa5_kontrol', 'gUserId,fltrAruanne.kpv2', 'tmpTulemus')
@@ -14,7 +14,8 @@ IF fltrAruanne.arvestus = 1 AND gRekv = 63
 	WAIT WINDOW 'Arvestan ...tehtud' nowait
 ENDIF
 
-
+CREATE CURSOR tmp_report_name (name c(20))
+INSERT INTO tmp_report_name  VALUES ('Asutuste järgi')
 
 Wait Window 'Päring...' Nowait
 
